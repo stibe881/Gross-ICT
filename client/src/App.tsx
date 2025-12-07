@@ -1,35 +1,40 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
 import { Route, Switch } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import Preloader from "@/components/Preloader";
-import Home from "./pages/Home";
-import Contact from "./pages/Contact";
-import WebService from "./pages/services/Web";
-import SupportService from "./pages/services/Support";
-import NetworkService from "./pages/services/Network";
-import About from "./pages/About";
-import Imprint from "@/pages/Imprint";
-import Privacy from "@/pages/Privacy";
+import { Suspense, lazy } from "react";
+
+// Lazy load pages for code splitting
+const Home = lazy(() => import("./pages/Home"));
+const Contact = lazy(() => import("./pages/Contact"));
+const WebService = lazy(() => import("./pages/services/Web"));
+const SupportService = lazy(() => import("./pages/services/Support"));
+const NetworkService = lazy(() => import("./pages/services/Network"));
+const About = lazy(() => import("./pages/About"));
+const Imprint = lazy(() => import("@/pages/Imprint"));
+const Privacy = lazy(() => import("@/pages/Privacy"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 
 function Router() {
   return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/contact"} component={Contact} />
-      <Route path={"/services/web"} component={WebService} />
-      <Route path={"/services/support"} component={SupportService} />
-      <Route path={"/services/network"} component={NetworkService} />
-      <Route path={"/about"} component={About} />
-      <Route path="/imprint" component={Imprint} />
-      <Route path="/privacy" component={Privacy} />
-      <Route component={NotFound} />
-    </Switch>
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <Switch>
+        <Route path={"/"} component={Home} />
+        <Route path={"/contact"} component={Contact} />
+        <Route path={"/services/web"} component={WebService} />
+        <Route path={"/services/support"} component={SupportService} />
+        <Route path={"/services/network"} component={NetworkService} />
+        <Route path={"/about"} component={About} />
+        <Route path="/imprint" component={Imprint} />
+        <Route path="/privacy" component={Privacy} />
+        <Route component={NotFound} />
+      </Switch>
+    </Suspense>
   );
 }
 

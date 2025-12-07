@@ -181,7 +181,7 @@ export default function Home() {
                 title={t.services.web.title}
                 description={t.services.web.desc}
                 icon={<Globe className="h-8 w-8 text-primary" />}
-                bgImage="/images/service-web.png"
+                bgImage="/images/service-web.webp"
                 href="/services/web"
                 delay={0.1}
               />
@@ -195,7 +195,7 @@ export default function Home() {
                 title={t.services.support.title}
                 description={t.services.support.desc}
                 icon={<Cpu className="h-8 w-8 text-blue-400" />}
-                bgImage="/images/service-support.png"
+                bgImage="/images/service-support.webp"
                 href="/services/support"
                 delay={0.2}
               />
@@ -209,7 +209,7 @@ export default function Home() {
                 title={t.services.security.title}
                 description={t.services.security.desc}
                 icon={<Shield className="h-6 w-6 text-purple-400" />}
-                bgImage="/images/service-security.png"
+                bgImage="/images/service-security.webp"
                 href="/services/network"
                 delay={0.4}
               />
@@ -222,7 +222,7 @@ export default function Home() {
                 title={t.services.performance.title}
                 description={t.services.performance.desc}
                 icon={<Zap className="h-6 w-6 text-yellow-400" />}
-                bgImage="/images/service-performance.png"
+                bgImage="/images/service-performance.webp"
                 href="/services/web"
                 delay={0.5}
               />
@@ -235,7 +235,7 @@ export default function Home() {
                 title={t.services.analytics.title}
                 description={t.services.analytics.desc}
                 icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
-                bgImage="/images/service-analytics.png"
+                bgImage="/images/service-analytics.webp"
                 href="/services/web"
                 delay={0.6}
               />
