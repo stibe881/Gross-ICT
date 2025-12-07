@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -34,12 +34,12 @@ export default function AdminDashboard() {
       category: categoryFilter as any,
     },
     {
-      enabled: !!user && user.role === "admin",
+      enabled: !!user && (user.role === "admin" || user.role === "support"),
     }
   );
 
   const { data: stats } = trpc.tickets.stats.useQuery(undefined, {
-    enabled: !!user && user.role === "admin",
+    enabled: !!user && (user.role === "admin" || user.role === "support"),
   });
 
   const updateMutation = trpc.tickets.update.useMutation({
@@ -112,15 +112,27 @@ export default function AdminDashboard() {
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="text-sm text-gray-400">Ticket-Verwaltung</p>
           </div>
-          <Button
-            variant="outline"
-            onClick={() => logoutMutation.mutate()}
-            disabled={logoutMutation.isPending}
-            className="border-white/20 bg-white/5 hover:bg-white/10"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Abmelden
-          </Button>
+          <div className="flex items-center gap-2">
+            {user?.role === "admin" && (
+              <Button
+                variant="outline"
+                onClick={() => setLocation("/admin/users")}
+                className="border-white/20 bg-white/5 hover:bg-white/10"
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Benutzerverwaltung
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={() => logoutMutation.mutate()}
+              disabled={logoutMutation.isPending}
+              className="border-white/20 bg-white/5 hover:bg-white/10"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Abmelden
+            </Button>
+          </div>
         </div>
       </div>
 

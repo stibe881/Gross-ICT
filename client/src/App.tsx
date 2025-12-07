@@ -24,6 +24,7 @@ const Calculator = lazy(() => import("@/pages/Calculator"));
 const Login = lazy(() => import("@/pages/Login"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const UserManagement = lazy(() => import("@/pages/UserManagement"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -44,6 +45,7 @@ function Router() {
         <Route path="/login" component={Login} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/admin" component={AdminDashboard} />
+        <Route path="/admin/users" component={UserManagement} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

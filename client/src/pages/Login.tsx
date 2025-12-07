@@ -20,7 +20,7 @@ export default function Login() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      if (user.role === 'admin') {
+      if (user.role === 'admin' || user.role === 'support') {
         setLocation("/admin");
       } else {
         setLocation("/dashboard");

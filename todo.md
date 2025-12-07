@@ -34,3 +34,8 @@
 ## Completed
 - [x] Remove status filter dropdown and emojis from priority/category filters
 - [x] Fix login redirect - automatically redirect after successful login
+
+## Completed
+- [x] Add support role with limited permissions (ticket management only)
+- [x] Implement admin user management (create users, assign roles)
+- [x] Role-based access control (admin vs support permissions)
