@@ -14,11 +14,20 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
+  const utils = trpc.useUtils();
 
   const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Invalidate and refetch the auth.me query to update authentication state
+      await utils.auth.me.invalidate();
       toast.success("Login erfolgreich!");
-      setLocation("/dashboard");
+      
+      // Redirect based on user role
+      if (data.user.role === 'admin') {
+        setLocation("/admin");
+      } else {
+        setLocation("/dashboard");
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Login fehlgeschlagen");
