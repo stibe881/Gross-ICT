@@ -212,7 +212,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.web}</span></Link></li>
                 <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.support}</span></Link></li>
                 <li><Link href="/services/network"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.network}</span></Link></li>
-                <li><Link href="/calculator"><span className="hover:text-primary transition-colors cursor-pointer">Project Calculator</span></Link></li>
+                <li><Link href="/calculator"><span className="hover:text-primary transition-colors cursor-pointer">Website Calculator</span></Link></li>
               </ul>
             </div>
 

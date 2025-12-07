@@ -281,7 +281,7 @@ export default function Calculator() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4"
             >
               <CalcIcon className="w-4 h-4" />
-              {language === 'de' ? 'Projekt-Kalkulator' : 'Project Estimator'}
+              {language === 'de' ? 'Webseiten-Kalkulator' : 'Website Calculator'}
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
               {language === 'de' ? 'Kalkulieren Sie Ihr Projekt' : 'Calculate Your Project'}
