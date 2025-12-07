@@ -42,101 +42,77 @@ function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: 
   );
 }
 
-function PlexusNetwork() {
-  const count = 40;
-  const radius = 15;
-  const connectionDistance = 5;
+function OrganicFlow() {
+  const count = 150;
+  const pointsRef = useRef<THREE.Points>(null);
   
-  const points = useMemo(() => {
+  const particles = useMemo(() => {
     const temp = [];
     for (let i = 0; i < count; i++) {
-      const theta = Math.random() * Math.PI * 2;
-      const phi = Math.acos(2 * Math.random() - 1);
-      const r = radius * Math.cbrt(Math.random());
+      const x = (Math.random() - 0.5) * 30;
+      const z = (Math.random() - 0.5) * 20;
+      const y = (Math.random() - 0.5) * 10;
+      const speed = 0.2 + Math.random() * 0.5;
+      const offset = Math.random() * Math.PI * 2;
       
-      temp.push({
-        position: new THREE.Vector3(
-          r * Math.sin(phi) * Math.cos(theta),
-          (Math.random() - 0.5) * 5 - 4, // Flattened height, positioned lower
-          r * Math.sin(phi) * Math.sin(theta)
-        ),
-        velocity: new THREE.Vector3(
-          (Math.random() - 0.5) * 0.02,
-          (Math.random() - 0.5) * 0.02,
-          (Math.random() - 0.5) * 0.02
-        )
-      });
+      temp.push({ x, y, z, speed, offset, originalY: y });
     }
     return temp;
   }, []);
 
-  const linesGeometry = useRef<THREE.BufferGeometry>(null);
-  const pointsRef = useRef<THREE.Points>(null);
-
-  useFrame(() => {
-    if (!linesGeometry.current || !pointsRef.current) return;
-
-    // Update points
-    points.forEach(point => {
-      point.position.add(point.velocity);
-      
-      // Boundary check
-      if (Math.abs(point.position.x) > 15) point.velocity.x *= -1;
-      if (point.position.y > -2 || point.position.y < -6) point.velocity.y *= -1;
-      if (Math.abs(point.position.z) > 10) point.velocity.z *= -1;
-    });
-
-    // Update lines
-    const positions = [];
-    const pointPositions = [];
+  useFrame((state) => {
+    if (!pointsRef.current) return;
+    
+    const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+    const t = state.clock.getElapsedTime();
     
     for (let i = 0; i < count; i++) {
-      pointPositions.push(points[i].position.x, points[i].position.y, points[i].position.z);
+      const p = particles[i];
       
-      for (let j = i + 1; j < count; j++) {
-        const dist = points[i].position.distanceTo(points[j].position);
-        if (dist < connectionDistance) {
-          positions.push(
-            points[i].position.x, points[i].position.y, points[i].position.z,
-            points[j].position.x, points[j].position.y, points[j].position.z
-          );
-        }
-      }
+      // Organic wave motion
+      const y = p.originalY + Math.sin(t * p.speed + p.offset + p.x * 0.2) * 1.5;
+      
+      // Gentle drift
+      let x = p.x + Math.cos(t * 0.1 + p.offset) * 0.5;
+      
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = p.z;
     }
-
-    linesGeometry.current.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(positions, 3)
-    );
     
-    pointsRef.current.geometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(pointPositions, 3)
-    );
+    pointsRef.current.geometry.attributes.position.needsUpdate = true;
   });
 
+  const initialPositions = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    particles.forEach((p, i) => {
+      pos[i * 3] = p.x;
+      pos[i * 3 + 1] = p.y;
+      pos[i * 3 + 2] = p.z;
+    });
+    return pos;
+  }, [particles]);
+
   return (
-    <group>
-      <points ref={pointsRef}>
-        <bufferGeometry />
-        <pointsMaterial
-          size={0.15}
-          color="#ffd700"
-          transparent
-          opacity={0.8}
-          sizeAttenuation
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute
+          attach="attributes-position"
+          count={count}
+          array={initialPositions}
+          itemSize={3}
+          args={[initialPositions, 3]}
         />
-      </points>
-      <lineSegments>
-        <bufferGeometry ref={linesGeometry} />
-        <lineBasicMaterial
-          color="#4a5568"
-          transparent
-          opacity={0.15}
-          depthWrite={false}
-        />
-      </lineSegments>
-    </group>
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.1}
+        color="#ffd700"
+        transparent
+        opacity={0.6}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+      />
+    </points>
   );
 }
 
@@ -185,7 +161,7 @@ export default function Scene3D() {
           </group>
         </ScrollRig>
 
-        <PlexusNetwork />
+        <OrganicFlow />
         <Environment preset="city" />
       </Canvas>
       
