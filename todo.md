@@ -55,3 +55,9 @@
 - [x] Clickable ticket cards to open full detail view
 - [x] Enhanced ticket detail modal with full message history
 - [x] Private notes system (visible only to staff, not customers)
+
+## Completed
+- [x] Fix ticket card width for mobile view in dashboard
+- [x] Add supporter assignment dropdown to ticket detail modal
+- [x] Fix title overlap issue in ticket detail modal
+- [x] Fix checkbox visibility in lower section of ticket detail modal

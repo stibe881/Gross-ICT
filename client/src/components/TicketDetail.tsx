@@ -4,11 +4,18 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag } from "lucide-react";
+import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface TicketDetailProps {
   ticketId: number;
@@ -25,12 +32,30 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
 
   const { data: ticket, isLoading: ticketLoading } = trpc.tickets.byId.useQuery({ id: ticketId });
 
+  const isStaff = user?.role === 'admin' || user?.role === 'support';
+
   const { data: comments, isLoading: commentsLoading } = trpc.comments.getComments.useQuery({
     ticketId,
   });
 
   const { data: attachments, isLoading: attachmentsLoading } = trpc.comments.getAttachments.useQuery({
     ticketId,
+  });
+
+  const { data: allUsers } = trpc.users.all.useQuery(undefined, {
+    enabled: isStaff,
+  });
+
+  const supportStaff = allUsers?.filter((u: any) => u.role === 'admin' || u.role === 'support');
+
+  const assignTicketMutation = trpc.tickets.assign.useMutation({
+    onSuccess: () => {
+      toast.success("Ticket zugewiesen");
+      utils.tickets.byId.invalidate({ id: ticketId });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Fehler beim Zuweisen des Tickets");
+    },
   });
 
   const createCommentMutation = trpc.comments.createComment.useMutation({
@@ -154,8 +179,6 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
     return labels[category] || category;
   };
 
-  const isStaff = user?.role === "admin" || user?.role === "support";
-
   // Filter comments based on user role
   const filteredComments = comments?.filter((comment: any) => {
     // Staff can see all comments
@@ -165,9 +188,10 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
   });
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
-      <Card className="w-full max-w-5xl my-8 bg-zinc-900 border-white/10">
-        <CardHeader className="border-b border-white/10 sticky top-0 bg-zinc-900 z-10">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-5xl my-8 max-h-[90vh] overflow-y-auto">
+        <Card className="bg-zinc-900 border-white/10">
+          <CardHeader className="border-b border-white/10 sticky top-0 bg-zinc-900 z-20 shadow-lg">
           <div className="flex justify-between items-start">
             <div>
               <CardTitle className="text-white text-2xl">Ticket #{ticketId}</CardTitle>
@@ -246,6 +270,38 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                           Eskalation Level {ticket.escalationLevel}
                         </Badge>
                       )}
+                    </div>
+                  )}
+
+                  {isStaff && (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                        <UserCheck className="h-4 w-4" />
+                        Zugewiesen an
+                      </h3>
+                      <Select
+                        value={ticket.assignedTo?.toString() || "unassigned"}
+                        onValueChange={(value) => {
+                          const assignedTo = value === "unassigned" ? null : parseInt(value);
+                          assignTicketMutation.mutate({
+                            ticketId: ticket.id,
+                            assignedTo,
+                          });
+                        }}
+                        disabled={assignTicketMutation.isPending}
+                      >
+                        <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="unassigned">Nicht zugewiesen</SelectItem>
+                          {supportStaff?.map((staff: any) => (
+                            <SelectItem key={staff.id} value={staff.id.toString()}>
+                              {staff.name || staff.email}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   )}
                 </div>
@@ -413,17 +469,18 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                     className="bg-white/5 border-white/10 text-white min-h-[100px]"
                   />
                   {isStaff && (
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 p-3 bg-white/5 rounded-lg border border-white/10">
                       <Checkbox
                         id="private-note"
                         checked={isPrivateNote}
                         onCheckedChange={(checked) => setIsPrivateNote(checked as boolean)}
+                        className="border-white/30"
                       />
                       <Label
                         htmlFor="private-note"
-                        className="text-sm text-gray-400 cursor-pointer flex items-center gap-2"
+                        className="text-sm text-gray-300 cursor-pointer flex items-center gap-2 font-medium"
                       >
-                        <Lock className="h-3 w-3" />
+                        <Lock className="h-4 w-4" />
                         Als private Notiz markieren (nur für Mitarbeitende sichtbar)
                       </Label>
                     </div>
@@ -448,6 +505,7 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
           )}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

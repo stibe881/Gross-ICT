@@ -386,7 +386,7 @@ export default function AdminDashboard() {
                   onClick={() => setSelectedTicketId(ticket.id)}
                 >
                   <CardHeader>
-                    <div className="flex justify-between items-start">
+                    <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                       <div className="flex-1">
                         <CardTitle className="text-white">#{ticket.id} - {ticket.subject}</CardTitle>
                         <CardDescription className="text-gray-400">
@@ -440,7 +440,7 @@ export default function AdminDashboard() {
                       </div>
                     )}
 
-                    <div className="flex gap-4 pt-4 border-t border-white/10">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-white/10">
                       <Button
                         variant="outline"
                         onClick={() => setSelectedTicketId(ticket.id)}
@@ -450,7 +450,7 @@ export default function AdminDashboard() {
                       </Button>
                     </div>
 
-                    <div className="flex gap-4 pt-4 border-t border-white/10">
+                    <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-white/10">
                       <div className="flex-1">
                         <label className="text-sm text-gray-400 mb-2 block">Status ändern:</label>
                         <Select
