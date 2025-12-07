@@ -10,6 +10,7 @@ import { Link } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useRef } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -27,6 +28,7 @@ const stagger = {
 
 function ScrollTypography() {
   const ref = useRef(null);
+  const { t } = useLanguage();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"]
@@ -38,14 +40,15 @@ function ScrollTypography() {
 
   return (
     <motion.h1 ref={ref} variants={fadeIn} className="text-[12vw] md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[1.1] overflow-visible py-4 px-2">
-      <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl whitespace-nowrap">Future-Proof</motion.span>
-      <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient whitespace-nowrap">Infrastructure.</motion.span>
+      <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl whitespace-nowrap">{t.hero.title_prefix}</motion.span>
+      <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient whitespace-nowrap">{t.hero.title_suffix}</motion.span>
     </motion.h1>
   );
 }
 
 export default function Home() {
   const ref = useRef(null);
+  const { t } = useLanguage();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"]
@@ -99,38 +102,37 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
               </span>
-              <span className="text-gray-200 tracking-wide uppercase text-xs font-bold">Next-Gen IT Services</span>
+              <span className="text-gray-200 tracking-wide uppercase text-xs font-bold">{t.hero.badge}</span>
             </motion.div>
             
             <ScrollTypography />
             
             <motion.p variants={fadeIn} className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
-              Wir transformieren Unternehmen mit modernster Web-Technologie, 
-              robusten Netzwerken und proaktivem Support.
+              {t.hero.subtitle}
             </motion.p>
             
             <motion.div variants={fadeIn} className="flex flex-col items-center gap-8 pt-8">
               <div className="flex flex-col sm:flex-row justify-center gap-6">
                 <Link href="/contact">
                   <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
-                    Start Project <ArrowRight className="ml-2 h-5 w-5" />
+                    {t.hero.cta_primary} <ArrowRight className="ml-2 h-5 w-5" />
                   </Button>
                 </Link>
                 <Link href="/services/web">
                   <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
-                    Explore Services
+                    {t.hero.cta_secondary}
                   </Button>
                 </Link>
               </div>
               
               <div className="flex gap-4 text-sm text-muted-foreground">
                 <a href="https://wa.me/41794140616" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
-                  <MessageCircle className="h-4 w-4" /> WhatsApp
+                  <MessageCircle className="h-4 w-4" /> {t.hero.whatsapp}
                 </a>
                 <span className="text-white/20">|</span>
                 <Link href="/contact">
                   <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
-                    <Calendar className="h-4 w-4" /> Termin vereinbaren
+                    <Calendar className="h-4 w-4" /> {t.hero.schedule}
                   </span>
                 </Link>
               </div>
@@ -146,7 +148,7 @@ export default function Home() {
           className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white/30 text-xs tracking-[0.2em] uppercase font-medium cursor-pointer hover:text-white transition-colors"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
-          <span>Scroll</span>
+          <span>{t.hero.scroll}</span>
           <div className="w-[1px] h-16 bg-gradient-to-b from-white/30 to-transparent"></div>
         </motion.div>
       </section>
@@ -161,11 +163,12 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
+            style={{ y: useTransform(scrollYProgress, [0, 1], [0, -50]) }}
             className="mb-16"
           >
-            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">Unsere Expertise</h2>
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">{t.services.title}</h2>
             <p className="text-xl text-muted-foreground max-w-2xl">
-              Ein ganzheitliches Ökosystem für Ihre digitale Performance.
+              {t.services.subtitle}
             </p>
           </motion.div>
 
@@ -175,8 +178,8 @@ export default function Home() {
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
-                title="Web Development"
-                description="High-Performance Webseiten und Applikationen. Gebaut mit Next-Gen Technologien für maximale Geschwindigkeit und SEO-Ranking."
+                title={t.services.web.title}
+                description={t.services.web.desc}
                 icon={<Globe className="h-8 w-8 text-primary" />}
                 bgImage="/images/service-web.png"
                 href="/services/web"
@@ -189,8 +192,8 @@ export default function Home() {
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.02 // SUPPORT</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
-                title="IT Support"
-                description="24/7 Monitoring und schnelle Hilfe bei allen Hardware-Problemen."
+                title={t.services.support.title}
+                description={t.services.support.desc}
                 icon={<Cpu className="h-8 w-8 text-blue-400" />}
                 bgImage="/images/service-support.png"
                 href="/services/support"
@@ -203,8 +206,8 @@ export default function Home() {
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SEC.02 // SHIELD</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
-                title="Security"
-                description="Umfassender Schutz vor Cyber-Bedrohungen durch modernste Firewalls, Verschlüsselung und proaktives Monitoring Ihrer gesamten Infrastruktur."
+                title={t.services.security.title}
+                description={t.services.security.desc}
                 icon={<Shield className="h-6 w-6 text-purple-400" />}
                 bgImage="/images/service-security.png"
                 href="/services/network"
@@ -216,8 +219,8 @@ export default function Home() {
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">OPT.03 // SPEED</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
-                title="Performance"
-                description="Maximale Geschwindigkeit für Ihre Systeme. Wir optimieren Ladezeiten, Datenbankabfragen und Server-Ressourcen für reibungslose Abläufe."
+                title={t.services.performance.title}
+                description={t.services.performance.desc}
                 icon={<Zap className="h-6 w-6 text-yellow-400" />}
                 bgImage="/images/service-performance.png"
                 href="/services/web"
@@ -229,8 +232,8 @@ export default function Home() {
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">DAT.04 // INSIGHT</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
-                title="Analytics"
-                description="Verwandeln Sie Daten in Wissen. Unsere Dashboards liefern Echtzeit-Einblicke in Nutzerverhalten und Systemstatus für fundierte Entscheidungen."
+                title={t.services.analytics.title}
+                description={t.services.analytics.desc}
                 icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
                 bgImage="/images/service-analytics.png"
                 href="/services/web"

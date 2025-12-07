@@ -4,11 +4,13 @@ import { Menu, X, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [location] = useLocation();
+  const { t, language, setLanguage } = useLanguage();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -42,10 +44,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, []);
 
   const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Web", path: "/services/web" },
-    { name: "Support", path: "/services/support" },
-    { name: "Netzwerk", path: "/services/network" },
+    { name: t.nav.home, path: "/" },
+    { name: t.nav.web, path: "/services/web" },
+    { name: t.nav.support, path: "/services/support" },
+    { name: t.nav.network, path: "/services/network" },
   ];
 
   return (
@@ -91,9 +93,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* CTA Button */}
           <div className="flex items-center gap-2">
+            {/* Language Switcher */}
+            <button 
+              onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
+              className="px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+            >
+              {language === 'de' ? 'EN' : 'DE'}
+            </button>
+
             <Link href="/contact">
               <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-2">
-                Kontakt <ArrowRight className="h-3 w-3" />
+                {t.nav.contact} <ArrowRight className="h-3 w-3" />
               </button>
             </Link>
             
@@ -140,7 +150,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h3 className="text-lg font-bold text-white">Gross ICT</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Next-Generation IT Solutions.<br/>
-                Wir bauen die digitale Infrastruktur von morgen.
+                {t.hero.subtitle}
               </p>
               <div className="text-muted-foreground text-sm leading-relaxed pt-2">
                 <p>Neuhushof 3</p>
@@ -152,19 +162,18 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div>
               <h4 className="font-medium text-white mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">Web Development</span></Link></li>
-                <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">IT Support</span></Link></li>
-                <li><Link href="/services/network"><span className="hover:text-primary transition-colors cursor-pointer">Network Solutions</span></Link></li>
+                <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.web}</span></Link></li>
+                <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.support}</span></Link></li>
+                <li><Link href="/services/network"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.network}</span></Link></li>
               </ul>
             </div>
 
             <div>
               <h4 className="font-medium text-white mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
-                <li><Link href="/about"><span className="hover:text-primary transition-colors cursor-pointer">Über uns</span></Link></li>
-                <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">Kontakt</span></Link></li>
-                <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">Impressum</span></Link></li>
-                <li><Link href="/privacy"><span className="hover:text-primary transition-colors cursor-pointer">Datenschutz</span></Link></li>
+                <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.contact}</span></Link></li>
+                <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">{t.footer.imprint}</span></Link></li>
+                <li><Link href="/privacy"><span className="hover:text-primary transition-colors cursor-pointer">{t.footer.privacy}</span></Link></li>
               </ul>
             </div>
 
@@ -172,7 +181,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} Gross ICT. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Gross ICT. {t.footer.rights}</p>
             <p>Designed with Next-Gen Tech.</p>
           </div>
         </div>

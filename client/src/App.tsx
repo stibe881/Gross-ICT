@@ -5,6 +5,7 @@ import { Route, Switch } from "wouter";
 import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
 import Preloader from "@/components/Preloader";
 import Home from "./pages/Home";
 import Contact from "./pages/Contact";
@@ -45,11 +46,13 @@ function App() {
           defaultTheme="light"
           // switchable
         >
-          <TooltipProvider>
-            <Preloader />
-            <Toaster />
-            <Router />
-          </TooltipProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <Preloader />
+              <Toaster />
+              <Router />
+            </TooltipProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </ErrorBoundary>
     </HelmetProvider>
