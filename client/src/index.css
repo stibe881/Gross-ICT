@@ -93,14 +93,7 @@
   }
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
-    /* Modern subtle grid background pattern */
-    background-image: 
-      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
-    background-size: 60px 60px;
-    background-position: center top;
-    /* Fade out grid at bottom */
-    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+
   }
   
   /* Smooth scrolling */
