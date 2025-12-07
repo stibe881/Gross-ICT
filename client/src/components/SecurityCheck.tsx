@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Shield, AlertTriangle, CheckCircle, ArrowRight, RefreshCw, Lock, Smartphone, Wifi, FileText, HardDrive, Info, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,7 +15,7 @@ export default function SecurityCheck() {
   const [showResult, setShowResult] = useState(false);
   const [, setLocation] = useLocation();
 
-  const questions = [
+  const questions = useMemo(() => [
     {
       question: language === 'de' ? "Haben Sie eine 2-Faktor-Authentifizierung (2FA) aktiviert?" : "Do you have 2-Factor Authentication (2FA) enabled?",
       info: language === 'de' ? "2FA schützt Ihre Konten selbst dann, wenn Ihr Passwort gestohlen wird." : "2FA protects your accounts even if your password is stolen.",
@@ -116,7 +116,7 @@ export default function SecurityCheck() {
         { text: language === 'de' ? "Nein" : "No", points: 0 }
       ]
     }
-  ];
+  ], [language]);
 
   const handleAnswer = (points: number) => {
     const newScore = score + points;
@@ -192,7 +192,7 @@ export default function SecurityCheck() {
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden min-h-[500px] flex flex-col justify-center shadow-2xl">
-          <AnimatePresence mode="wait">
+          <AnimatePresence initial={false}>
             {!started ? (
               <motion.div
                 key="start"
