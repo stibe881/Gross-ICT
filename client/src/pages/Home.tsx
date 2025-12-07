@@ -81,19 +81,7 @@ export default function Home() {
       
       {/* Hero Section */}
       <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden w-full">
-        {/* Network Visualization Background */}
-        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_100%)] z-10"></div>
-          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id="network-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1" className="fill-white/20" />
-                <path d="M2 2 L102 102 M2 102 L102 2" className="stroke-white/5" strokeWidth="0.5" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#network-pattern)" />
-          </svg>
-        </div>
+
 
         <motion.div 
           style={{ y, opacity }}
