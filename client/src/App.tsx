@@ -26,6 +26,8 @@ const Dashboard = lazy(() => import("@/pages/Dashboard"));
 const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 const UserManagement = lazy(() => import("@/pages/UserManagement"));
 const TemplateManagement = lazy(() => import("@/pages/TemplateManagement"));
+const KnowledgeBase = lazy(() => import("@/pages/KnowledgeBase"));
+const PublicKnowledgeBase = lazy(() => import("@/pages/PublicKnowledgeBase"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -48,6 +50,8 @@ function Router() {
         <Route path="/admin" component={AdminDashboard} />
         <Route path="/admin/users" component={UserManagement} />
         <Route path="/admin/templates" component={TemplateManagement} />
+        <Route path="/admin/knowledge-base" component={KnowledgeBase} />
+        <Route path="/knowledge-base" component={PublicKnowledgeBase} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

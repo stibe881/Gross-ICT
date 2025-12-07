@@ -43,6 +43,20 @@
       "when": 1765148959083,
       "tag": "0005_smooth_joseph",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1765150552280,
+      "tag": "0006_steady_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "5",
+      "when": 1765150662956,
+      "tag": "0007_pretty_klaw",
+      "breakpoints": true
     }
   ]
 }

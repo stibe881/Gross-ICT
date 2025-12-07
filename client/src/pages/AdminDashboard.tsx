@@ -155,6 +155,15 @@ export default function AdminDashboard() {
                     <Users className="h-4 w-4 md:mr-2" />
                     <span className="hidden md:inline">Benutzerverwaltung</span>
                   </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation("/admin/knowledge-base")}
+                    className="border-white/20 bg-white/5 hover:bg-white/10"
+                    size="sm"
+                  >
+                    <FileText className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Wissensdatenbank</span>
+                  </Button>
                 </>
               )}
               <Button

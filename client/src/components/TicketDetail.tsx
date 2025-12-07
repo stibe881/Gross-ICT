@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck } from "lucide-react";
+import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck, BookOpen, Search } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -27,6 +27,8 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
   const [commentText, setCommentText] = useState("");
   const [isPrivateNote, setIsPrivateNote] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [kbSearchOpen, setKbSearchOpen] = useState(false);
+  const [kbSearchQuery, setKbSearchQuery] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
 
@@ -41,6 +43,11 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
   const { data: attachments, isLoading: attachmentsLoading } = trpc.comments.getAttachments.useQuery({
     ticketId,
   });
+
+  const { data: kbArticles, isLoading: kbLoading } = trpc.kb.all.useQuery(
+    { search: kbSearchQuery },
+    { enabled: kbSearchOpen && kbSearchQuery.length > 2 }
+  );
 
   const { data: allUsers } = trpc.users.all.useQuery(undefined, {
     enabled: isStaff,
@@ -458,6 +465,70 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                   </div>
                 ) : (
                   <p className="text-sm text-gray-400 mb-4">Keine Kommentare vorhanden</p>
+                )}
+
+                {/* KB Search */}
+                {isStaff && (
+                  <div className="mb-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => setKbSearchOpen(!kbSearchOpen)}
+                      className="w-full border-white/10 text-white hover:bg-white/10"
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      {kbSearchOpen ? "KB-Suche schließen" : "Wissensdatenbank durchsuchen"}
+                    </Button>
+                    {kbSearchOpen && (
+                      <div className="mt-3 space-y-3">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                          <input
+                            type="text"
+                            value={kbSearchQuery}
+                            onChange={(e) => setKbSearchQuery(e.target.value)}
+                            placeholder="Suche nach Lösungen..."
+                            className="w-full pl-10 pr-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </div>
+                        {kbLoading && (
+                          <div className="flex justify-center py-4">
+                            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                          </div>
+                        )}
+                        {kbArticles && kbArticles.length > 0 && (
+                          <div className="max-h-[300px] overflow-y-auto space-y-2">
+                            {kbArticles.map((article: any) => (
+                              <div
+                                key={article.id}
+                                className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-primary/50 transition-colors cursor-pointer"
+                                onClick={() => {
+                                  setCommentText(commentText + (commentText ? "\n\n" : "") + article.content);
+                                  setKbSearchOpen(false);
+                                  setKbSearchQuery("");
+                                  toast.success("KB-Artikel eingefügt");
+                                }}
+                              >
+                                <h4 className="text-sm font-medium text-white mb-1">{article.title}</h4>
+                                <p className="text-xs text-gray-400 line-clamp-2">{article.content}</p>
+                                <div className="flex gap-2 mt-2">
+                                  <Badge variant="secondary" className="text-xs">{article.category}</Badge>
+                                  {article.visibility === "internal" && (
+                                    <Badge variant="outline" className="text-xs">
+                                      <Lock className="h-3 w-3 mr-1" />
+                                      Intern
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {kbSearchQuery.length > 2 && !kbLoading && kbArticles && kbArticles.length === 0 && (
+                          <p className="text-sm text-gray-400 text-center py-4">Keine Artikel gefunden</p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 )}
 
                 {/* Add Comment */}

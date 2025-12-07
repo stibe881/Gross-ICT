@@ -61,3 +61,11 @@
 - [x] Add supporter assignment dropdown to ticket detail modal
 - [x] Fix title overlap issue in ticket detail modal
 - [x] Fix checkbox visibility in lower section of ticket detail modal
+
+## Completed
+- [x] Knowledge Base database schema with visibility control (internal/public)
+- [x] KB article management (create, edit, delete, search)
+- [x] Create KB article directly from ticket solution
+- [x] Admin KB management interface
+- [x] KB search integration in ticket detail modal for quick insertion
+- [x] Public KB page for customer self-service (only public articles)

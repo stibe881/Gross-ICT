@@ -128,3 +128,35 @@ export const responseTemplates = mysqlTable("responseTemplates", {
 
 export type ResponseTemplate = typeof responseTemplates.$inferSelect;
 export type InsertResponseTemplate = typeof responseTemplates.$inferInsert;
+
+/**
+ * Knowledge Base articles table
+ */
+export const kbArticles = mysqlTable("kbArticles", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Article title */
+  title: varchar("title", { length: 500 }).notNull(),
+  /** Article content (markdown supported) */
+  content: text("content").notNull(),
+  /** Article category */
+  category: varchar("category", { length: 100 }).notNull(),
+  /** Tags for better searchability (comma-separated) */
+  tags: text("tags"),
+  /** Visibility: internal (staff only) or public (customers can see) */
+  visibility: mysqlEnum("visibility", ["internal", "public"]).default("public").notNull(),
+  /** Optional reference to source ticket */
+  sourceTicketId: int("sourceTicketId"),
+  /** View count */
+  viewCount: int("viewCount").default(0).notNull(),
+  /** Helpful count (upvotes) */
+  helpfulCount: int("helpfulCount").default(0).notNull(),
+  /** Author user ID */
+  authorId: int("authorId").notNull(),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Updated timestamp */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type KbArticle = typeof kbArticles.$inferSelect;
+export type InsertKbArticle = typeof kbArticles.$inferInsert;
