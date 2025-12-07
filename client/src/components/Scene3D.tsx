@@ -1,5 +1,6 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, PerspectiveCamera, Environment, Sparkles, MeshTransmissionMaterial } from "@react-three/drei";
+import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
@@ -190,6 +191,13 @@ export default function Scene3D() {
 
         <GridFloor />
         <Environment preset="city" />
+        
+        <EffectComposer>
+          <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.4} />
+          <ChromaticAberration offset={[0.002, 0.002]} />
+          <Noise opacity={0.05} />
+          <Vignette eskil={false} offset={0.1} darkness={0.5} />
+        </EffectComposer>
       </Canvas>
       
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none"></div>

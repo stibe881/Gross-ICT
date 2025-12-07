@@ -1,6 +1,7 @@
 import Layout from "@/components/Layout";
 import Scene3D from "@/components/Scene3D";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import Spotlight from "@/components/Spotlight";
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
@@ -135,42 +136,56 @@ export default function Home() {
               href="/services/support"
               delay={0.2}
             />
-            
-            {/* Medium Card - Network */}
-            <BentoCard 
-              className="md:col-span-1 md:row-span-1"
-              title="Network Solutions"
-              description="Sichere und skalierbare Netzwerkinfrastruktur für moderne Unternehmen."
-              icon={<Network className="h-8 w-8 text-green-400" />}
-              href="/services/network"
-              delay={0.3}
-            />
+
+            {/* Main Feature Card */}
+            <Spotlight className="md:col-span-2 md:row-span-2 min-h-[400px]">
+              <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
+              <BentoCard 
+                className="h-full border-none bg-transparent"
+                title="Web Development"
+                description="Maßgeschneiderte Webseiten und Applikationen, die nicht nur gut aussehen, sondern performen. React, Next.js und modernste Technologien."
+                icon={<Globe className="h-8 w-8 text-blue-400" />}
+                href="/services/web"
+                delay={0.3}
+              />
+            </Spotlight>
 
             {/* Small Cards Row */}
-            <BentoCard 
-              className="md:col-span-1"
-              title="Security"
-              description="Umfassender Schutz vor Cyber-Bedrohungen durch modernste Firewalls, Verschlüsselung und proaktives Monitoring Ihrer gesamten Infrastruktur."
-              icon={<Shield className="h-6 w-6 text-purple-400" />}
-              href="/services/network"
-              delay={0.4}
-            />
-            <BentoCard 
-              className="md:col-span-1"
-              title="Performance"
-              description="Maximale Geschwindigkeit für Ihre Systeme. Wir optimieren Ladezeiten, Datenbankabfragen und Server-Ressourcen für reibungslose Abläufe."
-              icon={<Zap className="h-6 w-6 text-yellow-400" />}
-              href="/services/web"
-              delay={0.5}
-            />
-            <BentoCard 
-              className="md:col-span-1"
-              title="Analytics"
-              description="Verwandeln Sie Daten in Wissen. Unsere Dashboards liefern Echtzeit-Einblicke in Nutzerverhalten und Systemstatus für fundierte Entscheidungen."
-              icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
-              href="/services/web"
-              delay={0.6}
-            />
+            <Spotlight className="md:col-span-1">
+              <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SEC.02 // SHIELD</div>
+              <BentoCard 
+                className="h-full border-none bg-transparent"
+                title="Security"
+                description="Umfassender Schutz vor Cyber-Bedrohungen durch modernste Firewalls, Verschlüsselung und proaktives Monitoring Ihrer gesamten Infrastruktur."
+                icon={<Shield className="h-6 w-6 text-purple-400" />}
+                href="/services/network"
+                delay={0.4}
+              />
+            </Spotlight>
+
+            <Spotlight className="md:col-span-1">
+              <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">OPT.03 // SPEED</div>
+              <BentoCard 
+                className="h-full border-none bg-transparent"
+                title="Performance"
+                description="Maximale Geschwindigkeit für Ihre Systeme. Wir optimieren Ladezeiten, Datenbankabfragen und Server-Ressourcen für reibungslose Abläufe."
+                icon={<Zap className="h-6 w-6 text-yellow-400" />}
+                href="/services/web"
+                delay={0.5}
+              />
+            </Spotlight>
+
+            <Spotlight className="md:col-span-1">
+              <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">DAT.04 // INSIGHT</div>
+              <BentoCard 
+                className="h-full border-none bg-transparent"
+                title="Analytics"
+                description="Verwandeln Sie Daten in Wissen. Unsere Dashboards liefern Echtzeit-Einblicke in Nutzerverhalten und Systemstatus für fundierte Entscheidungen."
+                icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
+                href="/services/web"
+                delay={0.6}
+              />
+            </Spotlight>
           </div>
         </div>
       </section>
