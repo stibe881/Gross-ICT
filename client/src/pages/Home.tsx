@@ -351,6 +351,7 @@ function BentoCard({
               src={bgImage} 
               alt={title} 
               loading="lazy"
+              decoding="async"
               style={{ y }}
               className="w-full h-[120%] -top-[10%] absolute object-cover opacity-60"
               initial={{ scale: 1.1 }}
