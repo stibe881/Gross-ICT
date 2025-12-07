@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
+import { Menu, X, ArrowRight, Sun, Moon, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
@@ -166,11 +166,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="text-muted-foreground text-sm leading-relaxed pt-2">
                 <p>Neuhushof 3</p>
                 <p>6144 Zell LU</p>
-                <p className="pt-2">
+                <div className="pt-2 flex flex-col gap-2">
                   <a href="tel:+41794140616" className="hover:text-primary transition-colors">
                     +41 79 414 06 16
                   </a>
-                </p>
+                  <a 
+                    href="https://wa.me/41794140616" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 transition-colors font-medium"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Start Chat</span>
+                  </a>
+                </div>
               </div>
             </div>
             
