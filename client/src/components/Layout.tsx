@@ -160,6 +160,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <li><Link href="/about"><span className="hover:text-primary transition-colors cursor-pointer">Über uns</span></Link></li>
                 <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">Kontakt</span></Link></li>
                 <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">Impressum</span></Link></li>
+                <li><Link href="/privacy"><span className="hover:text-primary transition-colors cursor-pointer">Datenschutz</span></Link></li>
               </ul>
             </div>
 

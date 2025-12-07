@@ -37,7 +37,7 @@ function ScrollTypography() {
   const color = useTransform(scrollYProgress, [0, 0.5], ["#ffffff", "#ffd700"]);
 
   return (
-    <motion.h1 ref={ref} variants={fadeIn} className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] overflow-hidden py-4">
+    <motion.h1 ref={ref} variants={fadeIn} className="text-[12vw] md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[1.1] overflow-visible py-4 px-2">
       <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl whitespace-nowrap">Future-Proof</motion.span>
       <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient whitespace-nowrap">Infrastructure.</motion.span>
     </motion.h1>

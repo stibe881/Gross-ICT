@@ -11,7 +11,8 @@ import WebService from "./pages/services/Web";
 import SupportService from "./pages/services/Support";
 import NetworkService from "./pages/services/Network";
 import About from "./pages/About";
-import Imprint from "./pages/Imprint";
+import Imprint from "@/pages/Imprint";
+import Privacy from "@/pages/Privacy";
 
 
 function Router() {
@@ -23,9 +24,8 @@ function Router() {
       <Route path={"/services/support"} component={SupportService} />
       <Route path={"/services/network"} component={NetworkService} />
       <Route path={"/about"} component={About} />
-      <Route path={"/imprint"} component={Imprint} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
+      <Route path="/imprint" component={Imprint} />
+      <Route path="/privacy" component={Privacy} />
       <Route component={NotFound} />
     </Switch>
   );

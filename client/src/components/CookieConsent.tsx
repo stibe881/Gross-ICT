@@ -58,7 +58,7 @@ export default function CookieConsent() {
               >
                 Ablehnen
               </Button>
-              <a href="/imprint" className="text-xs text-muted-foreground hover:text-white underline underline-offset-4 self-center ml-2">
+              <a href="/privacy" className="text-xs text-muted-foreground hover:text-white underline underline-offset-4 self-center ml-2">
                 Details
               </a>
             </div>
