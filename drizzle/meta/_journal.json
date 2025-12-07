@@ -36,6 +36,13 @@
       "when": 1765147190392,
       "tag": "0004_military_rocket_racer",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "5",
+      "when": 1765148959083,
+      "tag": "0005_smooth_joseph",
+      "breakpoints": true
     }
   ]
 }

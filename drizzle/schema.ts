@@ -53,6 +53,12 @@ export const tickets = mysqlTable("tickets", {
   adminNotes: text("adminNotes"),
   /** Assigned admin user ID */
   assignedTo: int("assignedTo"),
+  /** SLA due date (calculated based on priority) */
+  slaDueDate: timestamp("slaDueDate"),
+  /** Whether SLA was breached */
+  slaBreached: int("slaBreached").default(0).notNull(),
+  /** Escalation level (0 = none, 1 = first escalation, 2 = critical) */
+  escalationLevel: int("escalationLevel").default(0).notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   resolvedAt: timestamp("resolvedAt"),
@@ -102,3 +108,23 @@ export const ticketAttachments = mysqlTable("ticketAttachments", {
 
 export type TicketAttachment = typeof ticketAttachments.$inferSelect;
 export type InsertTicketAttachment = typeof ticketAttachments.$inferInsert;
+
+/**
+ * Response templates table for quick replies
+ */
+export const responseTemplates = mysqlTable("responseTemplates", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Template title/name */
+  title: varchar("title", { length: 255 }).notNull(),
+  /** Template content */
+  content: text("content").notNull(),
+  /** Category this template applies to */
+  category: mysqlEnum("category", ["network", "security", "hardware", "software", "email", "other", "general"]).default("general").notNull(),
+  /** Created by user ID */
+  createdBy: int("createdBy").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type ResponseTemplate = typeof responseTemplates.$inferSelect;
+export type InsertResponseTemplate = typeof responseTemplates.$inferInsert;

@@ -83,6 +83,16 @@ export const ticketRouter = router({
         }
       }
 
+      // Calculate SLA due date based on priority
+      const slaHours = {
+        urgent: 4,    // 4 hours
+        high: 24,     // 1 day
+        medium: 72,   // 3 days
+        low: 168,     // 7 days
+      };
+      const slaDueDate = new Date();
+      slaDueDate.setHours(slaDueDate.getHours() + slaHours[input.priority]);
+
       const ticketId = await createTicket({
         userId,
         customerName: input.customerName,
@@ -93,6 +103,9 @@ export const ticketRouter = router({
         priority: input.priority,
         category: input.category,
         status: 'open',
+        slaDueDate,
+        slaBreached: 0,
+        escalationLevel: 0,
       });
 
       return {
@@ -311,5 +324,89 @@ export const ticketRouter = router({
           .sort(([a], [b]) => a.localeCompare(b))
           .map(([date, counts]) => ({ date, ...counts })),
       };
+    }),
+
+  // Check and update SLA status for all open tickets (admin/support)
+  checkSLA: adminOrSupportProcedure
+    .mutation(async () => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { eq, and, or } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+      
+      const now = new Date();
+      const openTickets = await db.select().from(tickets).where(
+        or(
+          eq(tickets.status, 'open'),
+          eq(tickets.status, 'in_progress')
+        )
+      );
+      
+      let breached = 0;
+      let escalated = 0;
+      
+      for (const ticket of openTickets) {
+        if (!ticket.slaDueDate) continue;
+        
+        const dueDate = new Date(ticket.slaDueDate);
+        const hoursOverdue = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60);
+        
+        if (hoursOverdue > 0) {
+          // SLA breached
+          let newEscalationLevel = ticket.escalationLevel || 0;
+          
+          if (hoursOverdue > 48) {
+            // Critical escalation after 48 hours overdue
+            newEscalationLevel = 2;
+            escalated++;
+          } else if (hoursOverdue > 24) {
+            // First escalation after 24 hours overdue
+            newEscalationLevel = Math.max(1, newEscalationLevel);
+            escalated++;
+          }
+          
+          await db.update(tickets)
+            .set({
+              slaBreached: 1,
+              escalationLevel: newEscalationLevel,
+            })
+            .where(eq(tickets.id, ticket.id));
+          
+          breached++;
+        }
+      }
+      
+      return {
+        success: true,
+        checked: openTickets.length,
+        breached,
+        escalated,
+      };
+    }),
+
+  // Get overdue tickets (admin/support)
+  overdue: adminOrSupportProcedure
+    .query(async () => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { or, eq } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) return [];
+      
+      const openTickets = await db.select().from(tickets).where(
+        or(
+          eq(tickets.status, 'open'),
+          eq(tickets.status, 'in_progress')
+        )
+      );
+      
+      const now = new Date();
+      return openTickets.filter(ticket => {
+        if (!ticket.slaDueDate) return false;
+        return new Date(ticket.slaDueDate) < now;
+      });
     }),
 });

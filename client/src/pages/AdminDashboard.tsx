@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -45,6 +45,11 @@ export default function AdminDashboard() {
 
   const { data: supportStaff } = trpc.tickets.supportStaff.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
+  });
+
+  const { data: overdueTickets } = trpc.tickets.overdue.useQuery(undefined, {
+    enabled: !!user && (user.role === "admin" || user.role === "support"),
+    refetchInterval: 60000, // Refetch every minute
   });
 
   const assignMutation = trpc.tickets.assign.useMutation({
@@ -129,16 +134,27 @@ export default function AdminDashboard() {
               <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
             </div>
             <div className="flex items-center gap-2">
-              {user?.role === "admin" && (
-                <Button
-                  variant="outline"
-                  onClick={() => setLocation("/admin/users")}
-                  className="border-white/20 bg-white/5 hover:bg-white/10"
-                  size="sm"
-                >
-                  <Users className="h-4 w-4 md:mr-2" />
-                  <span className="hidden md:inline">Benutzerverwaltung</span>
-                </Button>
+              {user.role === "admin" && (
+                <>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation("/admin/templates")}
+                    className="border-white/20 bg-white/5 hover:bg-white/10"
+                    size="sm"
+                  >
+                    <FileText className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Vorlagen</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation("/admin/users")}
+                    className="border-white/20 bg-white/5 hover:bg-white/10"
+                    size="sm"
+                  >
+                    <Users className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Benutzerverwaltung</span>
+                  </Button>
+                </>
               )}
               <Button
                 variant="outline"
@@ -381,6 +397,17 @@ export default function AdminDashboard() {
                         <Badge className={getStatusColor(ticket.status)}>
                           {ticket.status === "in_progress" ? "In Bearbeitung" : ticket.status === "open" ? "Offen" : ticket.status === "resolved" ? "Gelöst" : "Geschlossen"}
                         </Badge>
+                        {ticket.slaDueDate && ticket.status !== 'resolved' && ticket.status !== 'closed' && (
+                          <Badge className={new Date(ticket.slaDueDate) < new Date() ? "bg-red-500/20 text-red-400 border-red-500/30" : "bg-green-500/20 text-green-400 border-green-500/30"}>
+                            <AlertTriangle className="h-3 w-3 mr-1" />
+                            {new Date(ticket.slaDueDate) < new Date() ? 'Überfällig' : `Fällig: ${new Date(ticket.slaDueDate).toLocaleDateString('de-DE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`}
+                          </Badge>
+                        )}
+                        {ticket.escalationLevel && ticket.escalationLevel > 0 && (
+                          <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
+                            Eskalation Level {ticket.escalationLevel}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   </CardHeader>
