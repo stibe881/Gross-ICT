@@ -1,24 +1,81 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Monitor, Download, Phone, ArrowRight } from "lucide-react";
+import { Monitor, Download, Phone, Smartphone } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function RemoteSupportModal({ children }: { children?: React.ReactNode }) {
   const { language } = useLanguage();
+  const [os, setOs] = useState<'windows' | 'mac' | 'ios' | 'android' | 'unknown'>('unknown');
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    if (/iphone|ipad|ipod/.test(userAgent)) {
+      setOs('ios');
+    } else if (/android/.test(userAgent)) {
+      setOs('android');
+    } else if (/mac/.test(userAgent)) {
+      setOs('mac');
+    } else if (/win/.test(userAgent)) {
+      setOs('windows');
+    }
+  }, []);
+
+  const handleSupportClick = (e: React.MouseEvent) => {
+    // If mobile, try to open app or redirect to store
+    if (os === 'ios') {
+      e.preventDefault();
+      // Try to open AnyDesk app scheme if possible, fallback to App Store
+      window.location.href = "https://apps.apple.com/app/anydesk-remote-desktop/id1176131273";
+    } else if (os === 'android') {
+      e.preventDefault();
+      // Try to open AnyDesk app scheme if possible, fallback to Play Store
+      window.location.href = "https://play.google.com/store/apps/details?id=com.anydesk.anydeskandroid";
+    } else if (os === 'windows') {
+      // Direct download for Windows
+      window.open("https://anydesk.com/de/downloads/thank-you?dv=win_exe", "_blank");
+    } else if (os === 'mac') {
+      // Direct download for Mac
+      window.open("https://anydesk.com/de/downloads/thank-you?dv=mac_dmg", "_blank");
+    }
+    // For unknown OS or if we want to show the modal anyway, we let the Dialog trigger happen
+    // But for mobile we want to prevent the dialog if we redirect
+    if (os === 'ios' || os === 'android') {
+      e.stopPropagation();
+    }
+  };
+
+  // On mobile, we render a direct link/button instead of a DialogTrigger if we want to bypass the modal
+  // However, the requirement says "If one clicks on remote support on smartphone...".
+  // To keep it clean, we can use the Dialog but trigger the action immediately if it's mobile, 
+  // OR we can just make the trigger button perform the action.
+  
+  // Let's make the trigger smart.
+  
+  const TriggerButton = children || (
+    <Button 
+      variant="outline" 
+      className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-all"
+    >
+      <Monitor className="w-4 h-4 text-primary" />
+      <span className="hidden lg:inline">{language === 'de' ? 'Fernwartung' : 'Remote Support'}</span>
+    </Button>
+  );
+
+  // If mobile, we wrap in a simple div that handles the click, instead of DialogTrigger
+  if (os === 'ios' || os === 'android') {
+    return (
+      <div onClick={handleSupportClick} className="cursor-pointer">
+        {TriggerButton}
+      </div>
+    );
+  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        {children || (
-          <Button 
-            variant="outline" 
-            className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-all"
-          >
-            <Monitor className="w-4 h-4 text-primary" />
-            <span className="hidden lg:inline">{language === 'de' ? 'Fernwartung' : 'Remote Support'}</span>
-          </Button>
-        )}
+        {TriggerButton}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-primary/20">
         <DialogHeader>
@@ -39,12 +96,12 @@ export default function RemoteSupportModal({ children }: { children?: React.Reac
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <motion.a 
-              href="https://anydesk.com/de/downloads/windows" 
+              href="https://anydesk.com/de/downloads/thank-you?dv=win_exe" 
               target="_blank" 
               rel="noopener noreferrer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex flex-col items-center justify-center p-6 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-accent/5 transition-all group cursor-pointer"
+              className={`flex flex-col items-center justify-center p-6 rounded-xl border transition-all group cursor-pointer ${os === 'windows' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border bg-card hover:border-primary/50 hover:bg-accent/5'}`}
             >
               <div className="w-12 h-12 mb-4 rounded-full bg-[#ef4444]/10 flex items-center justify-center text-[#ef4444] group-hover:bg-[#ef4444] group-hover:text-white transition-colors">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -53,17 +110,17 @@ export default function RemoteSupportModal({ children }: { children?: React.Reac
               </div>
               <h3 className="font-semibold mb-1">Windows</h3>
               <span className="text-xs text-muted-foreground flex items-center gap-1 group-hover:text-primary transition-colors">
-                Download <Download className="w-3 h-3" />
+                {os === 'windows' ? (language === 'de' ? 'Empfohlen' : 'Recommended') : 'Download'} <Download className="w-3 h-3" />
               </span>
             </motion.a>
 
             <motion.a 
-              href="https://anydesk.com/de/downloads/mac-os" 
+              href="https://anydesk.com/de/downloads/thank-you?dv=mac_dmg" 
               target="_blank" 
               rel="noopener noreferrer"
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="flex flex-col items-center justify-center p-6 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-accent/5 transition-all group cursor-pointer"
+              className={`flex flex-col items-center justify-center p-6 rounded-xl border transition-all group cursor-pointer ${os === 'mac' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'border-border bg-card hover:border-primary/50 hover:bg-accent/5'}`}
             >
               <div className="w-12 h-12 mb-4 rounded-full bg-foreground/5 flex items-center justify-center text-foreground group-hover:bg-foreground group-hover:text-background transition-colors">
                 <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
@@ -72,7 +129,7 @@ export default function RemoteSupportModal({ children }: { children?: React.Reac
               </div>
               <h3 className="font-semibold mb-1">macOS</h3>
               <span className="text-xs text-muted-foreground flex items-center gap-1 group-hover:text-primary transition-colors">
-                Download <Download className="w-3 h-3" />
+                {os === 'mac' ? (language === 'de' ? 'Empfohlen' : 'Recommended') : 'Download'} <Download className="w-3 h-3" />
               </span>
             </motion.a>
           </div>
