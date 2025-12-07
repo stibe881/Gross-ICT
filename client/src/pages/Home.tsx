@@ -11,6 +11,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import NewsSection from "@/components/NewsSection";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -255,6 +256,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* News Section */}
+      <NewsSection />
 
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden">
