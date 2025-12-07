@@ -37,7 +37,7 @@ function ScrollTypography() {
   const color = useTransform(scrollYProgress, [0, 0.5], ["#ffffff", "#ffd700"]);
 
   return (
-    <motion.h1 ref={ref} variants={fadeIn} className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] overflow-hidden py-4">
+    <motion.h1 ref={ref} variants={fadeIn} className="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] overflow-hidden py-4">
       <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl whitespace-nowrap">Future-Proof</motion.span>
       <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient whitespace-nowrap">Infrastructure.</motion.span>
     </motion.h1>
@@ -141,9 +141,9 @@ export default function Home() {
                 </a>
                 <span className="text-white/20">|</span>
                 <Link href="/contact">
-                  <a className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+                  <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
                     <Calendar className="h-4 w-4" /> Termin vereinbaren
-                  </a>
+                  </span>
                 </Link>
               </div>
             </motion.div>
