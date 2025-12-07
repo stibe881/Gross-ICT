@@ -114,6 +114,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 Next-Generation IT Solutions.<br/>
                 Wir bauen die digitale Infrastruktur von morgen.
               </p>
+              <div className="text-muted-foreground text-sm leading-relaxed pt-2">
+                <p>Neuhushof 3</p>
+                <p>6144 Zell LU</p>
+                <p className="pt-2">+41 79 414 06 16</p>
+              </div>
             </div>
             
             <div>

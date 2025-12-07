@@ -53,7 +53,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Telefon</p>
-                      <p>+41 XX XXX XX XX</p>
+                      <p>+41 79 414 06 16</p>
                     </div>
                   </div>
                   
@@ -63,7 +63,7 @@ export default function Contact() {
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Standort</p>
-                      <p>Schweiz</p>
+                      <p>6144 Zell LU</p>
                     </div>
                   </div>
                 </CardContent>

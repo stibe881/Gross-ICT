@@ -11,8 +11,8 @@ export default function Imprint() {
             <h2 className="text-2xl font-bold text-white">Kontaktadresse</h2>
             <div className="text-muted-foreground">
               <p className="font-bold text-white">Gross ICT</p>
-              <p>Musterstrasse 1</p>
-              <p>8000 Zürich</p>
+              <p>Neuhushof 3</p>
+              <p>6144 Zell LU</p>
               <p>Schweiz</p>
               <br />
               <p>Email: info@gross-ict.ch</p>
