@@ -114,7 +114,7 @@ export default function SecurityCheck() {
           <AnimatePresence mode="wait">
             {!showResult ? (
               <motion.div
-                key="question"
+                key={step}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
@@ -130,7 +130,7 @@ export default function SecurityCheck() {
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold mb-8">{questions[step].question}</h3>
+                <h3 className="text-xl font-bold mb-8 text-foreground">{questions[step].question}</h3>
                 
                 <div className="space-y-3">
                   {questions[step].options.map((option, idx) => (
