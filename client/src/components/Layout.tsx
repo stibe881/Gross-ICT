@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Menu, X, Monitor, Server, Network, LifeBuoy } from "lucide-react";
+import { Menu, X, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -18,129 +18,137 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   const navItems = [
     { name: "Home", path: "/" },
-    { name: "Webseiten", path: "/services/web" },
-    { name: "PC-Support", path: "/services/support" },
-    { name: "Netzwerke", path: "/services/network" },
-    { name: "Kontakt", path: "/contact" },
+    { name: "Web", path: "/services/web" },
+    { name: "Support", path: "/services/support" },
+    { name: "Netzwerk", path: "/services/network" },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col font-sans text-foreground bg-transparent">
-      <header
-        className={cn(
-          "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent",
-          isScrolled ? "bg-background/80 backdrop-blur-md border-border/50 py-3 shadow-sm" : "bg-transparent py-6"
-        )}
-      >
-        <div className="container flex items-center justify-between">
+    <div className="min-h-screen flex flex-col font-sans text-foreground bg-background selection:bg-primary/20">
+      
+      {/* Floating Island Navigation */}
+      <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+        <div className={cn(
+          "pointer-events-auto flex items-center gap-2 p-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl shadow-2xl transition-all duration-500",
+          isScrolled ? "w-auto px-4" : "w-full max-w-4xl justify-between px-6"
+        )}>
+          
+          {/* Logo Area */}
           <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer group">
-              <img 
-                src="/images/logo.png" 
-                alt="Gross ICT Logo" 
-                className="h-10 w-auto transition-transform duration-300 group-hover:scale-105" 
-              />
+            <div className="flex items-center gap-3 cursor-pointer group px-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-primary/20">
+                G
+              </div>
               <span className={cn(
-                "text-xl font-heading font-bold tracking-tight transition-colors",
-                isScrolled ? "text-foreground" : "text-foreground"
+                "font-bold tracking-tight transition-all duration-300",
+                isScrolled ? "hidden md:block" : "block"
               )}>
                 Gross <span className="text-primary">ICT</span>
               </span>
             </div>
           </Link>
 
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
+          {/* Desktop Nav Items */}
+          <nav className="hidden md:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <span className={cn(
-                  "text-sm font-medium transition-colors hover:text-primary cursor-pointer relative group",
-                  location === item.path ? "text-primary" : "text-muted-foreground"
+                  "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer hover:text-white",
+                  location === item.path 
+                    ? "bg-white/10 text-white shadow-inner" 
+                    : "text-muted-foreground hover:bg-white/5"
                 )}>
                   {item.name}
-                  <span className={cn(
-                    "absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full",
-                    location === item.path ? "w-full" : ""
-                  )} />
                 </span>
               </Link>
             ))}
-            <Link href="/contact">
-              <button className="bg-primary text-primary-foreground px-5 py-2 rounded-full text-sm font-semibold hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25 active:scale-95">
-                Angebot anfordern
-              </button>
-            </Link>
           </nav>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="md:hidden p-2 text-foreground"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
+          {/* CTA Button */}
+          <div className="flex items-center gap-2">
+            <Link href="/contact">
+              <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-2">
+                Kontakt <ArrowRight className="h-3 w-3" />
+              </button>
+            </Link>
+            
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden p-2 text-foreground bg-white/5 rounded-full"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </header>
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl pt-24 px-6 md:hidden animate-in slide-in-from-top-10 duration-200">
-          <nav className="flex flex-col gap-6 text-lg">
+        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl pt-32 px-6 md:hidden animate-in slide-in-from-top-5 duration-300">
+          <nav className="flex flex-col gap-4">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <span 
-                  className="block py-2 border-b border-border/50 hover:text-primary transition-colors cursor-pointer"
+                  className="block p-4 rounded-2xl bg-white/5 border border-white/5 text-xl font-medium hover:bg-white/10 transition-colors cursor-pointer"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </span>
               </Link>
             ))}
-            <button className="w-full bg-primary text-primary-foreground py-3 rounded-lg font-bold mt-4">
-              Angebot anfordern
-            </button>
           </nav>
         </div>
       )}
 
-      <main className="flex-grow pt-24 relative z-10">
+      <main className="flex-grow relative z-10">
         {children}
       </main>
 
-      <footer className="bg-card border-t border-border/50 py-12 mt-20 relative z-10">
-        <div className="container grid grid-cols-1 md:grid-cols-4 gap-10">
-          <div className="col-span-1 md:col-span-2">
-            <div className="flex items-center gap-2 mb-4">
-              <img src="/images/logo.png" alt="Gross ICT" className="h-8 w-auto" />
-              <span className="text-lg font-bold">Gross ICT</span>
+      <footer className="border-t border-white/10 bg-black py-20 relative z-10">
+        <div className="container">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-white">Gross ICT</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                Next-Generation IT Solutions.<br/>
+                Wir bauen die digitale Infrastruktur von morgen.
+              </p>
             </div>
-            <p className="text-muted-foreground max-w-md mb-6">
-              Ihr Partner für professionelle ICT-Dienstleistungen. 
-              Wir verbinden Technik mit Verstand und sorgen für reibungslose Abläufe.
-            </p>
+            
+            <div>
+              <h4 className="font-medium text-white mb-4">Services</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">Web Development</span></Link></li>
+                <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">IT Support</span></Link></li>
+                <li><Link href="/services/network"><span className="hover:text-primary transition-colors cursor-pointer">Network Solutions</span></Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-white mb-4">Company</h4>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li><Link href="/about"><span className="hover:text-primary transition-colors cursor-pointer">Über uns</span></Link></li>
+                <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">Kontakt</span></Link></li>
+                <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">Impressum</span></Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-medium text-white mb-4">Connect</h4>
+              <div className="flex gap-4">
+                {/* Social Placeholders */}
+                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
+                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
+                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
+              </div>
+            </div>
           </div>
           
-          <div>
-            <h3 className="font-bold mb-4 text-foreground">Dienstleistungen</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/services/web"><span className="hover:text-primary cursor-pointer">Webseiten Entwicklung</span></Link></li>
-              <li><Link href="/services/support"><span className="hover:text-primary cursor-pointer">PC-Support & Wartung</span></Link></li>
-              <li><Link href="/services/network"><span className="hover:text-primary cursor-pointer">Netzwerk Installation</span></Link></li>
-              <li><Link href="/services/support"><span className="hover:text-primary cursor-pointer">Client & Server Config</span></Link></li>
-            </ul>
+          <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">
+            <p>© {new Date().getFullYear()} Gross ICT. All rights reserved.</p>
+            <p>Designed with Next-Gen Tech.</p>
           </div>
-
-          <div>
-            <h3 className="font-bold mb-4 text-foreground">Kontakt</h3>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li>info@gross-ict.ch</li>
-              <li>+41 XX XXX XX XX</li>
-              <li>Schweiz</li>
-            </ul>
-          </div>
-        </div>
-        <div className="container mt-12 pt-8 border-t border-border/30 text-center text-xs text-muted-foreground">
-          © {new Date().getFullYear()} Gross ICT. Alle Rechte vorbehalten.
         </div>
       </footer>
     </div>
