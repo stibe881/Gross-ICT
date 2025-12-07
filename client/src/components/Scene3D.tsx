@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, PerspectiveCamera, Environment, Sparkles, Stars } from "@react-three/drei";
+import { Float, PerspectiveCamera, Environment, Sparkles, MeshTransmissionMaterial } from "@react-three/drei";
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
@@ -8,7 +8,6 @@ function GridFloor() {
   
   useFrame((state) => {
     if (!meshRef.current) return;
-    // Slowly move the grid to create a "traveling" effect
     meshRef.current.position.z = (state.clock.getElapsedTime() * 0.5) % 2;
   });
 
@@ -42,11 +41,9 @@ function InteractiveParticles({ count = 60 }) {
   useFrame((state) => {
     if (!points.current) return;
     
-    // Rotate entire particle system slowly
     points.current.rotation.y = state.clock.getElapsedTime() * 0.05;
     points.current.rotation.x = state.clock.getElapsedTime() * 0.02;
 
-    // Mouse interaction parallax - simplified lerp
     const x = (mouse.x * viewport.width) / 80;
     const y = (mouse.y * viewport.height) / 80;
     points.current.position.x += (x - points.current.position.x) * 0.05;
@@ -76,7 +73,7 @@ function InteractiveParticles({ count = 60 }) {
   );
 }
 
-function AbstractShape({ position, color, scale = 1, speed = 1 }: { position: [number, number, number], color: string, scale?: number, speed?: number }) {
+function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: { position: [number, number, number], type?: "torus" | "icosa" | "octa", color: string, scale?: number, speed?: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHover] = useState(false);
   
@@ -84,36 +81,47 @@ function AbstractShape({ position, color, scale = 1, speed = 1 }: { position: [n
     if (!meshRef.current) return;
     const t = state.clock.getElapsedTime();
     
-    // Complex rotation
     meshRef.current.rotation.x = t * 0.2 * speed;
     meshRef.current.rotation.y = t * 0.3 * speed;
     
-    // Floating movement
-    meshRef.current.position.y = position[1] + Math.sin(t * 0.5 * speed) * 0.3;
-    
-    // Scale pulse on hover
-    const targetScale = hovered ? scale * 1.2 : scale;
+    const targetScale = hovered ? scale * 1.1 : scale;
     meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
   });
+
+  const Geometry = () => {
+    switch(type) {
+      case "torus": return <torusKnotGeometry args={[0.6, 0.2, 128, 32]} />;
+      case "icosa": return <icosahedronGeometry args={[0.8, 0]} />; // Low poly look
+      case "octa": return <octahedronGeometry args={[0.8, 0]} />;
+      default: return <boxGeometry />;
+    }
+  };
 
   return (
     <Float speed={2 * speed} rotationIntensity={0.5} floatIntensity={0.5}>
       <mesh 
         ref={meshRef} 
         position={position} 
-        scale={scale}
         onPointerOver={() => setHover(true)}
         onPointerOut={() => setHover(false)}
       >
-        <icosahedronGeometry args={[1, 1]} />
-        <meshPhysicalMaterial 
-          color={color} 
-          roughness={0.2} 
-          metalness={0.8}
-          transmission={0.2}
-          thickness={1}
-          clearcoat={1}
-          wireframe={hovered} // Switch to wireframe on hover for "tech" feel
+        <Geometry />
+        {/* Modern Glass/Metal Material */}
+        <MeshTransmissionMaterial
+          backside
+          samples={4}
+          thickness={0.5}
+          chromaticAberration={0.1}
+          anisotropy={0.1}
+          distortion={0.1}
+          distortionScale={0.1}
+          temporalDistortion={0.1}
+          iridescence={1}
+          iridescenceIOR={1}
+          iridescenceThicknessRange={[0, 1400]}
+          roughness={0.2}
+          metalness={0.1}
+          color={color}
         />
       </mesh>
     </Float>
@@ -121,7 +129,7 @@ function AbstractShape({ position, color, scale = 1, speed = 1 }: { position: [n
 }
 
 function ConnectionLines() {
-  const count = 30;
+  const count = 20; // Reduced for performance
   const linesRef = useRef<THREE.Group>(null);
   
   const lines = useMemo(() => {
@@ -129,7 +137,7 @@ function ConnectionLines() {
     for (let i = 0; i < count; i++) {
       const start = new THREE.Vector3((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 5);
       const end = new THREE.Vector3((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 5);
-      temp.push({ start, end, speed: Math.random() * 0.5 + 0.1 });
+      temp.push({ start, end });
     }
     return temp;
   }, []);
@@ -160,17 +168,20 @@ export default function Scene3D() {
         <color attach="background" args={['#050505']} />
         <fog attach="fog" args={['#050505', 5, 25]} />
         
-        <ambientLight intensity={0.2} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#ffd700" />
-        <pointLight position={[-10, -10, -10]} intensity={0.5} color="#4a5568" />
-        <spotLight position={[0, 10, 0]} intensity={0.5} angle={0.5} penumbra={1} />
+        <ambientLight intensity={0.5} />
+        <pointLight position={[10, 10, 10]} intensity={2} color="#ffd700" />
+        <pointLight position={[-10, -10, -10]} intensity={1} color="#4a5568" />
+        <spotLight position={[0, 10, 0]} intensity={1} angle={0.5} penumbra={1} />
         
         <group position={[0, 0, 0]}>
-          <AbstractShape position={[3, 1, 0]} color="#ffd700" scale={0.8} speed={1.2} />
-          <AbstractShape position={[-3, -1, 1]} color="#333" scale={0.6} speed={0.8} />
-          <AbstractShape position={[0, 2, -2]} color="#666" scale={0.4} speed={1.5} />
-          <AbstractShape position={[-2, 3, -1]} color="#ffd700" scale={0.3} speed={0.5} />
-          <AbstractShape position={[2, -2, -1]} color="#444" scale={0.5} speed={1.0} />
+          {/* Hero Object - Torus Knot */}
+          <ModernShape position={[3, 1, 0]} type="torus" color="#ffd700" scale={1.2} speed={0.8} />
+          
+          {/* Floating Crystals */}
+          <ModernShape position={[-3, -1, 1]} type="icosa" color="#333" scale={0.8} speed={0.6} />
+          <ModernShape position={[0, 2, -2]} type="octa" color="#666" scale={0.6} speed={1.2} />
+          <ModernShape position={[-2, 3, -1]} type="icosa" color="#ffd700" scale={0.4} speed={0.4} />
+          <ModernShape position={[2, -2, -1]} type="torus" color="#444" scale={0.5} speed={0.9} />
           
           <ConnectionLines />
           <InteractiveParticles count={80} />
@@ -181,7 +192,6 @@ export default function Scene3D() {
         <Environment preset="city" />
       </Canvas>
       
-      {/* Gradient Overlay for better text readability */}
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none"></div>
     </div>
   );
