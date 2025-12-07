@@ -3,11 +3,26 @@ import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import { useState } from "react";
+import { Link } from "wouter";
+import { toast } from "sonner";
 
 export default function Contact() {
+  const [consent, setConsent] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!consent) {
+      toast.error("Bitte stimmen Sie der Datenschutzerklärung zu.");
+      return;
+    }
+    toast.success("Nachricht gesendet!");
+  };
+
   return (
     <Layout>
       <SEO 
@@ -116,7 +131,7 @@ export default function Contact() {
                   <CardDescription>Füllen Sie das Formular aus und wir melden uns umgehend.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+                  <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <label className="text-sm font-medium text-muted-foreground">Vorname</label>
@@ -142,8 +157,23 @@ export default function Contact() {
                       <label className="text-sm font-medium text-muted-foreground">Nachricht</label>
                       <Textarea placeholder="Wie können wir Ihnen helfen?" className="min-h-[150px] bg-black/20 border-white/10 focus:border-primary/50" />
                     </div>
+
+                    <div className="flex items-start space-x-2">
+                      <Checkbox 
+                        id="contact-consent" 
+                        checked={consent}
+                        onCheckedChange={(checked) => setConsent(checked as boolean)}
+                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                      />
+                      <label
+                        htmlFor="contact-consent"
+                        className="text-xs text-muted-foreground leading-tight cursor-pointer"
+                      >
+                        Ich stimme zu, dass meine Angaben zur Kontaktaufnahme und für Rückfragen dauerhaft gespeichert werden. Weitere Informationen finden Sie in der <Link href="/privacy" className="underline hover:text-white">Datenschutzerklärung</Link>.
+                      </label>
+                    </div>
                     
-                    <Button type="submit" className="w-full bg-white text-black hover:bg-gray-200 font-bold">
+                    <Button type="submit" disabled={!consent} className="w-full bg-white text-black hover:bg-gray-200 font-bold disabled:opacity-50">
                       Nachricht senden <Send className="ml-2 h-4 w-4" />
                     </Button>
                   </form>

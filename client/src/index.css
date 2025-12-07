@@ -91,6 +91,11 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
+  /* Improved Focus Styles for Accessibility */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
 

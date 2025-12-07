@@ -3,28 +3,38 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { Link } from "wouter";
+import { EmailService } from "@/lib/emailService";
 
 export default function Newsletter() {
   const { language } = useLanguage();
   const [email, setEmail] = useState("");
+  const [consent, setConsent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !consent) {
+      toast.error(language === 'de' ? 'Bitte stimmen Sie der Datenschutzerklärung zu.' : 'Please agree to the privacy policy.');
+      return;
+    }
 
     setIsLoading(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    setIsLoading(false);
-    setIsSuccess(true);
-    toast.success(language === 'de' ? 'Erfolgreich angemeldet!' : 'Successfully subscribed!');
-    setEmail("");
+    try {
+      await EmailService.subscribeToNewsletter({ email, consent });
+      setIsSuccess(true);
+      toast.success(language === 'de' ? 'Erfolgreich angemeldet!' : 'Successfully subscribed!');
+      setEmail("");
+    } catch (error) {
+      toast.error(language === 'de' ? 'Ein Fehler ist aufgetreten.' : 'An error occurred.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -81,9 +91,29 @@ export default function Newsletter() {
                       className="h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 focus:border-primary/50"
                     />
                   </div>
+                  
+                  <div className="flex items-start space-x-2">
+                    <Checkbox 
+                      id="newsletter-consent" 
+                      checked={consent}
+                      onCheckedChange={(checked) => setConsent(checked as boolean)}
+                      className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                    />
+                    <label
+                      htmlFor="newsletter-consent"
+                      className="text-xs text-muted-foreground leading-tight cursor-pointer"
+                    >
+                      {language === 'de' ? (
+                        <>Ich stimme zu, dass meine E-Mail-Adresse für den Versand des Newsletters verwendet wird. Weitere Informationen finden Sie in der <Link href="/privacy" className="underline hover:text-white">Datenschutzerklärung</Link>.</>
+                      ) : (
+                        <>I agree that my email address may be used to send the newsletter. For more information, please see our <Link href="/privacy" className="underline hover:text-white">Privacy Policy</Link>.</>
+                      )}
+                    </label>
+                  </div>
+
                   <Button 
                     type="submit" 
-                    disabled={isLoading}
+                    disabled={isLoading || !consent}
                     className="w-full h-12 text-lg font-medium"
                   >
                     {isLoading ? (
