@@ -30,3 +30,7 @@
 
 ## Completed
 - [x] Make statistics widgets clickable to filter tickets by status
+
+## Completed
+- [x] Remove status filter dropdown and emojis from priority/category filters
+- [x] Fix login redirect - automatically redirect after successful login

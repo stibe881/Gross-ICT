@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,19 +15,25 @@ export default function Login() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [name, setName] = useState("");
   const utils = trpc.useUtils();
+  const { data: user } = trpc.auth.me.useQuery();
 
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: async (data) => {
-      // Invalidate and refetch the auth.me query to update authentication state
-      await utils.auth.me.invalidate();
-      toast.success("Login erfolgreich!");
-      
-      // Redirect based on user role
-      if (data.user.role === 'admin') {
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'admin') {
         setLocation("/admin");
       } else {
         setLocation("/dashboard");
       }
+    }
+  }, [user, setLocation]);
+
+  const loginMutation = trpc.auth.login.useMutation({
+    onSuccess: async () => {
+      // Invalidate and refetch the auth.me query to update authentication state
+      await utils.auth.me.invalidate();
+      toast.success("Login erfolgreich!");
+      // Redirect will happen automatically via useEffect when user data is loaded
     },
     onError: (error) => {
       toast.error(error.message || "Login fehlgeschlagen");
