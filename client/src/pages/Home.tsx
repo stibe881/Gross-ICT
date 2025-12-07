@@ -270,10 +270,10 @@ function BentoCard({
   return (
     <Link href={href}>
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
+        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.5, delay, ease: "easeOut" }}
+        transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
         whileHover={{ scale: 0.98, y: -5 }}
         animate={{ y: [0, -5, 0] }}
         // @ts-ignore
@@ -287,21 +287,29 @@ function BentoCard({
           default: { duration: 0.5 }
         }}
         className={cn(
-          "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full",
+          "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full overflow-hidden rounded-3xl border border-white/5 bg-black/40 backdrop-blur-sm",
           className
         )}
       >
         {bgImage && (
           <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl">
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
+            {/* Cinematic Vignette & Gradient */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-20"></div>
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-20"></div>
+            
+            {/* Film Grain Overlay */}
+            <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-30 mix-blend-overlay" 
+                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}>
+            </div>
+
             <motion.img 
               src={bgImage} 
               alt={title} 
               loading="lazy"
-              className="w-full h-full object-cover opacity-50"
-              initial={{ scale: 1 }}
-              whileHover={{ scale: 1.1 }}
-              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="w-full h-full object-cover opacity-60"
+              initial={{ scale: 1.1 }}
+              whileHover={{ scale: 1.2 }}
+              transition={{ duration: 1.2, ease: "easeOut" }}
             />
           </div>
         )}
