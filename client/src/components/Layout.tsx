@@ -4,6 +4,7 @@ import { Menu, X, ArrowRight, Sun, Moon, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
+import RemoteSupportModal from "./RemoteSupportModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -111,6 +112,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
+
+            <RemoteSupportModal />
 
             <Link href="/contact">
               <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-2">
