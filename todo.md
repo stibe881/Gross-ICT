@@ -27,3 +27,6 @@
 
 ## Completed
 - [x] Redesign ticket system filters with improved visual design and UX
+
+## Completed
+- [x] Make statistics widgets clickable to filter tickets by status

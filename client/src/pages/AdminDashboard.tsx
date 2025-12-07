@@ -129,7 +129,14 @@ export default function AdminDashboard() {
         {/* Statistics */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-            <Card className="bg-white/5 border-white/10">
+            <Card 
+              className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+              onClick={() => {
+                setStatusFilter(undefined);
+                setPriorityFilter(undefined);
+                setCategoryFilter(undefined);
+              }}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-400">Total</CardTitle>
               </CardHeader>
@@ -138,7 +145,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
+            <Card 
+              className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+              onClick={() => setStatusFilter('open')}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-400">Offen</CardTitle>
               </CardHeader>
@@ -147,7 +157,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
+            <Card 
+              className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+              onClick={() => setStatusFilter('in_progress')}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-400">In Bearbeitung</CardTitle>
               </CardHeader>
@@ -156,7 +169,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card className="bg-white/5 border-white/10">
+            <Card 
+              className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+              onClick={() => setStatusFilter('resolved')}
+            >
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-gray-400">Gelöst</CardTitle>
               </CardHeader>
