@@ -4,19 +4,21 @@ import { Monitor, Download, Phone, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { motion } from "framer-motion";
 
-export default function RemoteSupportModal() {
+export default function RemoteSupportModal({ children }: { children?: React.ReactNode }) {
   const { language } = useLanguage();
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-all"
-        >
-          <Monitor className="w-4 h-4 text-primary" />
-          <span className="hidden lg:inline">{language === 'de' ? 'Fernwartung' : 'Remote Support'}</span>
-        </Button>
+        {children || (
+          <Button 
+            variant="outline" 
+            className="hidden md:flex gap-2 border-primary/20 hover:bg-primary/10 hover:border-primary/50 transition-all"
+          >
+            <Monitor className="w-4 h-4 text-primary" />
+            <span className="hidden lg:inline">{language === 'de' ? 'Fernwartung' : 'Remote Support'}</span>
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-primary/20">
         <DialogHeader>

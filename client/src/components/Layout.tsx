@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Menu, X, ArrowRight, Sun, Moon, MessageCircle } from "lucide-react";
+import { Menu, X, ArrowRight, Sun, Moon, MessageCircle, Monitor } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
@@ -146,6 +146,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </span>
               </Link>
             ))}
+            
+            <RemoteSupportModal>
+              <span 
+                className="block p-4 rounded-2xl bg-primary/10 border border-primary/20 text-xl font-medium text-primary hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-3"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Monitor className="w-5 h-5" />
+                {language === 'de' ? 'Fernwartung' : 'Remote Support'}
+              </span>
+            </RemoteSupportModal>
           </nav>
         </div>
       )}
