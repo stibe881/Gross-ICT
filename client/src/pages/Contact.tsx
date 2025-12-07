@@ -7,12 +7,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, Phone, MapPin, Send } from "lucide-react";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { toast } from "sonner";
 
 export default function Contact() {
   const [consent, setConsent] = useState(false);
+  const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    const prefilledMessage = localStorage.getItem("contact_message");
+    if (prefilledMessage) {
+      setMessage(prefilledMessage);
+      localStorage.removeItem("contact_message"); // Clear after use
+    }
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +164,12 @@ export default function Contact() {
                     
                     <div className="space-y-2">
                       <label className="text-sm font-medium text-muted-foreground">Nachricht</label>
-                      <Textarea placeholder="Wie können wir Ihnen helfen?" className="min-h-[150px] bg-black/20 border-white/10 focus:border-primary/50" />
+                      <Textarea 
+                        placeholder="Wie können wir Ihnen helfen?" 
+                        className="min-h-[150px] bg-black/20 border-white/10 focus:border-primary/50"
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
                     </div>
 
                     <div className="flex items-start space-x-2">

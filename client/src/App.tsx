@@ -19,6 +19,7 @@ const Imprint = lazy(() => import("@/pages/Imprint"));
 const Privacy = lazy(() => import("@/pages/Privacy"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const NewsDetail = lazy(() => import("@/pages/NewsDetail"));
+const Calculator = lazy(() => import("@/pages/Calculator"));
 
 
 function Router() {
@@ -34,6 +35,7 @@ function Router() {
         <Route path="/imprint" component={Imprint} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/news/:id" component={NewsDetail} />
+        <Route path="/calculator" component={Calculator} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
