@@ -297,6 +297,7 @@ function BentoCard({
             <motion.img 
               src={bgImage} 
               alt={title} 
+              loading="lazy"
               className="w-full h-full object-cover opacity-50"
               initial={{ scale: 1 }}
               whileHover={{ scale: 1.1 }}
@@ -306,9 +307,13 @@ function BentoCard({
         )}
         
         <div className="relative z-10">
-          <div className="mb-4 p-3 bg-white/10 rounded-2xl w-fit backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors">
+          <motion.div 
+            className="mb-4 p-3 bg-white/10 rounded-2xl w-fit backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors"
+            whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
+            transition={{ duration: 0.5 }}
+          >
             {icon}
-          </div>
+          </motion.div>
         </div>
         
         <div className="relative z-10">
