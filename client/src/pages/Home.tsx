@@ -39,17 +39,17 @@ export default function Home() {
       <Scene3D />
       
       {/* Hero Section */}
-      <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden">
+      <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden w-full">
         <motion.div 
           style={{ y, opacity }}
-          className="container relative z-10 flex flex-col items-center text-center"
+          className="w-full px-4 md:px-8 relative z-10 flex flex-col items-center text-center"
         >
           <motion.div 
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={stagger}
-            className="space-y-8 max-w-4xl mx-auto"
+            className="space-y-10 max-w-[90vw] mx-auto"
           >
             <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-medium backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
               <span className="relative flex h-2 w-2">
@@ -59,9 +59,9 @@ export default function Home() {
               <span className="text-gray-300">Next-Gen IT Services Available</span>
             </motion.div>
             
-            <motion.h1 variants={fadeIn} className="text-6xl md:text-8xl font-bold tracking-tight leading-tight">
-              <span className="text-gradient">Future-Proof</span> <br />
-              <span className="text-gradient-gold">Infrastructure.</span>
+            <motion.h1 variants={fadeIn} className="text-7xl md:text-9xl font-bold tracking-tighter leading-none">
+              <span className="block text-gradient bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 pb-4">Future-Proof</span>
+              <span className="block text-gradient-gold bg-clip-text text-transparent bg-gradient-to-b from-[#ffd700] via-[#ffd700] to-[#ffd700]/50 pb-4">Infrastructure.</span>
             </motion.h1>
             
             <motion.p variants={fadeIn} className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
@@ -150,28 +150,25 @@ export default function Home() {
             <BentoCard 
               className="md:col-span-1"
               title="Security"
-              description="Enterprise-Grade Schutz."
+              description="Umfassender Schutz vor Cyber-Bedrohungen durch modernste Firewalls, Verschlüsselung und proaktives Monitoring Ihrer gesamten Infrastruktur."
               icon={<Shield className="h-6 w-6 text-purple-400" />}
               href="/services/network"
-              minimal
               delay={0.4}
             />
             <BentoCard 
               className="md:col-span-1"
               title="Performance"
-              description="Optimierung bis ins Detail."
+              description="Maximale Geschwindigkeit für Ihre Systeme. Wir optimieren Ladezeiten, Datenbankabfragen und Server-Ressourcen für reibungslose Abläufe."
               icon={<Zap className="h-6 w-6 text-yellow-400" />}
               href="/services/web"
-              minimal
               delay={0.5}
             />
             <BentoCard 
               className="md:col-span-1"
               title="Analytics"
-              description="Datengetriebene Entscheidungen."
+              description="Verwandeln Sie Daten in Wissen. Unsere Dashboards liefern Echtzeit-Einblicke in Nutzerverhalten und Systemstatus für fundierte Entscheidungen."
               icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
               href="/services/web"
-              minimal
               delay={0.6}
             />
           </div>
