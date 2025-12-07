@@ -3,8 +3,9 @@ import Scene3D from "@/components/Scene3D";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -21,13 +22,25 @@ const stagger = {
 };
 
 export default function Home() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"]
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+
   return (
     <Layout>
       <Scene3D />
       
       {/* Hero Section */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden">
-        <div className="container relative z-10 flex flex-col items-center text-center">
+      <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center pt-20 pb-10 overflow-hidden">
+        <motion.div 
+          style={{ y, opacity }}
+          className="container relative z-10 flex flex-col items-center text-center"
+        >
           <motion.div 
             initial="initial"
             animate="animate"
@@ -54,18 +67,18 @@ export default function Home() {
             
             <motion.div variants={fadeIn} className="flex flex-wrap justify-center gap-4 pt-4">
               <Link href="/contact">
-                <Button size="lg" className="h-12 px-8 rounded-full bg-white text-black hover:bg-gray-200 font-semibold text-base transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)]">
+                <Button size="lg" className="h-12 px-8 rounded-full bg-white text-black hover:bg-gray-200 font-semibold text-base transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] hover:scale-105">
                   Start Project <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/services/web">
-                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm transition-all">
+                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm transition-all hover:scale-105">
                   Explore Services
                 </Button>
               </Link>
             </motion.div>
           </motion.div>
-        </div>
+        </motion.div>
         
         {/* Scroll Indicator */}
         <motion.div 
@@ -82,12 +95,18 @@ export default function Home() {
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
         <div className="container">
-          <div className="mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="mb-16"
+          >
             <h2 className="text-4xl md:text-5xl font-bold mb-6 text-gradient">Unsere Expertise</h2>
             <p className="text-xl text-muted-foreground max-w-2xl">
               Ein ganzheitliches Ökosystem für Ihre digitale Performance.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px]">
             {/* Large Card - Web */}
@@ -98,6 +117,7 @@ export default function Home() {
               icon={<Globe className="h-8 w-8 text-primary" />}
               bgImage="/images/service-web.png"
               href="/services/web"
+              delay={0.1}
             />
             
             {/* Medium Card - Support */}
@@ -107,6 +127,7 @@ export default function Home() {
               description="24/7 Monitoring und schnelle Hilfe bei allen Hardware-Problemen."
               icon={<Cpu className="h-8 w-8 text-blue-400" />}
               href="/services/support"
+              delay={0.2}
             />
             
             {/* Medium Card - Network */}
@@ -116,6 +137,7 @@ export default function Home() {
               description="Sichere und skalierbare Netzwerkinfrastruktur für moderne Unternehmen."
               icon={<Network className="h-8 w-8 text-green-400" />}
               href="/services/network"
+              delay={0.3}
             />
 
             {/* Small Cards Row */}
@@ -124,24 +146,27 @@ export default function Home() {
               title="Security"
               description="Enterprise-Grade Schutz."
               icon={<Shield className="h-6 w-6 text-purple-400" />}
-              href="/services/security"
+              href="/services/network"
               minimal
+              delay={0.4}
             />
             <BentoCard 
               className="md:col-span-1"
               title="Performance"
               description="Optimierung bis ins Detail."
               icon={<Zap className="h-6 w-6 text-yellow-400" />}
-              href="/services/performance"
+              href="/services/web"
               minimal
+              delay={0.5}
             />
             <BentoCard 
               className="md:col-span-1"
               title="Analytics"
               description="Datengetriebene Entscheidungen."
               icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
-              href="/services/analytics"
+              href="/services/web"
               minimal
+              delay={0.6}
             />
           </div>
         </div>
@@ -151,10 +176,10 @@ export default function Home() {
       <section className="py-24 border-y border-white/5 bg-white/[0.02]">
         <div className="container">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <StatItem number="99.9%" label="Uptime" />
-            <StatItem number="24/7" label="Support" />
-            <StatItem number="50+" label="Clients" />
-            <StatItem number="100%" label="Swiss Made" />
+            <StatItem number="99.9%" label="Uptime" delay={0} />
+            <StatItem number="24/7" label="Support" delay={0.1} />
+            <StatItem number="50+" label="Clients" delay={0.2} />
+            <StatItem number="100%" label="Swiss Made" delay={0.3} />
           </div>
         </div>
       </section>
@@ -162,7 +187,13 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
-        <div className="container relative z-10 text-center">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="container relative z-10 text-center"
+        >
           <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">
             Ready to <span className="text-primary">Upgrade?</span>
           </h2>
@@ -171,11 +202,11 @@ export default function Home() {
             Vereinbaren Sie heute ein unverbindliches Gespräch.
           </p>
           <Link href="/contact">
-            <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-lg transition-all shadow-2xl shadow-white/10">
+            <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-lg transition-all shadow-2xl shadow-white/10 hover:scale-105">
               Kontakt aufnehmen
             </Button>
           </Link>
-        </div>
+        </motion.div>
       </section>
     </Layout>
   );
@@ -188,7 +219,8 @@ function BentoCard({
   icon, 
   bgImage, 
   href,
-  minimal = false 
+  minimal = false,
+  delay = 0
 }: { 
   className?: string, 
   title: string, 
@@ -196,11 +228,16 @@ function BentoCard({
   icon: React.ReactNode, 
   bgImage?: string,
   href: string,
-  minimal?: boolean
+  minimal?: boolean,
+  delay?: number
 }) {
   return (
     <Link href={href}>
       <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay }}
         whileHover={{ scale: 0.98 }}
         className={cn(
           "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full",
@@ -236,11 +273,17 @@ function BentoCard({
   );
 }
 
-function StatItem({ number, label }: { number: string, label: string }) {
+function StatItem({ number, label, delay }: { number: string, label: string, delay: number }) {
   return (
-    <div className="space-y-2">
+    <motion.div 
+      initial={{ opacity: 0, scale: 0.5 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay }}
+      className="space-y-2"
+    >
       <div className="text-4xl md:text-5xl font-bold text-white">{number}</div>
       <div className="text-sm text-muted-foreground uppercase tracking-wider font-medium">{label}</div>
-    </div>
+    </motion.div>
   );
 }
