@@ -150,3 +150,34 @@
     @apply bg-card/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden transition-all duration-500 hover:border-white/10 hover:bg-card/60;
   }
 }
+
+@keyframes gradient-xy {
+  0%, 100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+.animate-gradient-xy {
+  background-size: 200% 200%;
+  animation: gradient-xy 15s ease infinite;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee 25s linear infinite reverse;
+}

@@ -1,5 +1,7 @@
 import Layout from "@/components/Layout";
 import Scene3D from "@/components/Scene3D";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import Marquee from "@/components/Marquee";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
@@ -33,6 +35,7 @@ export default function Home() {
 
   return (
     <Layout>
+      <AnimatedBackground />
       <Scene3D />
       
       {/* Hero Section */}
@@ -91,6 +94,11 @@ export default function Home() {
           <div className="w-[1px] h-12 bg-gradient-to-b from-white/50 to-transparent"></div>
         </motion.div>
       </section>
+
+      {/* Marquee Section */}
+      <div className="py-10">
+        <Marquee items={["Web Development", "IT Support", "Network Security", "Cloud Solutions", "Data Analytics", "Managed Services"]} speed="slow" />
+      </div>
 
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
