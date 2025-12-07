@@ -138,7 +138,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px]">
             {/* Large Card - Web */}
-            <Spotlight className="md:col-span-2 md:row-span-2 min-h-[400px]">
+            <Spotlight className="md:col-span-2 md:row-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
