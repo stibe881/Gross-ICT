@@ -1,67 +1,194 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Calculator as CalcIcon, ArrowRight, ArrowLeft, Server, Globe, Shield, Smartphone } from "lucide-react";
+import { Check, Calculator as CalcIcon, ArrowRight, ArrowLeft, Server, Globe, Shield, Smartphone, LayoutTemplate, Palette, Zap, Mail, BarChart, Languages } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Layout from "@/components/Layout";
 
 type Option = {
   id: string;
-  label: string;
+  label: { de: string; en: string };
+  description: { de: string; en: string };
   price: number;
   icon?: React.ReactNode;
 };
 
 type Category = {
   id: string;
-  title: string;
-  description: string;
+  title: { de: string; en: string };
+  description: { de: string; en: string };
   type: "single" | "multiple";
   options: Option[];
 };
 
 export default function Calculator() {
   const [, setLocation] = useLocation();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
   
-  // Define categories and pricing
+  // Define categories and pricing with localized content
   const categories: Category[] = [
     {
       id: "type",
-      title: "Project Type",
-      description: "What kind of digital solution are you looking for?",
+      title: { 
+        de: "Projekttyp", 
+        en: "Project Type" 
+      },
+      description: { 
+        de: "Welche Art von digitaler Lösung suchen Sie?", 
+        en: "What kind of digital solution are you looking for?" 
+      },
       type: "single",
       options: [
-        { id: "landing", label: "Landing Page", price: 1500, icon: <Globe className="w-6 h-6" /> },
-        { id: "corporate", label: "Corporate Website", price: 3500, icon: <Server className="w-6 h-6" /> },
-        { id: "ecommerce", label: "E-Commerce Shop", price: 8000, icon: <Smartphone className="w-6 h-6" /> },
-        { id: "webapp", label: "Web Application", price: 12000, icon: <Shield className="w-6 h-6" /> },
+        { 
+          id: "landing", 
+          label: { de: "Landing Page", en: "Landing Page" }, 
+          description: { 
+            de: "Eine einzelne Seite, ideal für Marketingkampagnen oder Produktvorstellungen.", 
+            en: "A single page, ideal for marketing campaigns or product launches." 
+          },
+          price: 1500, 
+          icon: <Globe className="w-6 h-6" /> 
+        },
+        { 
+          id: "corporate", 
+          label: { de: "Unternehmenswebsite", en: "Corporate Website" }, 
+          description: { 
+            de: "Mehrseitige Website zur professionellen Präsentation Ihres Unternehmens.", 
+            en: "Multi-page website for professional presentation of your company." 
+          },
+          price: 3500, 
+          icon: <Server className="w-6 h-6" /> 
+        },
+        { 
+          id: "ecommerce", 
+          label: { de: "E-Commerce Shop", en: "E-Commerce Shop" }, 
+          description: { 
+            de: "Online-Shop mit Warenkorb, Zahlungsabwicklung und Produktverwaltung.", 
+            en: "Online store with shopping cart, payment processing, and product management." 
+          },
+          price: 8000, 
+          icon: <Smartphone className="w-6 h-6" /> 
+        },
+        { 
+          id: "webapp", 
+          label: { de: "Web Applikation", en: "Web Application" }, 
+          description: { 
+            de: "Komplexe Softwarelösung mit Benutzerkonten und individuellen Funktionen.", 
+            en: "Complex software solution with user accounts and custom features." 
+          },
+          price: 12000, 
+          icon: <Shield className="w-6 h-6" /> 
+        },
       ]
     },
     {
       id: "design",
-      title: "Design Complexity",
-      description: "How unique should the visual design be?",
+      title: { 
+        de: "Design-Komplexität", 
+        en: "Design Complexity" 
+      },
+      description: { 
+        de: "Wie einzigartig soll das visuelle Design sein?", 
+        en: "How unique should the visual design be?" 
+      },
       type: "single",
       options: [
-        { id: "template", label: "Template Based", price: 0 },
-        { id: "custom", label: "Custom Design", price: 2000 },
-        { id: "premium", label: "Premium / 3D", price: 4500 },
+        { 
+          id: "template", 
+          label: { de: "Template Basiert", en: "Template Based" }, 
+          description: { 
+            de: "Kosteneffizient durch Nutzung bewährter Vorlagen, angepasst an Ihre Farben.", 
+            en: "Cost-efficient by using proven templates, adapted to your colors." 
+          },
+          price: 0,
+          icon: <LayoutTemplate className="w-6 h-6" />
+        },
+        { 
+          id: "custom", 
+          label: { de: "Individuelles Design", en: "Custom Design" }, 
+          description: { 
+            de: "Maßgeschneidertes Design, das exakt Ihre Markenidentität widerspiegelt.", 
+            en: "Tailor-made design that exactly reflects your brand identity." 
+          },
+          price: 2000,
+          icon: <Palette className="w-6 h-6" />
+        },
+        { 
+          id: "premium", 
+          label: { de: "Premium / 3D", en: "Premium / 3D" }, 
+          description: { 
+            de: "High-End Design mit 3D-Elementen und aufwendigen Animationen.", 
+            en: "High-end design with 3D elements and elaborate animations." 
+          },
+          price: 4500,
+          icon: <Zap className="w-6 h-6" />
+        },
       ]
     },
     {
       id: "features",
-      title: "Additional Features",
-      description: "Select any extra capabilities you need.",
+      title: { 
+        de: "Zusatzfunktionen", 
+        en: "Additional Features" 
+      },
+      description: { 
+        de: "Wählen Sie zusätzliche Funktionen, die Sie benötigen.", 
+        en: "Select any extra capabilities you need." 
+      },
       type: "multiple",
       options: [
-        { id: "cms", label: "CMS Integration", price: 1200 },
-        { id: "seo", label: "SEO Optimization", price: 800 },
-        { id: "multilang", label: "Multi-language", price: 1500 },
-        { id: "analytics", label: "Advanced Analytics", price: 500 },
-        { id: "newsletter", label: "Newsletter Setup", price: 600 },
+        { 
+          id: "cms", 
+          label: { de: "CMS Integration", en: "CMS Integration" }, 
+          description: { 
+            de: "Verwalten Sie Inhalte selbstständig ohne Programmierkenntnisse.", 
+            en: "Manage content independently without programming knowledge." 
+          },
+          price: 1200,
+          icon: <LayoutTemplate className="w-6 h-6" />
+        },
+        { 
+          id: "seo", 
+          label: { de: "SEO Optimierung", en: "SEO Optimization" }, 
+          description: { 
+            de: "Bessere Auffindbarkeit bei Google & Co. für mehr Besucher.", 
+            en: "Better visibility on Google & Co. for more visitors." 
+          },
+          price: 800,
+          icon: <BarChart className="w-6 h-6" />
+        },
+        { 
+          id: "multilang", 
+          label: { de: "Mehrsprachigkeit", en: "Multi-language" }, 
+          description: { 
+            de: "Erreichen Sie Kunden in verschiedenen Sprachen (z.B. DE/EN).", 
+            en: "Reach customers in different languages (e.g., DE/EN)." 
+          },
+          price: 1500,
+          icon: <Languages className="w-6 h-6" />
+        },
+        { 
+          id: "analytics", 
+          label: { de: "Erweiterte Analyse", en: "Advanced Analytics" }, 
+          description: { 
+            de: "Detaillierte Einblicke in das Besucherverhalten (DSGVO-konform).", 
+            en: "Detailed insights into visitor behavior (GDPR compliant)." 
+          },
+          price: 500,
+          icon: <BarChart className="w-6 h-6" />
+        },
+        { 
+          id: "newsletter", 
+          label: { de: "Newsletter Setup", en: "Newsletter Setup" }, 
+          description: { 
+            de: "Sammeln Sie E-Mail-Adressen und versenden Sie Updates.", 
+            en: "Collect email addresses and send updates." 
+          },
+          price: 600,
+          icon: <Mail className="w-6 h-6" />
+        },
       ]
     }
   ];
@@ -122,16 +249,18 @@ export default function Calculator() {
       const selected = selections[cat.id];
       if (!selected || (Array.isArray(selected) && selected.length === 0)) return null;
       
-      const label = cat.title;
+      const label = cat.title[language as 'de' | 'en'];
       const values = Array.isArray(selected)
-        ? selected.map(s => cat.options.find(o => o.id === s)?.label).join(", ")
-        : cat.options.find(o => o.id === selected)?.label;
+        ? selected.map(s => cat.options.find(o => o.id === s)?.label[language as 'de' | 'en']).join(", ")
+        : cat.options.find(o => o.id === selected)?.label[language as 'de' | 'en'];
       
       return `${label}: ${values}`;
     }).filter(Boolean).join("\n");
 
     const total = calculateTotal();
-    const message = `I am interested in a project with the following configuration:\n\n${summary}\n\nEstimated Budget: CHF ${total.toLocaleString()}`;
+    const message = language === 'de' 
+      ? `Ich interessiere mich für ein Projekt mit folgender Konfiguration:\n\n${summary}\n\nGeschätztes Budget: CHF ${total.toLocaleString()}`
+      : `I am interested in a project with the following configuration:\n\n${summary}\n\nEstimated Budget: CHF ${total.toLocaleString()}`;
     
     localStorage.setItem("contact_message", message);
     setLocation("/contact");
@@ -152,16 +281,16 @@ export default function Calculator() {
               className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4"
             >
               <CalcIcon className="w-4 h-4" />
-              Project Estimator
+              {language === 'de' ? 'Projekt-Kalkulator' : 'Project Estimator'}
             </motion.div>
             <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground to-foreground/70">
-              Calculate Your Project
+              {language === 'de' ? 'Kalkulieren Sie Ihr Projekt' : 'Calculate Your Project'}
             </h1>
             
             {/* Progress Bar */}
             <div className="max-w-md mx-auto mt-8">
               <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                <span>Step {Math.min(currentStep + 1, categories.length + 1)} of {categories.length + 1}</span>
+                <span>{language === 'de' ? 'Schritt' : 'Step'} {Math.min(currentStep + 1, categories.length + 1)} {language === 'de' ? 'von' : 'of'} {categories.length + 1}</span>
                 <span>{Math.round((Math.min(currentStep + 1, categories.length + 1) / (categories.length + 1)) * 100)}%</span>
               </div>
               <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -189,11 +318,11 @@ export default function Calculator() {
                     className="space-y-6"
                   >
                     <div className="mb-8">
-                      <h2 className="text-2xl font-bold mb-2">{currentCategory.title}</h2>
-                      <p className="text-muted-foreground">{currentCategory.description}</p>
+                      <h2 className="text-2xl font-bold mb-2">{currentCategory.title[language as 'de' | 'en']}</h2>
+                      <p className="text-muted-foreground">{currentCategory.description[language as 'de' | 'en']}</p>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 gap-4">
                       {currentCategory.options.map((option) => {
                         const isSelected = currentCategory.type === "single"
                           ? selections[currentCategory.id] === option.id
@@ -210,28 +339,35 @@ export default function Calculator() {
                                 : "border-border bg-card hover:border-primary/50 hover:bg-accent/5"
                             )}
                           >
-                            <div className="flex items-start justify-between mb-4">
+                            <div className="flex items-start gap-4">
                               <div className={cn(
-                                "p-2 rounded-lg transition-colors",
+                                "p-3 rounded-lg transition-colors shrink-0",
                                 isSelected ? "bg-primary/20 text-primary" : "bg-muted text-muted-foreground group-hover:text-foreground"
                               )}>
-                                {option.icon || <Check className="w-5 h-5" />}
+                                {option.icon || <Check className="w-6 h-6" />}
                               </div>
-                              {isSelected && (
-                                <motion.div
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
-                                >
-                                  <Check className="w-3 h-3" />
-                                </motion.div>
-                              )}
+                              
+                              <div className="flex-1">
+                                <div className="flex justify-between items-start mb-1">
+                                  <h4 className="font-semibold text-lg">{option.label[language as 'de' | 'en']}</h4>
+                                  {isSelected && (
+                                    <motion.div
+                                      initial={{ scale: 0 }}
+                                      animate={{ scale: 1 }}
+                                      className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0 ml-2"
+                                    >
+                                      <Check className="w-3 h-3" />
+                                    </motion.div>
+                                  )}
+                                </div>
+                                <p className="text-sm text-muted-foreground mb-2">
+                                  {option.description[language as 'de' | 'en']}
+                                </p>
+                                <p className="text-sm font-medium text-primary">
+                                  {option.price > 0 ? `+ CHF ${option.price.toLocaleString()}` : (language === 'de' ? "Inklusive" : "Included")}
+                                </p>
+                              </div>
                             </div>
-                            
-                            <h4 className="font-semibold mb-1">{option.label}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {option.price > 0 ? `+ CHF ${option.price.toLocaleString()}` : "Included"}
-                            </p>
                           </div>
                         );
                       })}
@@ -247,15 +383,17 @@ export default function Calculator() {
                     <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
                       <Check className="w-10 h-10" />
                     </div>
-                    <h2 className="text-3xl font-bold mb-4">Ready to Launch?</h2>
+                    <h2 className="text-3xl font-bold mb-4">{language === 'de' ? 'Bereit zum Start?' : 'Ready to Launch?'}</h2>
                     <p className="text-muted-foreground text-lg mb-8">
-                      You've configured your perfect project. Review the estimate on the right and let's get started!
+                      {language === 'de' 
+                        ? 'Sie haben Ihr perfektes Projekt konfiguriert. Überprüfen Sie die Schätzung rechts und lassen Sie uns beginnen!' 
+                        : 'You\'ve configured your perfect project. Review the estimate on the right and let\'s get started!'}
                     </p>
                     <Button 
                       onClick={handleRequestQuote}
                       className="w-full md:w-auto px-8 py-6 text-lg font-bold"
                     >
-                      Request Official Quote <ArrowRight className="ml-2 w-5 h-5" />
+                      {language === 'de' ? 'Offizielle Offerte anfordern' : 'Request Official Quote'} <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </motion.div>
                 )}
@@ -269,12 +407,12 @@ export default function Calculator() {
                   disabled={currentStep === 0}
                   className={cn("gap-2", currentStep === 0 && "opacity-0 pointer-events-none")}
                 >
-                  <ArrowLeft className="w-4 h-4" /> Back
+                  <ArrowLeft className="w-4 h-4" /> {language === 'de' ? 'Zurück' : 'Back'}
                 </Button>
                 
                 {!isLastStep && (
                   <Button onClick={handleNext} className="gap-2">
-                    Next Step <ArrowRight className="w-4 h-4" />
+                    {language === 'de' ? 'Weiter' : 'Next'} <ArrowRight className="w-4 h-4" />
                   </Button>
                 )}
               </div>
@@ -284,7 +422,7 @@ export default function Calculator() {
             <div className="lg:col-span-1">
               <div className="sticky top-32">
                 <div className="p-8 rounded-2xl border border-border bg-card/50 backdrop-blur-xl shadow-2xl">
-                  <h3 className="text-xl font-bold mb-6">Live Estimate</h3>
+                  <h3 className="text-xl font-bold mb-6">{language === 'de' ? 'Live Schätzung' : 'Live Estimate'}</h3>
                   
                   <div className="space-y-4 mb-8">
                     {categories.map(cat => {
@@ -293,20 +431,20 @@ export default function Calculator() {
 
                       return (
                         <div key={cat.id} className="text-sm">
-                          <span className="text-muted-foreground block mb-1">{cat.title}</span>
+                          <span className="text-muted-foreground block mb-1">{cat.title[language as 'de' | 'en']}</span>
                           {Array.isArray(selected) ? (
                             selected.map(s => {
                               const opt = cat.options.find(o => o.id === s);
                               return (
                                 <div key={s} className="flex justify-between font-medium pl-2 border-l-2 border-primary/20 mb-1">
-                                  <span>{opt?.label}</span>
+                                  <span>{opt?.label[language as 'de' | 'en']}</span>
                                   <span>{opt?.price ? `CHF ${opt.price}` : "0"}</span>
                                 </div>
                               );
                             })
                           ) : (
                             <div className="flex justify-between font-medium pl-2 border-l-2 border-primary/20">
-                              <span>{cat.options.find(o => o.id === selected)?.label}</span>
+                              <span>{cat.options.find(o => o.id === selected)?.label[language as 'de' | 'en']}</span>
                               <span>{cat.options.find(o => o.id === selected)?.price || "0"}</span>
                             </div>
                           )}
@@ -317,13 +455,13 @@ export default function Calculator() {
 
                   <div className="pt-6 border-t border-border">
                     <div className="flex justify-between items-end">
-                      <span className="text-muted-foreground">Total Estimate</span>
+                      <span className="text-muted-foreground">{language === 'de' ? 'Gesamtschätzung' : 'Total Estimate'}</span>
                       <span className="text-3xl font-bold text-primary">
                         CHF {calculateTotal().toLocaleString()}
                       </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-2">
-                      *Rough estimate. Final price may vary.
+                      {language === 'de' ? '*Grobe Schätzung. Endpreis kann variieren.' : '*Rough estimate. Final price may vary.'}
                     </p>
                   </div>
                 </div>
