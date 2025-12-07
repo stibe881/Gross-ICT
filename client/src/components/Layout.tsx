@@ -82,10 +82,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <span className={cn(
-                  "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer hover:text-white",
+                  "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer hover:text-foreground",
                   location === item.path 
-                    ? "bg-white/10 text-white shadow-inner" 
-                    : "text-muted-foreground hover:bg-white/5"
+                    ? "bg-foreground/10 text-foreground shadow-inner" 
+                    : "text-muted-foreground hover:bg-foreground/5"
                 )}>
                   {item.name}
                 </span>
@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Language Switcher */}
             <button 
               onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
-              className="px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+              className="px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
             >
               {language === 'de' ? 'EN' : 'DE'}
             </button>
@@ -106,7 +106,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-muted-foreground hover:text-white hover:bg-white/5 transition-all"
+              className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -154,11 +154,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </main>
 
       <CookieConsent />
-      <footer className="border-t border-white/10 bg-black py-20 relative z-10">
+      <footer className="border-t border-border bg-background py-20 relative z-10">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-white">Gross ICT</h3>
+              <h3 className="text-lg font-bold text-foreground">Gross ICT</h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Next-Generation IT Solutions.<br/>
                 {t.hero.subtitle}
@@ -171,7 +171,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
             
             <div>
-              <h4 className="font-medium text-white mb-4">Services</h4>
+              <h4 className="font-medium text-foreground mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.web}</span></Link></li>
                 <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.support}</span></Link></li>
@@ -180,7 +180,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
 
             <div>
-              <h4 className="font-medium text-white mb-4">Company</h4>
+              <h4 className="font-medium text-foreground mb-4">Company</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.contact}</span></Link></li>
                 <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">{t.footer.imprint}</span></Link></li>

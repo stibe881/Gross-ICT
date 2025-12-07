@@ -27,7 +27,7 @@ export default function NewsSection() {
   }, []);
 
   return (
-    <section className="py-24 relative border-t border-white/5">
+    <section className="py-24 relative border-t border-border">
       <div className="container">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -36,7 +36,7 @@ export default function NewsSection() {
           className="mb-12 flex justify-between items-end"
         >
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
               {language === 'de' ? 'Aktuelles' : 'Latest News'}
             </h2>
             <p className="text-muted-foreground">
@@ -65,7 +65,7 @@ export default function NewsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group relative bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors"
+                className="group relative bg-card/40 border border-border rounded-2xl p-6 hover:bg-card/60 transition-colors"
               >
                 <div className="flex justify-between items-start mb-4">
                   <span className="px-3 py-1 rounded-full text-xs font-medium bg-primary/20 text-primary border border-primary/20">
@@ -77,7 +77,7 @@ export default function NewsSection() {
                   </div>
                 </div>
                 
-                <h3 className="text-xl font-bold mb-3 text-white group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-bold mb-3 text-foreground group-hover:text-primary transition-colors">
                   {item.title[language]}
                 </h3>
                 
@@ -85,9 +85,11 @@ export default function NewsSection() {
                   {item.excerpt[language]}
                 </p>
                 
-                <div className="flex items-center gap-2 text-sm font-medium text-white group-hover:translate-x-2 transition-transform">
-                  {language === 'de' ? 'Mehr lesen' : 'Read more'} <ArrowRight className="w-4 h-4" />
-                </div>
+                <Link href={`/news/${item.id}`}>
+                  <div className="flex items-center gap-2 text-sm font-medium text-foreground group-hover:translate-x-2 transition-transform cursor-pointer">
+                    {language === 'de' ? 'Mehr lesen' : 'Read more'} <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>

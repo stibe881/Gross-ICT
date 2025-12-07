@@ -38,19 +38,19 @@ export default function Newsletter() {
   };
 
   return (
-    <section className="py-24 relative border-t border-white/5 overflow-hidden">
+    <section className="py-24 relative border-t border-border overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
 
       <div className="container relative z-10">
-        <div className="max-w-4xl mx-auto bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-sm">
+        <div className="max-w-4xl mx-auto bg-card/40 border border-border rounded-3xl p-8 md:p-12 backdrop-blur-sm">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6 border border-primary/20">
                 <Mail className="w-3 h-3" />
                 {language === 'de' ? 'Newsletter' : 'Newsletter'}
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
                 {language === 'de' ? 'Immer informiert bleiben' : 'Stay informed'}
               </h2>
               <p className="text-muted-foreground text-lg">
@@ -70,7 +70,7 @@ export default function Newsletter() {
                   <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
                     <CheckCircle2 className="w-8 h-8 text-green-500" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-2">
+                  <h3 className="text-xl font-bold text-foreground mb-2">
                     {language === 'de' ? 'Willkommen an Bord!' : 'Welcome aboard!'}
                   </h3>
                   <p className="text-muted-foreground">
@@ -88,7 +88,7 @@ export default function Newsletter() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
-                      className="h-12 bg-black/20 border-white/10 text-white placeholder:text-white/30 focus:border-primary/50"
+                      className="h-12 bg-background/50 border-border text-foreground placeholder:text-muted-foreground focus:border-primary/50"
                     />
                   </div>
                   
@@ -97,16 +97,16 @@ export default function Newsletter() {
                       id="newsletter-consent" 
                       checked={consent}
                       onCheckedChange={(checked) => setConsent(checked as boolean)}
-                      className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
+                      className="mt-1 border-border data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground"
                     />
                     <label
                       htmlFor="newsletter-consent"
                       className="text-xs text-muted-foreground leading-tight cursor-pointer"
                     >
                       {language === 'de' ? (
-                        <>Ich stimme zu, dass meine E-Mail-Adresse für den Versand des Newsletters verwendet wird. Weitere Informationen finden Sie in der <Link href="/privacy" className="underline hover:text-white">Datenschutzerklärung</Link>.</>
+                        <>Ich stimme zu, dass meine E-Mail-Adresse für den Versand des Newsletters verwendet wird. Weitere Informationen finden Sie in der <Link href="/privacy" className="underline hover:text-foreground">Datenschutzerklärung</Link>.</>
                       ) : (
-                        <>I agree that my email address may be used to send the newsletter. For more information, please see our <Link href="/privacy" className="underline hover:text-white">Privacy Policy</Link>.</>
+                        <>I agree that my email address may be used to send the newsletter. For more information, please see our <Link href="/privacy" className="underline hover:text-foreground">Privacy Policy</Link>.</>
                       )}
                     </label>
                   </div>

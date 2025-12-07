@@ -9,6 +9,10 @@ export interface NewsItem {
     de: string;
     en: string;
   };
+  content?: {
+    de: string;
+    en: string;
+  };
   category: 'Security' | 'Update' | 'Tech';
 }
 
@@ -24,7 +28,11 @@ export const newsData: NewsItem[] = [
       de: 'Aktuell sind vermehrt gefälschte E-Mails im Umlauf. Bitte prüfen Sie Absender genau.',
       en: 'Currently, there are increased fake emails in circulation. Please check senders carefully.'
     },
-    category: 'Security'
+    category: 'Security',
+    content: {
+      de: 'Detaillierte Informationen zur aktuellen Phishing-Welle. Betrüger nutzen derzeit verstärkt KI-generierte E-Mails, die täuschend echt aussehen. Achten Sie besonders auf dringende Handlungsaufforderungen und prüfen Sie die Absenderadresse genau. Im Zweifel kontaktieren Sie uns.',
+      en: 'Detailed information about the current phishing wave. Scammers are increasingly using AI-generated emails that look deceptively real. Pay special attention to urgent calls to action and check the sender address carefully. When in doubt, contact us.'
+    }
   },
   {
     id: '2',
@@ -37,7 +45,11 @@ export const newsData: NewsItem[] = [
       de: 'Ab sofort bieten wir auch Headless-CMS-Integrationen für maximale Performance an.',
       en: 'We now offer Headless CMS integrations for maximum performance.'
     },
-    category: 'Update'
+    category: 'Update',
+    content: {
+      de: 'Wir freuen uns, unser Portfolio zu erweitern. Mit Headless-CMS-Lösungen wie Strapi oder Contentful bieten wir Ihnen nun noch flexiblere Möglichkeiten, Ihre Inhalte zu verwalten, ohne Kompromisse bei der Performance einzugehen.',
+      en: 'We are excited to expand our portfolio. With Headless CMS solutions like Strapi or Contentful, we now offer you even more flexible ways to manage your content without compromising on performance.'
+    }
   },
   {
     id: '3',
@@ -50,6 +62,10 @@ export const newsData: NewsItem[] = [
       de: 'Die ersten Leaks zum neuen Betriebssystem versprechen spannende KI-Features.',
       en: 'First leaks about the new OS promise exciting AI features.'
     },
-    category: 'Tech'
+    category: 'Tech',
+    content: {
+      de: 'Die Gerüchteküche brodelt. Windows 12 soll laut Insidern eine tiefe Integration von KI-Assistenten bieten und die Benutzeroberfläche grundlegend modernisieren. Wir halten Sie auf dem Laufenden.',
+      en: 'Rumors are swirling. According to insiders, Windows 12 is set to offer deep integration of AI assistants and fundamentally modernize the user interface. We will keep you updated.'
+    }
   }
 ];

@@ -102,16 +102,16 @@ export default function CookieConsent() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-lg z-50 animate-in slide-in-from-bottom-10 duration-500">
-      <div className="bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl relative overflow-hidden">
+      <div className="bg-card/95 backdrop-blur-xl border border-border rounded-2xl p-6 shadow-2xl relative overflow-hidden">
         {/* Spotlight effect */}
         <div className="absolute -top-20 -right-20 w-40 h-40 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
         
         <div className="flex items-start gap-4 relative z-10">
-          <div className="p-2 bg-white/5 rounded-full shrink-0 hidden sm:block">
+          <div className="p-2 bg-background/50 rounded-full shrink-0 hidden sm:block">
             <ShieldCheck className="h-6 w-6 text-primary" />
           </div>
           <div className="space-y-4 w-full">
-            <h3 className="font-bold text-white text-lg flex items-center gap-2">
+            <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-primary sm:hidden" />
               {content.title}
             </h3>
@@ -123,14 +123,14 @@ export default function CookieConsent() {
               <div className="space-y-4 py-2 animate-in slide-in-from-top-2">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">{content.essential}</p>
+                    <p className="text-sm font-medium text-foreground">{content.essential}</p>
                     <p className="text-xs text-muted-foreground">{content.essentialDesc}</p>
                   </div>
                   <Switch checked={true} disabled />
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">{content.analytics}</p>
+                    <p className="text-sm font-medium text-foreground">{content.analytics}</p>
                     <p className="text-xs text-muted-foreground">{content.analyticsDesc}</p>
                   </div>
                   <Switch 
@@ -140,7 +140,7 @@ export default function CookieConsent() {
                 </div>
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-white">{content.marketing}</p>
+                    <p className="text-sm font-medium text-foreground">{content.marketing}</p>
                     <p className="text-xs text-muted-foreground">{content.marketingDesc}</p>
                   </div>
                   <Switch 
@@ -163,7 +163,7 @@ export default function CookieConsent() {
                 <Button 
                   onClick={handleSaveSelection}
                   variant="secondary"
-                  className="bg-white/10 text-white hover:bg-white/20 rounded-full text-xs font-semibold px-4 flex-1"
+                  className="bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-full text-xs font-semibold px-4 flex-1"
                 >
                   {content.saveSelection}
                 </Button>
@@ -171,7 +171,7 @@ export default function CookieConsent() {
                 <Button 
                   onClick={handleDeclineAll}
                   variant="outline"
-                  className="bg-transparent border-white/10 text-white hover:bg-white/5 rounded-full text-xs flex-1"
+                  className="bg-transparent border-border text-foreground hover:bg-foreground/5 rounded-full text-xs flex-1"
                 >
                   {content.decline}
                 </Button>
@@ -181,7 +181,7 @@ export default function CookieConsent() {
                 onClick={() => setShowDetails(!showDetails)}
                 variant="ghost"
                 size="icon"
-                className="rounded-full text-muted-foreground hover:text-white"
+                className="rounded-full text-muted-foreground hover:text-foreground"
               >
                 {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>

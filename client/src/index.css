@@ -5,7 +5,7 @@
 
 @theme inline {
   --font-sans: "Inter", sans-serif;
-  --font-heading: "Inter", sans-serif; /* Modern tech sites often use one font family */
+  --font-heading: "Inter", sans-serif;
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -42,66 +42,81 @@
 }
 
 :root {
-  /* Modern Tech Dark Theme (Default) */
-  /* Using Oklch for precise color control */
+  /* Light Mode (Default) */
+  --background: oklch(0.98 0 0);
+  --foreground: oklch(0.12 0.01 260);
   
-  /* Background: Very dark zinc/slate, almost black */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.12 0.01 260);
+  
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.12 0.01 260);
+  
+  --primary: oklch(0.75 0.15 85); 
+  --primary-foreground: oklch(0.12 0.01 260);
+  
+  --secondary: oklch(0.96 0.01 260);
+  --secondary-foreground: oklch(0.12 0.01 260);
+  
+  --muted: oklch(0.96 0.01 260);
+  --muted-foreground: oklch(0.45 0.01 260);
+  
+  --accent: oklch(0.96 0.01 260);
+  --accent-foreground: oklch(0.12 0.01 260);
+  
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+  
+  --border: oklch(0.92 0.01 260);
+  --input: oklch(0.92 0.01 260);
+  --ring: oklch(0.75 0.15 85);
+  
+  --radius: 0.75rem;
+}
+
+.dark {
+  /* Dark Mode */
   --background: oklch(0.12 0.01 260); 
   --foreground: oklch(0.98 0 0);
   
-  /* Cards: Slightly lighter than bg, with subtle borders */
   --card: oklch(0.15 0.01 260);
   --card-foreground: oklch(0.98 0 0);
   
   --popover: oklch(0.15 0.01 260);
   --popover-foreground: oklch(0.98 0 0);
   
-  /* Primary: Gold from logo, but refined for dark mode */
   --primary: oklch(0.75 0.15 85); 
   --primary-foreground: oklch(0.12 0.01 260);
   
-  /* Secondary: Dark grey for subtle elements */
   --secondary: oklch(0.2 0.01 260);
   --secondary-foreground: oklch(0.98 0 0);
   
-  /* Muted: For subtext */
   --muted: oklch(0.2 0.01 260);
   --muted-foreground: oklch(0.6 0.01 260);
   
-  /* Accent: For hover states */
   --accent: oklch(0.2 0.01 260);
   --accent-foreground: oklch(0.98 0 0);
   
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
   
-  /* Borders: Very subtle, barely there */
   --border: oklch(0.25 0.01 260);
   --input: oklch(0.25 0.01 260);
   --ring: oklch(0.75 0.15 85);
-  
-  --radius: 0.75rem;
 }
-
-/* Force Dark Mode aesthetic even without .dark class if desired, 
-   but we keep .dark for consistency if we want to switch later. 
-   For now, :root IS the dark theme. */
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
   
-  /* Improved Focus Styles for Accessibility */
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
   }
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
-
   }
   
-  /* Smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
@@ -127,13 +142,12 @@
     .container {
       padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1200px; /* Slightly tighter container for modern look */
+      max-width: 1200px;
     }
   }
   
-  /* Modern Utilities */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60;
+    @apply bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60;
   }
   
   .text-gradient-gold {
@@ -141,11 +155,11 @@
   }
 
   .glass-panel {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-background/40 backdrop-blur-xl border border-border shadow-2xl;
   }
   
   .bento-card {
-    @apply bg-card/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden transition-all duration-500 hover:border-white/10 hover:bg-card/60;
+    @apply bg-card/40 backdrop-blur-md border border-border rounded-3xl overflow-hidden transition-all duration-500 hover:border-primary/20 hover:bg-card/60;
   }
 }
 
@@ -180,7 +194,7 @@
   animation: marquee 25s linear infinite reverse;
 }
 
-/* Cinematic Effects */
+/* Cinematic Effects - Only visible in Dark Mode or reduced in Light Mode */
 .cinematic-grain {
   position: fixed;
   top: 0;
@@ -191,6 +205,12 @@
   z-index: 9999;
   opacity: 0.07;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+/* Hide grain in light mode if desired, or keep it subtle */
+:root:not(.dark) .cinematic-grain {
+  opacity: 0.03;
+  mix-blend-mode: multiply;
 }
 
 .cinematic-vignette {
@@ -204,7 +224,10 @@
   background: radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
 }
 
-/* Mobile Optimizations */
+:root:not(.dark) .cinematic-vignette {
+  background: radial-gradient(circle at center, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
+}
+
 @media (max-width: 768px) {
   .text-7xl {
     font-size: 3.5rem;

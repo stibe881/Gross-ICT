@@ -34,7 +34,7 @@ export default function Preloader() {
                 transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                 className="absolute inset-0 rounded-full border-t-2 border-primary border-r-2 border-r-transparent border-b-2 border-b-transparent border-l-2 border-l-transparent"
               />
-              <span className="text-2xl font-bold text-white">G</span>
+              <span className="text-2xl font-bold text-foreground">G</span>
             </motion.div>
             
             {/* Loading Text */}
@@ -42,13 +42,13 @@ export default function Preloader() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-xs font-mono text-white/50 tracking-[0.3em] uppercase"
+              className="text-xs font-mono text-muted-foreground tracking-[0.3em] uppercase"
             >
               Initializing System
             </motion.div>
 
             {/* Progress Bar */}
-            <div className="w-48 h-[1px] bg-white/10 mt-4 overflow-hidden">
+            <div className="w-48 h-[1px] bg-border mt-4 overflow-hidden">
               <motion.div
                 initial={{ x: "-100%" }}
                 animate={{ x: "0%" }}
