@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { Menu, X, ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
+import CookieConsent from "./CookieConsent";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -127,6 +128,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
+      <CookieConsent />
       <footer className="border-t border-white/10 bg-black py-20 relative z-10">
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
