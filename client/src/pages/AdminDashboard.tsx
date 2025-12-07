@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3 } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -20,11 +20,23 @@ export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
+  const [priorityFilter, setPriorityFilter] = useState<string | undefined>(undefined);
+  const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   const utils = trpc.useUtils();
 
-  const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.all.useQuery(undefined, {
-    enabled: !!user && user.role === "admin",
-  });
+  const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
+    {
+      search: searchQuery || undefined,
+      status: statusFilter as any,
+      priority: priorityFilter as any,
+      category: categoryFilter as any,
+    },
+    {
+      enabled: !!user && user.role === "admin",
+    }
+  );
 
   const { data: stats } = trpc.tickets.stats.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
@@ -157,10 +169,136 @@ export default function AdminDashboard() {
 
         {/* Tickets List */}
         <div className="mb-8">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Ticket className="h-5 w-5 text-primary" />
-            Alle Tickets
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <Ticket className="h-5 w-5 text-primary" />
+              Alle Tickets
+            </h2>
+          </div>
+
+          {/* Search and Filters */}
+          <div className="mb-6 space-y-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Suche nach Ticket-Nr, Betreff, Kunde, E-Mail..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+
+            <div className="flex gap-3 flex-wrap">
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Status
+                </label>
+                <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? undefined : v)}>
+                  <SelectTrigger className="bg-white/10 border-white/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    <SelectItem value="open">Offen</SelectItem>
+                    <SelectItem value="in_progress">In Bearbeitung</SelectItem>
+                    <SelectItem value="resolved">Gelöst</SelectItem>
+                    <SelectItem value="closed">Geschlossen</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Priorität
+                </label>
+                <Select value={priorityFilter || "all"} onValueChange={(v) => setPriorityFilter(v === "all" ? undefined : v)}>
+                  <SelectTrigger className="bg-white/10 border-white/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    <SelectItem value="low">Niedrig</SelectItem>
+                    <SelectItem value="medium">Mittel</SelectItem>
+                    <SelectItem value="high">Hoch</SelectItem>
+                    <SelectItem value="urgent">Dringend</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex-1 min-w-[200px]">
+                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
+                  <Filter className="h-4 w-4" />
+                  Kategorie
+                </label>
+                <Select value={categoryFilter || "all"} onValueChange={(v) => setCategoryFilter(v === "all" ? undefined : v)}>
+                  <SelectTrigger className="bg-white/10 border-white/20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle</SelectItem>
+                    <SelectItem value="network">Netzwerk</SelectItem>
+                    <SelectItem value="security">Sicherheit</SelectItem>
+                    <SelectItem value="hardware">Hardware</SelectItem>
+                    <SelectItem value="software">Software</SelectItem>
+                    <SelectItem value="email">E-Mail</SelectItem>
+                    <SelectItem value="other">Sonstiges</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            {(searchQuery || statusFilter || priorityFilter || categoryFilter) && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-gray-400">Aktive Filter:</span>
+                <div className="flex gap-2 flex-wrap">
+                  {searchQuery && (
+                    <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
+                      Suche: {searchQuery}
+                    </Badge>
+                  )}
+                  {statusFilter && (
+                    <Badge variant="outline" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                      Status: {statusFilter}
+                    </Badge>
+                  )}
+                  {priorityFilter && (
+                    <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                      Priorität: {priorityFilter}
+                    </Badge>
+                  )}
+                  {categoryFilter && (
+                    <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                      Kategorie: {categoryFilter}
+                    </Badge>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setStatusFilter(undefined);
+                      setPriorityFilter(undefined);
+                      setCategoryFilter(undefined);
+                    }}
+                    className="h-6 text-xs"
+                  >
+                    Alle Filter zurücksetzen
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
 
           {!tickets || tickets.length === 0 ? (
             <Card className="bg-white/5 border-white/10">
@@ -191,7 +329,10 @@ export default function AdminDashboard() {
                           })}
                         </CardDescription>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 flex-wrap">
+                        <Badge className={getCategoryColor(ticket.category)}>
+                          {getCategoryLabel(ticket.category)}
+                        </Badge>
                         <Badge className={getPriorityColor(ticket.priority)}>
                           {ticket.priority}
                         </Badge>
@@ -288,4 +429,40 @@ export default function AdminDashboard() {
       )}
     </div>
   );
+}
+
+function getCategoryColor(category: string) {
+  switch (category) {
+    case "network":
+      return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+    case "security":
+      return "bg-red-500/20 text-red-400 border-red-500/30";
+    case "hardware":
+      return "bg-purple-500/20 text-purple-400 border-purple-500/30";
+    case "software":
+      return "bg-green-500/20 text-green-400 border-green-500/30";
+    case "email":
+      return "bg-cyan-500/20 text-cyan-400 border-cyan-500/30";
+    case "other":
+    default:
+      return "bg-gray-500/20 text-gray-400 border-gray-500/30";
+  }
+}
+
+function getCategoryLabel(category: string) {
+  switch (category) {
+    case "network":
+      return "Netzwerk";
+    case "security":
+      return "Sicherheit";
+    case "hardware":
+      return "Hardware";
+    case "software":
+      return "Software";
+    case "email":
+      return "E-Mail";
+    case "other":
+    default:
+      return "Sonstiges";
+  }
 }

@@ -32,6 +32,7 @@ export default function SupportCenter() {
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [priority, setPriority] = useState<"low" | "medium" | "high" | "urgent">("medium");
+  const [category, setCategory] = useState<"network" | "security" | "hardware" | "software" | "email" | "other">("other");
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState("");
 
@@ -85,6 +86,7 @@ export default function SupportCenter() {
       subject,
       message,
       priority,
+      category,
       createAccount,
       password: createAccount ? password : undefined,
     });
@@ -403,6 +405,23 @@ export default function SupportCenter() {
                       <SelectItem value="medium">{language === 'de' ? "Mittel" : "Medium"}</SelectItem>
                       <SelectItem value="high">{language === 'de' ? "Hoch" : "High"}</SelectItem>
                       <SelectItem value="urgent">{language === 'de' ? "Dringend" : "Urgent"}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'de' ? "Kategorie" : "Category"}</label>
+                  <Select value={category} onValueChange={(val: any) => setCategory(val)}>
+                    <SelectTrigger className="bg-black/20 border-white/10">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="network">{language === 'de' ? "Netzwerk" : "Network"}</SelectItem>
+                      <SelectItem value="security">{language === 'de' ? "Sicherheit" : "Security"}</SelectItem>
+                      <SelectItem value="hardware">{language === 'de' ? "Hardware" : "Hardware"}</SelectItem>
+                      <SelectItem value="software">{language === 'de' ? "Software" : "Software"}</SelectItem>
+                      <SelectItem value="email">{language === 'de' ? "E-Mail" : "Email"}</SelectItem>
+                      <SelectItem value="other">{language === 'de' ? "Sonstiges" : "Other"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

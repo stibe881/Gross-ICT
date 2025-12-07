@@ -1,0 +1,1 @@
+ALTER TABLE `tickets` ADD `category` enum('network','security','hardware','software','email','other') DEFAULT 'other' NOT NULL;

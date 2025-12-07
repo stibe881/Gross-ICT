@@ -22,6 +22,7 @@ export const ticketRouter = router({
       subject: z.string().min(1),
       message: z.string().min(10),
       priority: z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
+      category: z.enum(['network', 'security', 'hardware', 'software', 'email', 'other']).default('other'),
       createAccount: z.boolean().optional(),
       password: z.string().min(6).optional(),
     }))
@@ -82,6 +83,7 @@ export const ticketRouter = router({
         subject: input.subject,
         message: input.message,
         priority: input.priority,
+        category: input.category,
         status: 'open',
       });
 
@@ -101,6 +103,47 @@ export const ticketRouter = router({
   all: adminProcedure.query(async () => {
     return await getAllTickets();
   }),
+
+  // Get filtered tickets (admin only)
+  filtered: adminProcedure
+    .input(z.object({
+      search: z.string().optional(),
+      status: z.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
+      priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
+      category: z.enum(['network', 'security', 'hardware', 'software', 'email', 'other']).optional(),
+    }))
+    .query(async ({ input }) => {
+      let tickets = await getAllTickets();
+
+      // Apply search filter
+      if (input.search) {
+        const searchLower = input.search.toLowerCase();
+        tickets = tickets.filter(t => 
+          t.subject.toLowerCase().includes(searchLower) ||
+          t.message.toLowerCase().includes(searchLower) ||
+          t.customerName?.toLowerCase().includes(searchLower) ||
+          t.customerEmail?.toLowerCase().includes(searchLower) ||
+          t.company?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      // Apply status filter
+      if (input.status) {
+        tickets = tickets.filter(t => t.status === input.status);
+      }
+
+      // Apply priority filter
+      if (input.priority) {
+        tickets = tickets.filter(t => t.priority === input.priority);
+      }
+
+      // Apply category filter
+      if (input.category) {
+        tickets = tickets.filter(t => t.category === input.category);
+      }
+
+      return tickets;
+    }),
 
   // Get single ticket
   getById: protectedProcedure
@@ -159,6 +202,14 @@ export const ticketRouter = router({
         medium: allTickets.filter(t => t.priority === 'medium').length,
         high: allTickets.filter(t => t.priority === 'high').length,
         urgent: allTickets.filter(t => t.priority === 'urgent').length,
+      },
+      byCategory: {
+        network: allTickets.filter(t => t.category === 'network').length,
+        security: allTickets.filter(t => t.category === 'security').length,
+        hardware: allTickets.filter(t => t.category === 'hardware').length,
+        software: allTickets.filter(t => t.category === 'software').length,
+        email: allTickets.filter(t => t.category === 'email').length,
+        other: allTickets.filter(t => t.category === 'other').length,
       },
     };
   }),

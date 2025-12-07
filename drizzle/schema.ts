@@ -47,6 +47,8 @@ export const tickets = mysqlTable("tickets", {
   status: mysqlEnum("status", ["open", "in_progress", "resolved", "closed"]).default("open").notNull(),
   /** Priority level */
   priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
+  /** Ticket category */
+  category: mysqlEnum("category", ["network", "security", "hardware", "software", "email", "other"]).default("other").notNull(),
   /** Admin notes (internal) */
   adminNotes: text("adminNotes"),
   /** Assigned admin user ID */

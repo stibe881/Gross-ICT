@@ -20,3 +20,7 @@
 ## Completed
 - [x] Ticket comments/communication system
 - [x] File uploads for tickets (screenshots, logs)
+
+## Completed
+- [x] Ticket filter & search functionality
+- [x] Ticket categories system
