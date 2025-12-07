@@ -13,6 +13,7 @@ const Home = lazy(() => import("./pages/Home"));
 const Contact = lazy(() => import("./pages/Contact"));
 const WebService = lazy(() => import("./pages/services/Web"));
 const SupportService = lazy(() => import("./pages/services/Support"));
+const SupportCenter = lazy(() => import("./pages/SupportCenter"));
 const NetworkService = lazy(() => import("./pages/services/Network"));
 const About = lazy(() => import("./pages/About"));
 const Imprint = lazy(() => import("@/pages/Imprint"));
@@ -30,6 +31,7 @@ function Router() {
         <Route path={"/contact"} component={Contact} />
         <Route path={"/services/web"} component={WebService} />
         <Route path={"/services/support"} component={SupportService} />
+        <Route path={"/support-center"} component={SupportCenter} />
         <Route path={"/services/network"} component={NetworkService} />
         <Route path={"/about"} component={About} />
         <Route path="/imprint" component={Imprint} />

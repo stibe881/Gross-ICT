@@ -49,7 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const navItems = [
     { name: t.nav.home, path: "/" },
     { name: t.nav.web, path: "/services/web" },
-    { name: t.nav.support, path: "/services/support" },
+    { name: t.nav.support, path: "/support-center" },
     { name: t.nav.network, path: "/services/network" },
   ];
 
@@ -210,7 +210,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <h4 className="font-medium text-foreground mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><Link href="/services/web"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.web}</span></Link></li>
-                <li><Link href="/services/support"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.support}</span></Link></li>
+                <li><Link href="/support-center"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.support}</span></Link></li>
                 <li><Link href="/services/network"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.network}</span></Link></li>
                 <li><Link href="/calculator"><span className="hover:text-primary transition-colors cursor-pointer">Website Calculator</span></Link></li>
               </ul>
