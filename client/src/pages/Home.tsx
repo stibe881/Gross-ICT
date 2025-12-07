@@ -138,36 +138,30 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px]">
             {/* Large Card - Web */}
-            <BentoCard 
-              className="md:col-span-2 md:row-span-2"
-              title="Web Development"
-              description="High-Performance Webseiten und Applikationen. Gebaut mit Next-Gen Technologien für maximale Geschwindigkeit und SEO-Ranking."
-              icon={<Globe className="h-8 w-8 text-primary" />}
-              bgImage="/images/service-web.png"
-              href="/services/web"
-              delay={0.1}
-            />
-            
-            {/* Medium Card - Support */}
-            <BentoCard 
-              className="md:col-span-1 md:row-span-1"
-              title="IT Support"
-              description="24/7 Monitoring und schnelle Hilfe bei allen Hardware-Problemen."
-              icon={<Cpu className="h-8 w-8 text-blue-400" />}
-              href="/services/support"
-              delay={0.2}
-            />
-
-            {/* Main Feature Card */}
             <Spotlight className="md:col-span-2 md:row-span-2 min-h-[400px]">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
                 title="Web Development"
-                description="Maßgeschneiderte Webseiten und Applikationen, die nicht nur gut aussehen, sondern performen. React, Next.js und modernste Technologien."
-                icon={<Globe className="h-8 w-8 text-blue-400" />}
+                description="High-Performance Webseiten und Applikationen. Gebaut mit Next-Gen Technologien für maximale Geschwindigkeit und SEO-Ranking."
+                icon={<Globe className="h-8 w-8 text-primary" />}
+                bgImage="/images/service-web.png"
                 href="/services/web"
-                delay={0.3}
+                delay={0.1}
+              />
+            </Spotlight>
+            
+            {/* Medium Card - Support */}
+            <Spotlight className="md:col-span-1 md:row-span-1">
+              <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.02 // SUPPORT</div>
+              <BentoCard 
+                className="h-full border-none bg-transparent"
+                title="IT Support"
+                description="24/7 Monitoring und schnelle Hilfe bei allen Hardware-Problemen."
+                icon={<Cpu className="h-8 w-8 text-blue-400" />}
+                bgImage="/images/service-support.png"
+                href="/services/support"
+                delay={0.2}
               />
             </Spotlight>
 
@@ -179,6 +173,7 @@ export default function Home() {
                 title="Security"
                 description="Umfassender Schutz vor Cyber-Bedrohungen durch modernste Firewalls, Verschlüsselung und proaktives Monitoring Ihrer gesamten Infrastruktur."
                 icon={<Shield className="h-6 w-6 text-purple-400" />}
+                bgImage="/images/service-security.png"
                 href="/services/network"
                 delay={0.4}
               />
@@ -191,6 +186,7 @@ export default function Home() {
                 title="Performance"
                 description="Maximale Geschwindigkeit für Ihre Systeme. Wir optimieren Ladezeiten, Datenbankabfragen und Server-Ressourcen für reibungslose Abläufe."
                 icon={<Zap className="h-6 w-6 text-yellow-400" />}
+                bgImage="/images/service-performance.png"
                 href="/services/web"
                 delay={0.5}
               />
@@ -203,6 +199,7 @@ export default function Home() {
                 title="Analytics"
                 description="Verwandeln Sie Daten in Wissen. Unsere Dashboards liefern Echtzeit-Einblicke in Nutzerverhalten und Systemstatus für fundierte Entscheidungen."
                 icon={<BarChart3 className="h-6 w-6 text-pink-400" />}
+                bgImage="/images/service-analytics.png"
                 href="/services/web"
                 delay={0.6}
               />
