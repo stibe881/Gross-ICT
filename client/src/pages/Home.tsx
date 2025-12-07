@@ -160,18 +160,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-
-
-      <PartnerMarquee />
-
-      <ProcessTimeline />
-      
-      <FAQSection />
-
-      <SecurityCheck />
-      
-      <StatusDashboard />
-
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
         <div className="container">
@@ -261,167 +249,66 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Stats / Trust Section */}
-      <section className="py-24 border-y border-white/5 bg-white/[0.02]">
-        <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <StatItem number="99.9%" label="Uptime" delay={0} />
-            <StatItem number="24/7" label="Support" delay={0.1} />
-            <StatItem number="50+" label="Clients" delay={0.2} />
-            <StatItem number="100%" label="Swiss Made" delay={0.3} />
-          </div>
-        </div>
-      </section>
+      <PartnerMarquee />
 
-      {/* News Section */}
+      <ProcessTimeline />
+      
+      <FAQSection />
+
+      <SecurityCheck />
+      
+      <StatusDashboard />
+
       <NewsSection />
-
-      {/* Newsletter Section */}
       <Newsletter />
-
-      {/* CTA Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute inset-0 bg-primary/5 blur-[100px] rounded-full pointer-events-none"></div>
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="container relative z-10 text-center"
-        >
-          <h2 className="text-4xl md:text-6xl font-bold mb-8 tracking-tight">
-            Ready to <span className="text-primary">Upgrade?</span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Lassen Sie uns Ihre IT-Infrastruktur auf das nächste Level heben.
-            Vereinbaren Sie heute ein unverbindliches Gespräch.
-          </p>
-          <Link href="/contact">
-            <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-200 font-bold text-lg transition-all shadow-2xl shadow-white/10 hover:scale-105">
-              Kontakt aufnehmen
-            </Button>
-          </Link>
-        </motion.div>
-      </section>
     </Layout>
   );
 }
 
-function BentoCard({ 
-  className, 
-  title, 
-  description, 
-  icon, 
-  bgImage, 
-  href,
-  minimal = false,
-  delay = 0
-}: { 
-  className?: string, 
-  title: string, 
-  description: string, 
-  icon: React.ReactNode, 
-  bgImage?: string,
-  href: string,
-  minimal?: boolean,
-  delay?: number
-}) {
-  const ref = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"]
-  });
-  
-  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
-
+function BentoCard({ className, title, description, icon, bgImage, href, delay }: any) {
   return (
     <Link href={href}>
       <motion.div 
-        ref={ref}
-        initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
-        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-        viewport={{ once: true, margin: "-50px" }}
-        transition={{ duration: 0.8, delay, ease: [0.22, 1, 0.36, 1] }}
-        whileHover={{ scale: 0.98, y: -5 }}
-        animate={{ y: [0, -5, 0] }}
-        // @ts-ignore
-        transition={{ 
-          y: {
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: Math.random() * 2
-          },
-          default: { duration: 0.5 }
-        }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4, delay }}
         className={cn(
-          "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full overflow-hidden rounded-3xl border border-white/5 bg-black/40 backdrop-blur-sm",
+          "group relative overflow-hidden rounded-3xl border border-white/10 bg-black/40 backdrop-blur-sm p-6 transition-all hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 cursor-pointer",
           className
         )}
       >
-        {bgImage && (
-          <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl">
-            {/* Cinematic Vignette & Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-20"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-20"></div>
-            
-            {/* Film Grain Overlay */}
-            <div className="absolute inset-0 opacity-[0.03] pointer-events-none z-30 mix-blend-overlay" 
-                 style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}>
-            </div>
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
+          <img 
+            src={bgImage} 
+            alt={title} 
+            className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
+          />
+        </div>
 
-            <motion.img 
-              src={bgImage} 
-              alt={title} 
-              loading="lazy"
-              decoding="async"
-              style={{ y }}
-              className="w-full h-[120%] -top-[10%] absolute object-cover opacity-60"
-              initial={{ scale: 1.1 }}
-              whileHover={{ scale: 1.2 }}
-              transition={{ duration: 1.2, ease: "easeOut" }}
-            />
-          </div>
-        )}
-        
-        <div className="relative z-10">
-          <motion.div 
-            className="mb-4 p-3 bg-white/10 rounded-2xl w-fit backdrop-blur-md border border-white/10 group-hover:bg-white/20 transition-colors"
-            whileHover={{ rotate: [0, -10, 10, -10, 0], scale: 1.1 }}
-            transition={{ duration: 0.5 }}
-          >
+        {/* Content */}
+        <div className="relative z-20 h-full flex flex-col justify-end">
+          <div className="mb-auto p-3 rounded-2xl bg-white/5 w-fit backdrop-blur-md border border-white/10 group-hover:bg-primary/20 group-hover:border-primary/30 transition-colors">
             {icon}
-          </motion.div>
-        </div>
-        
-        <div className="relative z-10">
-          <h3 className={cn("font-bold mb-2 text-white group-hover:text-primary transition-colors", minimal ? "text-lg" : "text-2xl")}>
-            {title}
-          </h3>
-          <p className={cn("text-muted-foreground leading-relaxed", minimal ? "text-sm line-clamp-2" : "text-base")}>
-            {description}
-          </p>
-        </div>
+          </div>
+          
+          <div className="space-y-2 transform transition-transform duration-300 group-hover:-translate-y-2">
+            <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors">{title}</h3>
+            <p className="text-sm text-gray-400 line-clamp-2 group-hover:text-gray-300 transition-colors">
+              {description}
+            </p>
+          </div>
 
-        {/* Hover Glow Effect */}
-        <div className="absolute inset-0 border-2 border-white/0 rounded-3xl group-hover:border-white/10 transition-all duration-500 pointer-events-none"></div>
-        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500 rounded-3xl pointer-events-none"></div>
+          {/* Hover Indicator */}
+          <div className="absolute bottom-6 right-6 opacity-0 transform translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+            <div className="p-2 rounded-full bg-primary text-black">
+              <ArrowRight className="h-4 w-4" />
+            </div>
+          </div>
+        </div>
       </motion.div>
     </Link>
-  );
-}
-
-function StatItem({ number, label, delay }: { number: string, label: string, delay: number }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, scale: 0.5 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
-      className="space-y-2"
-    >
-      <div className="text-4xl md:text-5xl font-bold text-white">{number}</div>
-      <div className="text-sm text-muted-foreground uppercase tracking-wider font-medium">{label}</div>
-    </motion.div>
   );
 }
