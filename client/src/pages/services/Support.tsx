@@ -56,7 +56,7 @@ export default function SupportService() {
             />
             <ServiceDetailCard 
               title="Wartungsverträge"
-              description="Proaktive Überwachung und regelmäßige Updates für maximale Ausfallsicherheit."
+              description="Proaktive Überwachung und regelmässige Updates für maximale Ausfallsicherheit."
               features={["24/7 Monitoring", "Automatische Updates", "Priorisierter Support", "Monatliche Berichte"]}
               icon={<ShieldCheck className="h-6 w-6 text-green-400" />}
             />

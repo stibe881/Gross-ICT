@@ -70,7 +70,7 @@ export default function WebService() {
               <div>
                 <h2 className="text-3xl font-bold mb-6 text-white">Unser Prozess</h2>
                 <div className="space-y-6">
-                  <ProcessStep number="01" title="Analyse & Konzept" description="Wir verstehen Ihre Ziele und entwickeln eine maßgeschneiderte Strategie." />
+                  <ProcessStep number="01" title="Analyse & Konzept" description="Wir verstehen Ihre Ziele und entwickeln eine massgeschneiderte Strategie." />
                   <ProcessStep number="02" title="Design & Prototyping" description="Visuelle Gestaltung, die Ihre Marke perfekt repräsentiert." />
                   <ProcessStep number="03" title="Entwicklung" description="Sauberer Code und performante Umsetzung." />
                   <ProcessStep number="04" title="Launch & Support" description="Sicherer Go-Live und langfristige Betreuung." />

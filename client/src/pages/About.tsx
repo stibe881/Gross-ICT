@@ -53,7 +53,7 @@ export default function About() {
             <ValueCard 
               icon={<Target className="h-8 w-8 text-blue-400" />}
               title="Unsere Mission"
-              description="Wir machen komplexe IT-Lösungen einfach und zugänglich für Unternehmen jeder Größe."
+              description="Wir machen komplexe IT-Lösungen einfach und zugänglich für Unternehmen jeder Grösse."
             />
             <ValueCard 
               icon={<Users className="h-8 w-8 text-green-400" />}

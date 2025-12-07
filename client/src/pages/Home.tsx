@@ -62,6 +62,20 @@ export default function Home() {
       
       {/* Hero Section */}
       <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden w-full">
+        {/* Network Visualization Background */}
+        <div className="absolute inset-0 z-0 opacity-30 pointer-events-none">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#000_100%)] z-10"></div>
+          <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <pattern id="network-pattern" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1" className="fill-white/20" />
+                <path d="M2 2 L102 102 M2 102 L102 2" className="stroke-white/5" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#network-pattern)" />
+          </svg>
+        </div>
+
         <motion.div 
           style={{ y, opacity }}
           className="w-full px-4 md:px-8 relative z-10 flex flex-col items-center text-center"
@@ -71,34 +85,34 @@ export default function Home() {
             whileInView="animate"
             viewport={{ once: true }}
             variants={stagger}
-            className="space-y-10 max-w-[90vw] mx-auto"
+            className="space-y-12 max-w-[90vw] mx-auto"
           >
-            <motion.div variants={fadeIn} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-sm font-medium backdrop-blur-md hover:bg-white/10 transition-colors cursor-default">
-              <span className="relative flex h-2 w-2">
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium backdrop-blur-xl hover:bg-white/10 transition-all cursor-default shadow-lg shadow-black/20">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
               </span>
-              <span className="text-gray-300">Next-Gen IT Services Available</span>
+              <span className="text-gray-200 tracking-wide uppercase text-xs font-bold">Next-Gen IT Services</span>
             </motion.div>
             
-            <motion.h1 variants={fadeIn} className="text-7xl md:text-9xl font-bold tracking-tighter leading-none">
-              <span className="block text-gradient bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/50 pb-4">Future-Proof</span>
-              <span className="block text-gradient-gold bg-clip-text text-transparent bg-gradient-to-b from-[#ffd700] via-[#ffd700] to-[#ffd700]/50 pb-4">Infrastructure.</span>
+            <motion.h1 variants={fadeIn} className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9]">
+              <span className="block text-white drop-shadow-2xl">Future-Proof</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient">Infrastructure.</span>
             </motion.h1>
             
-            <motion.p variants={fadeIn} className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <motion.p variants={fadeIn} className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
               Wir transformieren Unternehmen mit modernster Web-Technologie, 
               robusten Netzwerken und proaktivem Support.
             </motion.p>
             
-            <motion.div variants={fadeIn} className="flex flex-wrap justify-center gap-4 pt-4">
+            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
               <Link href="/contact">
-                <Button size="lg" className="h-12 px-8 rounded-full bg-white text-black hover:bg-gray-200 font-semibold text-base transition-all shadow-[0_0_20px_-5px_rgba(255,255,255,0.3)] hover:scale-105">
-                  Start Project <ArrowRight className="ml-2 h-4 w-4" />
+                <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
+                  Start Project <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
               <Link href="/services/web">
-                <Button variant="outline" size="lg" className="h-12 px-8 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm transition-all hover:scale-105">
+                <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
                   Explore Services
                 </Button>
               </Link>
@@ -106,15 +120,15 @@ export default function Home() {
           </motion.div>
         </motion.div>
         
-        {/* Scroll Indicator */}
+        {/* Modern Scroll Indicator */}
         <motion.div 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground text-sm"
+          transition={{ delay: 1.5, duration: 1 }}
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white/30 text-xs tracking-[0.2em] uppercase font-medium"
         >
-          <span>Scroll to explore</span>
-          <div className="w-[1px] h-12 bg-gradient-to-b from-white/50 to-transparent"></div>
+          <span>Scroll</span>
+          <div className="w-[1px] h-16 bg-gradient-to-b from-white/30 to-transparent"></div>
         </motion.div>
       </section>
 

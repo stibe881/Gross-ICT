@@ -36,7 +36,7 @@ export default function Imprint() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-white">Urheberrechte</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf der Website gehören ausschließlich der Firma Gross ICT oder den speziell genannten Rechtsinhabern. Für die Reproduktion jeglicher Elemente ist die schriftliche Zustimmung der Urheberrechtsträger im Voraus einzuholen.
+              Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf der Website gehören ausschliesslich der Firma Gross ICT oder den speziell genannten Rechtsinhabern. Für die Reproduktion jeglicher Elemente ist die schriftliche Zustimmung der Urheberrechtsträger im Voraus einzuholen.
             </p>
           </section>
         </div>

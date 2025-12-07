@@ -5,24 +5,50 @@ import { Float, PerspectiveCamera, Environment, Sparkles } from "@react-three/dr
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
-function GridFloor() {
+function NetworkFloor() {
   const groupRef = useRef<THREE.Group>(null);
   
+  // Generate random nodes for the network floor
+  const nodes = useMemo(() => {
+    const temp = [];
+    for (let i = 0; i < 50; i++) {
+      temp.push({
+        x: (Math.random() - 0.5) * 40,
+        z: (Math.random() - 0.5) * 20,
+        size: Math.random() * 0.1 + 0.05
+      });
+    }
+    return temp;
+  }, []);
+
   useFrame((state) => {
     if (!groupRef.current) return;
-    // Move the grid to create an infinite floor effect
-    const t = state.clock.getElapsedTime() * 0.5;
-    groupRef.current.position.z = t % 2;
+    // Slowly rotate the floor for dynamic effect
+    groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
   });
 
   return (
-    <group rotation={[Math.PI / 2, 0, 0]} position={[0, -4, 0]}>
+    <group position={[0, -4, 0]} rotation={[0.1, 0, 0]}>
       <group ref={groupRef}>
+        {/* Network Nodes */}
+        {nodes.map((node, i) => (
+          <mesh key={i} position={[node.x, 0, node.z]}>
+            <sphereGeometry args={[node.size, 8, 8]} />
+            <meshBasicMaterial color="#333" transparent opacity={0.4} />
+          </mesh>
+        ))}
+        
+        {/* Connecting Lines */}
         <gridHelper 
-          args={[100, 100, 0x333333, 0x333333]} 
-          position={[0, 0, 0]} 
-          rotation={[-Math.PI / 2, 0, 0]}
+          args={[60, 20, 0x222222, 0x111111]} 
+          position={[0, -0.1, 0]} 
         />
+        
+        {/* Digital Horizon Glow */}
+        <mesh position={[0, 0, -15]} rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[60, 10]} />
+          <meshBasicMaterial color="#000" transparent opacity={0.8} />
+        </mesh>
       </group>
     </group>
   );
@@ -198,7 +224,7 @@ export default function Scene3D() {
           </group>
         </ScrollRig>
 
-        <GridFloor />
+        <NetworkFloor />
         <Environment preset="city" />
         
         {/* Post-processing disabled for stability */}
