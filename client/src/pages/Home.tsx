@@ -14,6 +14,10 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import NewsSection from "@/components/NewsSection";
 import Newsletter from "@/components/Newsletter";
 import PartnerMarquee from "@/components/PartnerMarquee";
+import ProcessTimeline from "@/components/ProcessTimeline";
+import FAQSection from "@/components/FAQSection";
+import SecurityCheck from "@/components/SecurityCheck";
+import StatusDashboard from "@/components/StatusDashboard";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -159,6 +163,14 @@ export default function Home() {
 
 
       <PartnerMarquee />
+
+      <ProcessTimeline />
+      
+      <FAQSection />
+
+      <SecurityCheck />
+      
+      <StatusDashboard />
 
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">

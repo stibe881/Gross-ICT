@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { Menu, X, ArrowRight, Sun, Moon, MessageCircle, Monitor } from "lucide-react";
+import { Menu, X, ArrowRight, Sun, Moon, MessageCircle, Monitor, Calendar } from "lucide-react";
 import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
@@ -114,6 +114,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </button>
 
             <RemoteSupportModal />
+
+            <a 
+              href="https://cal.com/gross-ict" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="hidden lg:flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>{language === 'de' ? 'Termin' : 'Book'}</span>
+            </a>
 
             <Link href="/contact">
               <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-2">
