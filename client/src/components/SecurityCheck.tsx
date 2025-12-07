@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Shield, AlertTriangle, CheckCircle, ArrowRight, RefreshCw, Play, Lock, Smartphone, Wifi, FileText, HardDrive } from "lucide-react";
+import { Shield, AlertTriangle, CheckCircle, ArrowRight, RefreshCw, Lock, Smartphone, Wifi, FileText, HardDrive, Info, XCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function SecurityCheck() {
   const { language } = useLanguage();
   const [started, setStarted] = useState(false);
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
+  const [answers, setAnswers] = useState<number[]>([]);
   const [showResult, setShowResult] = useState(false);
   const [, setLocation] = useLocation();
 
   const questions = [
     {
       question: language === 'de' ? "Haben Sie eine 2-Faktor-Authentifizierung (2FA) aktiviert?" : "Do you have 2-Factor Authentication (2FA) enabled?",
+      info: language === 'de' ? "2FA schützt Ihre Konten selbst dann, wenn Ihr Passwort gestohlen wird." : "2FA protects your accounts even if your password is stolen.",
       icon: Lock,
       options: [
         { text: language === 'de' ? "Ja, überall" : "Yes, everywhere", points: 2 },
@@ -25,6 +28,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Wie oft führen Sie Backups durch?" : "How often do you perform backups?",
+      info: language === 'de' ? "Regelmäßige Backups sind Ihre Lebensversicherung gegen Ransomware und Datenverlust." : "Regular backups are your insurance against ransomware and data loss.",
       icon: RefreshCw,
       options: [
         { text: language === 'de' ? "Täglich automatisch" : "Daily automatically", points: 2 },
@@ -34,6 +38,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Nutzen Sie einen Passwort-Manager?" : "Do you use a password manager?",
+      info: language === 'de' ? "Ein Passwort-Manager ermöglicht komplexe, einzigartige Passwörter für jeden Dienst." : "A password manager enables complex, unique passwords for every service.",
       icon: Shield,
       options: [
         { text: language === 'de' ? "Ja, für alles" : "Yes, for everything", points: 2 },
@@ -43,6 +48,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Sind Ihre Systeme (Windows/Mac) auf dem neuesten Stand?" : "Are your systems (Windows/Mac) up to date?",
+      info: language === 'de' ? "Veraltete Software ist das Einfallstor Nr. 1 für Hacker." : "Outdated software is the #1 gateway for hackers.",
       icon: RefreshCw,
       options: [
         { text: language === 'de' ? "Ja, Updates sind automatisch" : "Yes, updates are automatic", points: 2 },
@@ -52,6 +58,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Haben Sie eine Firewall / Antivirus-Lösung?" : "Do you have a firewall / antivirus solution?",
+      info: language === 'de' ? "Moderne Endpoint-Protection erkennt Angriffe in Echtzeit." : "Modern endpoint protection detects attacks in real-time.",
       icon: Shield,
       options: [
         { text: language === 'de' ? "Ja, Managed Antivirus" : "Yes, Managed Antivirus", points: 2 },
@@ -61,6 +68,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Sind Ihre Mitarbeiter geschult (Phishing)?" : "Are your employees trained (Phishing)?",
+      info: language === 'de' ? "Der Mensch ist oft das schwächste Glied in der Sicherheitskette." : "Humans are often the weakest link in the security chain.",
       icon: FileText,
       options: [
         { text: language === 'de' ? "Ja, regelmäßige Trainings" : "Yes, regular training", points: 2 },
@@ -70,6 +78,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Sind Firmendaten auf Handys geschützt (MDM)?" : "Are company data on phones protected (MDM)?",
+      info: language === 'de' ? "Mobile Device Management (MDM) trennt private und geschäftliche Daten sicher." : "Mobile Device Management (MDM) securely separates private and business data.",
       icon: Smartphone,
       options: [
         { text: language === 'de' ? "Ja, zentral verwaltet" : "Yes, centrally managed", points: 2 },
@@ -79,6 +88,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Ist Ihr Firmen-WLAN vom Gast-WLAN getrennt?" : "Is your company Wi-Fi separated from guest Wi-Fi?",
+      info: language === 'de' ? "Gäste sollten niemals Zugriff auf Ihr internes Firmennetzwerk haben." : "Guests should never have access to your internal company network.",
       icon: Wifi,
       options: [
         { text: language === 'de' ? "Ja, strikt getrennt" : "Yes, strictly separated", points: 2 },
@@ -88,6 +98,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Sind Ihre Festplatten verschlüsselt (BitLocker)?" : "Are your hard drives encrypted (BitLocker)?",
+      info: language === 'de' ? "Verschlüsselung schützt Daten bei Diebstahl oder Verlust des Geräts." : "Encryption protects data in case of theft or loss of the device.",
       icon: HardDrive,
       options: [
         { text: language === 'de' ? "Ja, alle Geräte" : "Yes, all devices", points: 2 },
@@ -97,6 +108,7 @@ export default function SecurityCheck() {
     },
     {
       question: language === 'de' ? "Gibt es einen Notfallplan für Cyber-Angriffe?" : "Is there an emergency plan for cyber attacks?",
+      info: language === 'de' ? "Im Ernstfall zählt jede Minute. Ein Plan verhindert Panik und Chaos." : "In an emergency, every minute counts. A plan prevents panic and chaos.",
       icon: AlertTriangle,
       options: [
         { text: language === 'de' ? "Ja, dokumentiert & getestet" : "Yes, documented & tested", points: 2 },
@@ -107,7 +119,10 @@ export default function SecurityCheck() {
   ];
 
   const handleAnswer = (points: number) => {
-    setScore(score + points);
+    const newScore = score + points;
+    setScore(newScore);
+    setAnswers([...answers, points]);
+    
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
@@ -119,6 +134,7 @@ export default function SecurityCheck() {
     setStarted(true);
     setStep(0);
     setScore(0);
+    setAnswers([]);
     setShowResult(false);
   };
 
@@ -126,6 +142,7 @@ export default function SecurityCheck() {
     setStarted(false);
     setStep(0);
     setScore(0);
+    setAnswers([]);
     setShowResult(false);
   };
 
@@ -174,7 +191,7 @@ export default function SecurityCheck() {
           </p>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden min-h-[400px] flex flex-col justify-center shadow-2xl">
+        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden min-h-[500px] flex flex-col justify-center shadow-2xl">
           <AnimatePresence mode="wait">
             {!started ? (
               <motion.div
@@ -182,7 +199,7 @@ export default function SecurityCheck() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="flex flex-col items-center text-center"
+                className="flex flex-col items-center text-center w-full"
               >
                 <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6 animate-pulse">
                   <Shield className="w-10 h-10 text-primary" />
@@ -203,10 +220,10 @@ export default function SecurityCheck() {
             ) : !showResult ? (
               <motion.div
                 key={`question-${step}`}
-                initial={{ opacity: 0, x: 50 }}
+                initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.2 }}
                 className="w-full"
               >
                 <div className="flex justify-between items-center mb-8 text-sm font-medium text-muted-foreground">
@@ -228,9 +245,15 @@ export default function SecurityCheck() {
                       </div>
                     );
                   })()}
-                  <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight">
-                    {questions[step].question}
-                  </h3>
+                  <div className="flex-1">
+                    <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight mb-2">
+                      {questions[step].question}
+                    </h3>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/5 p-2 rounded-lg inline-flex">
+                      <Info className="w-4 h-4 text-primary" />
+                      {questions[step].info}
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="grid gap-3">
@@ -262,8 +285,29 @@ export default function SecurityCheck() {
                         <ResultIcon className="w-12 h-12" />
                       </div>
                       <h3 className={`text-3xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
-                      <p className="text-xl text-muted-foreground mb-10 max-w-lg mx-auto leading-relaxed">{result.desc}</p>
+                      <p className="text-xl text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">{result.desc}</p>
                       
+                      {/* Detailed Breakdown */}
+                      <div className="bg-white/5 rounded-xl p-6 mb-8 text-left max-h-60 overflow-y-auto custom-scrollbar">
+                        <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-muted-foreground">
+                          {language === 'de' ? "Detailanalyse" : "Detailed Analysis"}
+                        </h4>
+                        <div className="space-y-3">
+                          {answers.map((points, idx) => (
+                            <div key={idx} className="flex items-center justify-between text-sm border-b border-white/5 pb-2 last:border-0">
+                              <span className="truncate pr-4 flex-1">{questions[idx].question}</span>
+                              {points === 2 ? (
+                                <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
+                              ) : points === 1 ? (
+                                <AlertTriangle className="w-4 h-4 text-yellow-500 shrink-0" />
+                              ) : (
+                                <XCircle className="w-4 h-4 text-red-500 shrink-0" />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
                       <div className="flex flex-col sm:flex-row gap-4 justify-center">
                         <Button onClick={resetQuiz} variant="outline" size="lg" className="gap-2 rounded-full">
                           <RefreshCw className="w-4 h-4" />
