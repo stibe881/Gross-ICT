@@ -16,3 +16,7 @@
 - [ ] E-Mail notifications for ticket updates
 - [ ] Ticket comments/communication
 - [ ] File uploads for tickets
+
+## Completed
+- [x] Ticket comments/communication system
+- [x] File uploads for tickets (screenshots, logs)

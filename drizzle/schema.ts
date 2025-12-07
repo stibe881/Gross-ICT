@@ -58,3 +58,45 @@ export const tickets = mysqlTable("tickets", {
 
 export type Ticket = typeof tickets.$inferSelect;
 export type InsertTicket = typeof tickets.$inferInsert;
+/**
+ * Ticket comments table for communication between admin and customers
+ */
+export const ticketComments = mysqlTable("ticketComments", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Reference to the ticket */
+  ticketId: int("ticketId").notNull(),
+  /** Reference to the user who created the comment */
+  userId: int("userId").notNull(),
+  /** Comment text */
+  message: text("message").notNull(),
+  /** Whether this is an internal note (only visible to admins) */
+  isInternal: int("isInternal").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type TicketComment = typeof ticketComments.$inferSelect;
+export type InsertTicketComment = typeof ticketComments.$inferInsert;
+
+/**
+ * Ticket attachments table for file uploads
+ */
+export const ticketAttachments = mysqlTable("ticketAttachments", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Reference to the ticket */
+  ticketId: int("ticketId").notNull(),
+  /** Reference to the user who uploaded the file */
+  userId: int("userId").notNull(),
+  /** Original filename */
+  filename: varchar("filename", { length: 255 }).notNull(),
+  /** File URL (S3 storage) */
+  fileUrl: varchar("fileUrl", { length: 1000 }).notNull(),
+  /** File size in bytes */
+  fileSize: int("fileSize").notNull(),
+  /** MIME type */
+  mimeType: varchar("mimeType", { length: 100 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type TicketAttachment = typeof ticketAttachments.$inferSelect;
+export type InsertTicketAttachment = typeof ticketAttachments.$inferInsert;

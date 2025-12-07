@@ -14,10 +14,12 @@ import { useLocation } from "wouter";
 import { Loader2, Ticket, LogOut, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
+import { TicketDetail } from "@/components/TicketDetail";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.all.useQuery(undefined, {
@@ -213,6 +215,16 @@ export default function AdminDashboard() {
                     )}
 
                     <div className="flex gap-4 pt-4 border-t border-white/10">
+                      <Button
+                        variant="outline"
+                        onClick={() => setSelectedTicketId(ticket.id)}
+                        className="border-white/20 bg-white/5 hover:bg-white/10"
+                      >
+                        Details & Kommentare
+                      </Button>
+                    </div>
+
+                    <div className="flex gap-4 pt-4 border-t border-white/10">
                       <div className="flex-1">
                         <label className="text-sm text-gray-400 mb-2 block">Status ändern:</label>
                         <Select
@@ -266,6 +278,14 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+
+      {/* Ticket Detail Modal */}
+      {selectedTicketId && (
+        <TicketDetail
+          ticketId={selectedTicketId}
+          onClose={() => setSelectedTicketId(null)}
+        />
+      )}
     </div>
   );
 }

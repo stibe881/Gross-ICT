@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, tickets, InsertTicket, Ticket } from "../drizzle/schema";
+import { InsertUser, users, tickets, InsertTicket, Ticket, ticketComments, InsertTicketComment, TicketComment, ticketAttachments, InsertTicketAttachment, TicketAttachment } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -156,4 +156,53 @@ export async function updateTicket(id: number, updates: Partial<InsertTicket>) {
   }
 
   return await db.update(tickets).set(updates).where(eq(tickets.id, id));
+}
+
+// Ticket comment helpers
+export async function createTicketComment(comment: InsertTicketComment): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(ticketComments).values(comment);
+  return Number(result[0].insertId);
+}
+
+export async function getCommentsByTicketId(ticketId: number): Promise<TicketComment[]> {
+  const db = await getDb();
+  if (!db) {
+    return [];
+  }
+
+  return await db.select().from(ticketComments).where(eq(ticketComments.ticketId, ticketId));
+}
+
+// Ticket attachment helpers
+export async function createTicketAttachment(attachment: InsertTicketAttachment): Promise<number> {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const result = await db.insert(ticketAttachments).values(attachment);
+  return Number(result[0].insertId);
+}
+
+export async function getAttachmentsByTicketId(ticketId: number): Promise<TicketAttachment[]> {
+  const db = await getDb();
+  if (!db) {
+    return [];
+  }
+
+  return await db.select().from(ticketAttachments).where(eq(ticketAttachments.ticketId, ticketId));
+}
+
+export async function deleteAttachment(id: number) {
+  const db = await getDb();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  return await db.delete(ticketAttachments).where(eq(ticketAttachments.id, id));
 }

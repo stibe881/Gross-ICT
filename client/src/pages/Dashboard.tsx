@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,10 +7,12 @@ import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { Loader2, Ticket, LogOut } from "lucide-react";
 import { toast } from "sonner";
+import { TicketDetail } from "@/components/TicketDetail";
 
 export default function Dashboard() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.myTickets.useQuery(undefined, {
     enabled: !!user,
@@ -110,7 +113,11 @@ export default function Dashboard() {
           ) : (
             <div className="grid gap-4">
               {tickets.map((ticket) => (
-                <Card key={ticket.id} className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors">
+                <Card 
+                  key={ticket.id} 
+                  className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors cursor-pointer"
+                  onClick={() => setSelectedTicketId(ticket.id)}
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div>
@@ -141,6 +148,14 @@ export default function Dashboard() {
           )}
         </div>
       </div>
+
+      {/* Ticket Detail Modal */}
+      {selectedTicketId && (
+        <TicketDetail
+          ticketId={selectedTicketId}
+          onClose={() => setSelectedTicketId(null)}
+        />
+      )}
     </div>
   );
 }
