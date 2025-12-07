@@ -21,9 +21,12 @@ const Privacy = lazy(() => import("@/pages/Privacy"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const NewsDetail = lazy(() => import("@/pages/NewsDetail"));
 const Calculator = lazy(() => import("@/pages/Calculator"));
-
+const Login = lazy(() => import("@/pages/Login"));
+const Dashboard = lazy(() => import("@/pages/Dashboard"));
+const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
 
 function Router() {
+  // make sure to consider if you need authentication for certain routes
   return (
     <Suspense fallback={<div className="min-h-screen bg-background" />}>
       <Switch>
@@ -38,6 +41,9 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/news/:id" component={NewsDetail} />
         <Route path="/calculator" component={Calculator} />
+        <Route path="/login" component={Login} />
+        <Route path="/dashboard" component={Dashboard} />
+        <Route path="/admin" component={AdminDashboard} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

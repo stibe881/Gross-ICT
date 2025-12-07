@@ -2,7 +2,20 @@ import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, LifeBuoy, Download, MessageSquare, FileText, ChevronRight, Monitor, Shield, Smartphone, Server, Mail, Phone } from "lucide-react";
+import { Search, LifeBuoy, Download, MessageSquare, FileText, ChevronRight, Monitor, Shield, Smartphone, Server, Mail, Phone, Loader2 } from "lucide-react";
+import { useState } from "react";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,6 +23,72 @@ import RemoteSupportModal from "@/components/RemoteSupportModal";
 
 export default function SupportCenter() {
   const { language } = useLanguage();
+  const [, setLocation] = useState<any>();
+
+  // Form state
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [company, setCompany] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [priority, setPriority] = useState<"low" | "medium" | "high" | "urgent">("medium");
+  const [createAccount, setCreateAccount] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const createTicketMutation = trpc.tickets.create.useMutation({
+    onSuccess: (data) => {
+      if (data.accountCreated) {
+        toast.success(
+          language === 'de'
+            ? "Ticket erstellt und Account angelegt! Sie können sich jetzt anmelden."
+            : "Ticket created and account created! You can now log in."
+        );
+      } else {
+        toast.success(
+          language === 'de'
+            ? "Ticket erfolgreich erstellt! Wir melden uns in Kürze."
+            : "Ticket created successfully! We will get back to you soon."
+        );
+      }
+      // Reset form
+      setName("");
+      setEmail("");
+      setCompany("");
+      setSubject("");
+      setMessage("");
+      setPriority("medium");
+      setCreateAccount(false);
+      setPassword("");
+    },
+    onError: (error) => {
+      toast.error(error.message || (language === 'de' ? "Fehler beim Erstellen des Tickets" : "Error creating ticket"));
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!name || !email || !subject || !message) {
+      toast.error(language === 'de' ? "Bitte füllen Sie alle Pflichtfelder aus" : "Please fill in all required fields");
+      return;
+    }
+
+    if (createAccount && !password) {
+      toast.error(language === 'de' ? "Bitte geben Sie ein Passwort ein" : "Please enter a password");
+      return;
+    }
+
+    createTicketMutation.mutate({
+      customerName: name,
+      customerEmail: email,
+      company: company || undefined,
+      subject,
+      message,
+      priority,
+      createAccount,
+      password: createAccount ? password : undefined,
+    });
+  };
 
   const quickActions = [
     {
@@ -267,39 +346,129 @@ export default function SupportCenter() {
               <h3 className="text-xl font-bold mb-6">
                 {language === 'de' ? "Neues Ticket erstellen" : "Create New Ticket"}
               </h3>
-              <form className="space-y-4">
+              <form className="space-y-4" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">{language === 'de' ? "Name" : "Name"}</label>
-                    <Input placeholder="Max Mustermann" className="bg-black/20 border-white/10" />
+                    <label className="text-sm font-medium">{language === 'de' ? "Name" : "Name"} *</label>
+                    <Input
+                      placeholder="Max Mustermann"
+                      className="bg-black/20 border-white/10"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">{language === 'de' ? "Firma" : "Company"}</label>
-                    <Input placeholder="Muster AG" className="bg-black/20 border-white/10" />
+                    <Input
+                      placeholder="Muster AG"
+                      className="bg-black/20 border-white/10"
+                      value={company}
+                      onChange={(e) => setCompany(e.target.value)}
+                    />
                   </div>
                 </div>
                 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">{language === 'de' ? "E-Mail" : "Email"}</label>
-                  <Input type="email" placeholder="max@muster.ch" className="bg-black/20 border-white/10" />
+                  <label className="text-sm font-medium">{language === 'de' ? "E-Mail" : "Email"} *</label>
+                  <Input
+                    type="email"
+                    placeholder="max@muster.ch"
+                    className="bg-black/20 border-white/10"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">{language === 'de' ? "Betreff" : "Subject"}</label>
-                  <Input placeholder={language === 'de' ? "Kurze Beschreibung des Problems" : "Short description of the issue"} className="bg-black/20 border-white/10" />
+                  <label className="text-sm font-medium">{language === 'de' ? "Betreff" : "Subject"} *</label>
+                  <Input
+                    placeholder={language === 'de' ? "Kurze Beschreibung des Problems" : "Short description of the issue"}
+                    className="bg-black/20 border-white/10"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    required
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">{language === 'de' ? "Nachricht" : "Message"}</label>
-                  <textarea 
-                    className="w-full min-h-[120px] rounded-md border border-white/10 bg-black/20 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  <label className="text-sm font-medium">{language === 'de' ? "Priorität" : "Priority"}</label>
+                  <Select value={priority} onValueChange={(val: any) => setPriority(val)}>
+                    <SelectTrigger className="bg-black/20 border-white/10">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">{language === 'de' ? "Niedrig" : "Low"}</SelectItem>
+                      <SelectItem value="medium">{language === 'de' ? "Mittel" : "Medium"}</SelectItem>
+                      <SelectItem value="high">{language === 'de' ? "Hoch" : "High"}</SelectItem>
+                      <SelectItem value="urgent">{language === 'de' ? "Dringend" : "Urgent"}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">{language === 'de' ? "Nachricht" : "Message"} *</label>
+                  <Textarea
+                    className="min-h-[120px] bg-black/20 border-white/10"
                     placeholder={language === 'de' ? "Bitte beschreiben Sie das Problem so genau wie möglich..." : "Please describe the issue as detailed as possible..."}
-                  ></textarea>
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                  />
                 </div>
 
-                <Button className="w-full gap-2" size="lg">
-                  <MessageSquare className="w-4 h-4" />
-                  {language === 'de' ? "Ticket absenden" : "Submit Ticket"}
+                <div className="space-y-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox
+                      id="createAccount"
+                      checked={createAccount}
+                      onCheckedChange={(checked) => setCreateAccount(checked as boolean)}
+                    />
+                    <Label htmlFor="createAccount" className="text-sm cursor-pointer">
+                      {language === 'de'
+                        ? "Benutzerkonto erstellen (um Tickets zu verfolgen)"
+                        : "Create user account (to track tickets)"}
+                    </Label>
+                  </div>
+
+                  {createAccount && (
+                    <div className="space-y-2 pl-6">
+                      <label className="text-sm font-medium">{language === 'de' ? "Passwort" : "Password"} *</label>
+                      <Input
+                        type="password"
+                        placeholder="••••••••"
+                        className="bg-black/20 border-white/10"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required={createAccount}
+                      />
+                      <p className="text-xs text-muted-foreground">
+                        {language === 'de'
+                          ? "Mindestens 6 Zeichen"
+                          : "At least 6 characters"}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  className="w-full gap-2"
+                  size="lg"
+                  disabled={createTicketMutation.isPending}
+                >
+                  {createTicketMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      {language === 'de' ? "Wird gesendet..." : "Submitting..."}
+                    </>
+                  ) : (
+                    <>
+                      <MessageSquare className="w-4 h-4" />
+                      {language === 'de' ? "Ticket absenden" : "Submit Ticket"}
+                    </>
+                  )}
                 </Button>
               </form>
             </div>

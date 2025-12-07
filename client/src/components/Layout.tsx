@@ -7,6 +7,8 @@ import CookieConsent from "./CookieConsent";
 import RemoteSupportModal from "./RemoteSupportModal";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/_core/hooks/useAuth";
+import { User } from "lucide-react";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -14,6 +16,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const { t, language, setLanguage } = useLanguage();
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -94,8 +97,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ))}
           </nav>
 
-          {/* CTA Button */}
+          {/* User Auth & CTA */}
           <div className="flex items-center gap-2">
+            {/* User/Login Button */}
+            {user ? (
+              <Link href={user.role === 'admin' ? '/admin' : '/dashboard'}>
+                <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 group">
+                  <User className="h-4 w-4 text-primary" />
+                </button>
+              </Link>
+            ) : (
+              <Link href="/login">
+                <button className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-sm font-medium">
+                  {language === 'de' ? 'Anmelden' : 'Login'}
+                </button>
+              </Link>
+            )}
             {/* Language Switcher */}
             <button 
               onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
