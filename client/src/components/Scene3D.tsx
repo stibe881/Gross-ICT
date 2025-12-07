@@ -1,5 +1,5 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, PerspectiveCamera, Environment, Sparkles, MeshTransmissionMaterial, ScrollControls, useScroll } from "@react-three/drei";
+import { Float, PerspectiveCamera, Environment, Sparkles, MeshTransmissionMaterial } from "@react-three/drei";
 import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
@@ -110,7 +110,7 @@ function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: 
         {/* Modern Glass/Metal Material */}
         <MeshTransmissionMaterial
           backside
-          samples={4}
+          samples={2}
           thickness={0.5}
           chromaticAberration={0.1}
           anisotropy={0.1}
@@ -162,18 +162,19 @@ function ConnectionLines() {
 
 function ScrollRig({ children }: { children: React.ReactNode }) {
   const group = useRef<THREE.Group>(null);
-  const scroll = useScroll();
   
   useFrame((state) => {
     if (!group.current) return;
     
-    // Use drei's useScroll for performant scroll access
-    const progress = scroll.offset;
+    // Calculate scroll progress directly from window to avoid ScrollControls conflict
+    // Using a safe fallback if document is not ready
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     
-    // Rotate entire group based on scroll
     // Smooth rotation using dampening
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, progress * Math.PI * 2, 0.1);
-    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, progress * 2, 0.1);
+    // We use a smaller lerp factor for smoother movement
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, scrollProgress * Math.PI * 2, 0.05);
+    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, scrollProgress * 2, 0.05);
   });
 
   return <group ref={group}>{children}</group>;
@@ -193,24 +194,22 @@ export default function Scene3D() {
         <pointLight position={[-10, -10, -10]} intensity={1} color="#4a5568" />
         <spotLight position={[0, 10, 0]} intensity={1} angle={0.5} penumbra={1} />
         
-        <ScrollControls pages={4} damping={0.3}>
-          <ScrollRig>
-            <group position={[0, 0, 0]}>
-              {/* Hero Object - Torus Knot */}
-              <ModernShape position={[3, 1, 0]} type="torus" color="#ffd700" scale={1.2} speed={0.8} />
-              
-              {/* Floating Crystals */}
-              <ModernShape position={[-3, -1, 1]} type="icosa" color="#333" scale={0.8} speed={0.6} />
-              <ModernShape position={[0, 2, -2]} type="octa" color="#666" scale={0.6} speed={1.2} />
-              <ModernShape position={[-2, 3, -1]} type="icosa" color="#ffd700" scale={0.4} speed={0.4} />
-              <ModernShape position={[2, -2, -1]} type="torus" color="#444" scale={0.5} speed={0.9} />
-              
-              <ConnectionLines />
-              <InteractiveParticles count={80} />
-              <Sparkles count={40} scale={12} size={3} speed={0.4} opacity={0.4} color="#ffd700" />
-            </group>
-          </ScrollRig>
-        </ScrollControls>
+        <ScrollRig>
+          <group position={[0, 0, 0]}>
+            {/* Hero Object - Torus Knot */}
+            <ModernShape position={[3, 1, 0]} type="torus" color="#ffd700" scale={1.2} speed={0.8} />
+            
+            {/* Floating Crystals */}
+            <ModernShape position={[-3, -1, 1]} type="icosa" color="#333" scale={0.8} speed={0.6} />
+            <ModernShape position={[0, 2, -2]} type="octa" color="#666" scale={0.6} speed={1.2} />
+            <ModernShape position={[-2, 3, -1]} type="icosa" color="#ffd700" scale={0.4} speed={0.4} />
+            <ModernShape position={[2, -2, -1]} type="torus" color="#444" scale={0.5} speed={0.9} />
+            
+            <ConnectionLines />
+            <InteractiveParticles count={60} />
+            <Sparkles count={30} scale={12} size={3} speed={0.4} opacity={0.4} color="#ffd700" />
+          </group>
+        </ScrollRig>
 
         <GridFloor />
         <Environment preset="city" />
