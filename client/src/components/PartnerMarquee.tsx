@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 const partners = [
-  { name: "Microsoft", logo: "/images/partners/microsoft.webp" },
+  { name: "Microsoft", logo: "/images/partners/microsoft.png" },
   { name: "Cisco", logo: "/images/partners/cisco.png" },
   { name: "React", logo: "/images/partners/react.png" },
   { name: "Hetzner", logo: "/images/partners/hetzner.png" },
