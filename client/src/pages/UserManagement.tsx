@@ -105,17 +105,17 @@ export default function UserManagement() {
       <div className="container mx-auto max-w-7xl">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold flex items-center gap-3">
-                <Users className="h-8 w-8 text-primary" />
+              <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 md:gap-3">
+                <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
                 Benutzerverwaltung
               </h1>
-              <p className="text-gray-400 mt-2">Verwalten Sie Benutzer und deren Rollen</p>
+              <p className="text-sm md:text-base text-gray-400 mt-1 md:mt-2">Verwalten Sie Benutzer und deren Rollen</p>
             </div>
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/80">
+                <Button className="bg-primary hover:bg-primary/80 w-full md:w-auto" size="sm">
                   <UserPlus className="h-4 w-4 mr-2" />
                   Neuer Benutzer
                 </Button>

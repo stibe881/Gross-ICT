@@ -39,3 +39,8 @@
 - [x] Add support role with limited permissions (ticket management only)
 - [x] Implement admin user management (create users, assign roles)
 - [x] Role-based access control (admin vs support permissions)
+
+## Completed
+- [x] Ticket assignment system (assign tickets to support staff)
+- [x] Dashboard statistics with charts (tickets per category over time, avg resolution time)
+- [x] Mobile-responsive headers for admin dashboard and user management

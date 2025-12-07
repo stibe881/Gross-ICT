@@ -15,6 +15,7 @@ import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users } from "lu
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
+import { DashboardStatistics } from "@/components/DashboardStatistics";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -40,6 +41,20 @@ export default function AdminDashboard() {
 
   const { data: stats } = trpc.tickets.stats.useQuery(undefined, {
     enabled: !!user && (user.role === "admin" || user.role === "support"),
+  });
+
+  const { data: supportStaff } = trpc.tickets.supportStaff.useQuery(undefined, {
+    enabled: !!user && user.role === "admin",
+  });
+
+  const assignMutation = trpc.tickets.assign.useMutation({
+    onSuccess: () => {
+      toast.success("Ticket zugewiesen");
+      utils.tickets.filtered.invalidate();
+    },
+    onError: () => {
+      toast.error("Fehler beim Zuweisen");
+    },
   });
 
   const updateMutation = trpc.tickets.update.useMutation({
@@ -107,31 +122,35 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-black text-white">
       {/* Header */}
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-            <p className="text-sm text-gray-400">Ticket-Verwaltung</p>
-          </div>
-          <div className="flex items-center gap-2">
-            {user?.role === "admin" && (
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
+              <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
+            </div>
+            <div className="flex items-center gap-2">
+              {user?.role === "admin" && (
+                <Button
+                  variant="outline"
+                  onClick={() => setLocation("/admin/users")}
+                  className="border-white/20 bg-white/5 hover:bg-white/10"
+                  size="sm"
+                >
+                  <Users className="h-4 w-4 md:mr-2" />
+                  <span className="hidden md:inline">Benutzerverwaltung</span>
+                </Button>
+              )}
               <Button
                 variant="outline"
-                onClick={() => setLocation("/admin/users")}
+                onClick={() => logoutMutation.mutate()}
+                disabled={logoutMutation.isPending}
                 className="border-white/20 bg-white/5 hover:bg-white/10"
+                size="sm"
               >
-                <Users className="mr-2 h-4 w-4" />
-                Benutzerverwaltung
+                <LogOut className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Abmelden</span>
               </Button>
-            )}
-            <Button
-              variant="outline"
-              onClick={() => logoutMutation.mutate()}
-              disabled={logoutMutation.isPending}
-              className="border-white/20 bg-white/5 hover:bg-white/10"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Abmelden
-            </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -318,6 +337,11 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
+          {/* Detailed Statistics */}
+          <div className="mb-8">
+            <DashboardStatistics />
+          </div>
+
           {!tickets || tickets.length === 0 ? (
             <Card className="bg-white/5 border-white/10">
               <CardContent className="py-12 text-center">
@@ -429,6 +453,33 @@ export default function AdminDashboard() {
                           </SelectContent>
                         </Select>
                       </div>
+
+                      {user?.role === "admin" && (
+                        <div className="flex-1">
+                          <label className="text-sm text-gray-400 mb-2 block">Zugewiesen an:</label>
+                          <Select
+                            value={ticket.assignedTo?.toString() || "unassigned"}
+                            onValueChange={(value) => {
+                              assignMutation.mutate({
+                                ticketId: ticket.id,
+                                assignedTo: value === "unassigned" ? null : parseInt(value),
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="bg-white/10 border-white/20">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="unassigned">Nicht zugewiesen</SelectItem>
+                              {supportStaff?.map((staff) => (
+                                <SelectItem key={staff.id} value={staff.id.toString()}>
+                                  {staff.name || staff.email}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

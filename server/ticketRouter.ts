@@ -4,6 +4,14 @@ import { publicProcedure, protectedProcedure, router } from './_core/trpc';
 import { createTicket, getTicketsByUserId, getAllTickets, getTicketById, updateTicket, getUserByEmail, createUser } from './db';
 import bcrypt from 'bcrypt';
 
+// Admin or Support procedure
+const adminOrSupportProcedure = protectedProcedure.use(({ ctx, next }) => {
+  if (ctx.user.role !== 'admin' && ctx.user.role !== 'support') {
+    throw new TRPCError({ code: 'FORBIDDEN', message: 'Admin or Support access required' });
+  }
+  return next({ ctx });
+});
+
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
   if (ctx.user.role !== 'admin') {
@@ -103,6 +111,17 @@ export const ticketRouter = router({
   all: adminProcedure.query(async () => {
     return await getAllTickets();
   }),
+
+  // Get ticket by ID (admin or support)
+  byId: adminOrSupportProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input }) => {
+      const ticket = await getTicketById(input.id);
+      if (!ticket) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket not found' });
+      }
+      return ticket;
+    }),
 
   // Get filtered tickets (admin only)
   filtered: adminProcedure
@@ -213,4 +232,84 @@ export const ticketRouter = router({
       },
     };
   }),
+
+  // Assign ticket to support staff (admin only)
+  assign: adminProcedure
+    .input(z.object({
+      ticketId: z.number(),
+      assignedTo: z.number().nullable(),
+    }))
+    .mutation(async ({ input }) => {
+      await updateTicket(input.ticketId, { assignedTo: input.assignedTo });
+      return { success: true };
+    }),
+
+  // Get support staff list (admin only)
+  supportStaff: adminOrSupportProcedure
+    .query(async () => {
+      const { getDb } = await import('./db.js');
+      const { users } = await import('../drizzle/schema.js');
+      const { eq, or } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) return [];
+      
+      return await db.select().from(users).where(
+        or(
+          eq(users.role, 'admin'),
+          eq(users.role, 'support')
+        )
+      );
+    }),
+
+  // Get detailed statistics with time-series data (admin/support)
+  detailedStats: adminOrSupportProcedure
+    .query(async () => {
+      const allTickets = await getAllTickets();
+      const now = new Date();
+      const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+      // Calculate average resolution time
+      const resolvedTickets = allTickets.filter(t => t.status === 'resolved' && t.resolvedAt);
+      const avgResolutionTime = resolvedTickets.length > 0
+        ? resolvedTickets.reduce((sum, t) => {
+            const created = new Date(t.createdAt).getTime();
+            const resolved = new Date(t.resolvedAt!).getTime();
+            return sum + (resolved - created);
+          }, 0) / resolvedTickets.length
+        : 0;
+
+      // Tickets by category over last 30 days
+      const ticketsByDay: Record<string, Record<string, number>> = {};
+      for (let i = 0; i < 30; i++) {
+        const date = new Date(now.getTime() - i * 24 * 60 * 60 * 1000);
+        const dateStr = date.toISOString().split('T')[0];
+        ticketsByDay[dateStr] = {
+          network: 0,
+          security: 0,
+          hardware: 0,
+          software: 0,
+          email: 0,
+          other: 0,
+        };
+      }
+
+      allTickets.forEach(ticket => {
+        const ticketDate = new Date(ticket.createdAt).toISOString().split('T')[0];
+        if (ticketsByDay[ticketDate]) {
+          ticketsByDay[ticketDate][ticket.category]++;
+        }
+      });
+
+      return {
+        avgResolutionTimeMs: avgResolutionTime,
+        avgResolutionTimeHours: avgResolutionTime / (1000 * 60 * 60),
+        ticketsLast7Days: allTickets.filter(t => new Date(t.createdAt) >= last7Days).length,
+        ticketsLast30Days: allTickets.filter(t => new Date(t.createdAt) >= last30Days).length,
+        ticketsByDay: Object.entries(ticketsByDay)
+          .sort(([a], [b]) => a.localeCompare(b))
+          .map(([date, counts]) => ({ date, ...counts })),
+      };
+    }),
 });
