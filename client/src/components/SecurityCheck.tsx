@@ -3,12 +3,14 @@ import { useLanguage } from "@/contexts/LanguageContext";
 import { Shield, AlertTriangle, CheckCircle, ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLocation } from "wouter";
 
 export default function SecurityCheck() {
   const { language } = useLanguage();
   const [step, setStep] = useState(0);
   const [score, setScore] = useState(0);
   const [showResult, setShowResult] = useState(false);
+  const [, setLocation] = useLocation();
 
   const questions = [
     {
@@ -168,7 +170,10 @@ export default function SecurityCheck() {
                           <RefreshCw className="w-4 h-4" />
                           {language === 'de' ? "Wiederholen" : "Retry"}
                         </Button>
-                        <Button className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90">
+                        <Button 
+                          className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90"
+                          onClick={() => setLocation("/contact")}
+                        >
                           <Shield className="w-4 h-4" />
                           {language === 'de' ? "Beratung anfordern" : "Request Consultation"}
                         </Button>
