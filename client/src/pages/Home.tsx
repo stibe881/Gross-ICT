@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NewsSection from "@/components/NewsSection";
+import Newsletter from "@/components/Newsletter";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -259,6 +260,9 @@ export default function Home() {
 
       {/* News Section */}
       <NewsSection />
+
+      {/* Newsletter Section */}
+      <Newsletter />
 
       {/* CTA Section */}
       <section className="py-32 relative overflow-hidden">
