@@ -25,7 +25,7 @@ function GridFloor() {
   );
 }
 
-function InteractiveParticles({ count = 100 }) {
+function InteractiveParticles({ count = 60 }) {
   const { mouse, viewport } = useThree();
   const points = useRef<THREE.Points>(null);
 
@@ -46,11 +46,11 @@ function InteractiveParticles({ count = 100 }) {
     points.current.rotation.y = state.clock.getElapsedTime() * 0.05;
     points.current.rotation.x = state.clock.getElapsedTime() * 0.02;
 
-    // Mouse interaction parallax
-    const x = (mouse.x * viewport.width) / 50;
-    const y = (mouse.y * viewport.height) / 50;
-    points.current.position.x = THREE.MathUtils.lerp(points.current.position.x, x, 0.1);
-    points.current.position.y = THREE.MathUtils.lerp(points.current.position.y, y, 0.1);
+    // Mouse interaction parallax - simplified lerp
+    const x = (mouse.x * viewport.width) / 80;
+    const y = (mouse.y * viewport.height) / 80;
+    points.current.position.x += (x - points.current.position.x) * 0.05;
+    points.current.position.y += (y - points.current.position.y) * 0.05;
   });
 
   return (
@@ -154,7 +154,7 @@ function ConnectionLines() {
 export default function Scene3D() {
   return (
     <div className="absolute inset-0 -z-10 h-full w-full">
-      <Canvas gl={{ antialias: true, toneMapping: THREE.ACESFilmicToneMapping }} dpr={[1, 2]}>
+      <Canvas gl={{ antialias: false, powerPreference: "high-performance" }} dpr={[1, 1.5]}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={45} />
         
         <color attach="background" args={['#050505']} />
@@ -173,8 +173,8 @@ export default function Scene3D() {
           <AbstractShape position={[2, -2, -1]} color="#444" scale={0.5} speed={1.0} />
           
           <ConnectionLines />
-          <InteractiveParticles count={150} />
-          <Sparkles count={80} scale={12} size={3} speed={0.8} opacity={0.4} color="#ffd700" />
+          <InteractiveParticles count={80} />
+          <Sparkles count={40} scale={12} size={3} speed={0.4} opacity={0.4} color="#ffd700" />
         </group>
 
         <GridFloor />

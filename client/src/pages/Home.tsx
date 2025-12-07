@@ -46,7 +46,8 @@ export default function Home() {
         >
           <motion.div 
             initial="initial"
-            animate="animate"
+            whileInView="animate"
+            viewport={{ once: true }}
             variants={stagger}
             className="space-y-8 max-w-4xl mx-auto"
           >
@@ -244,8 +245,8 @@ function BentoCard({
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay }}
+        viewport={{ once: true, margin: "-50px" }}
+        transition={{ duration: 0.5, delay, ease: "easeOut" }}
         whileHover={{ scale: 0.98 }}
         className={cn(
           "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full",

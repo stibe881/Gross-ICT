@@ -15,7 +15,8 @@ export default function AnimatedBackground() {
           repeat: Infinity,
           ease: "easeInOut" 
         }}
-        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/5 rounded-full blur-[120px]"
+        style={{ willChange: "transform" }}
+        className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-primary/5 rounded-full blur-[80px]"
       />
       
       <motion.div 
@@ -30,7 +31,8 @@ export default function AnimatedBackground() {
           ease: "easeInOut",
           delay: 2
         }}
-        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-blue-500/5 rounded-full blur-[150px]"
+        style={{ willChange: "transform" }}
+        className="absolute bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] bg-blue-500/5 rounded-full blur-[100px]"
       />
 
       <motion.div 
@@ -45,7 +47,8 @@ export default function AnimatedBackground() {
           ease: "easeInOut",
           delay: 5
         }}
-        className="absolute top-[40%] left-[30%] w-[30vw] h-[30vw] bg-purple-500/5 rounded-full blur-[100px]"
+        style={{ willChange: "transform" }}
+        className="absolute top-[40%] left-[30%] w-[30vw] h-[30vw] bg-purple-500/5 rounded-full blur-[60px]"
       />
     </div>
   );
