@@ -11,6 +11,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location]);
+
+  useEffect(() => {
     const lenis = new Lenis({
       duration: 1.2,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -164,15 +168,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </ul>
             </div>
 
-            <div>
-              <h4 className="font-medium text-white mb-4">Connect</h4>
-              <div className="flex gap-4">
-                {/* Social Placeholders */}
-                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
-                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
-                <div className="h-8 w-8 rounded-full bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"></div>
-              </div>
-            </div>
+
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">

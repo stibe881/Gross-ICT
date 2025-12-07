@@ -1,135 +1,7 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Float, PerspectiveCamera, Environment, Sparkles } from "@react-three/drei";
-// Post-processing removed for stability
-// import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
-
-function InteractiveNode({ position, size }: { position: [number, number, number], size: number }) {
-  const meshRef = useRef<THREE.Mesh>(null);
-  const [hovered, setHover] = useState(false);
-
-  useFrame((state) => {
-    if (!meshRef.current) return;
-    
-    // Pulse effect
-    const t = state.clock.getElapsedTime();
-    const scale = hovered ? 2 : 1 + Math.sin(t * 2 + position[0]) * 0.2;
-    
-    meshRef.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.1);
-  });
-
-  return (
-    <mesh 
-      ref={meshRef} 
-      position={position}
-      onPointerOver={() => setHover(true)}
-      onPointerOut={() => setHover(false)}
-    >
-      <sphereGeometry args={[size, 8, 8]} />
-      <meshBasicMaterial 
-        color={hovered ? "#ffd700" : "#333"} 
-        transparent 
-        opacity={hovered ? 0.8 : 0.4} 
-      />
-    </mesh>
-  );
-}
-
-function NetworkFloor() {
-  const groupRef = useRef<THREE.Group>(null);
-  
-  // Generate random nodes for the network floor
-  const nodes = useMemo(() => {
-    const temp = [];
-    for (let i = 0; i < 50; i++) {
-      temp.push({
-        x: (Math.random() - 0.5) * 40,
-        z: (Math.random() - 0.5) * 20,
-        size: Math.random() * 0.1 + 0.05
-      });
-    }
-    return temp;
-  }, []);
-
-  useFrame((state) => {
-    if (!groupRef.current) return;
-    // Slowly rotate the floor for dynamic effect
-    groupRef.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-  });
-
-  return (
-    <group position={[0, -4, 0]} rotation={[0.1, 0, 0]}>
-      <group ref={groupRef}>
-        {/* Network Nodes */}
-        {nodes.map((node, i) => (
-          <InteractiveNode key={i} position={[node.x, 0, node.z]} size={node.size} />
-        ))}
-        
-        {/* Connecting Lines */}
-        <gridHelper 
-          args={[60, 20, 0x222222, 0x111111]} 
-          position={[0, -0.1, 0]} 
-        />
-        
-        {/* Digital Horizon Glow */}
-        <mesh position={[0, 0, -15]} rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[60, 10]} />
-          <meshBasicMaterial color="#000" transparent opacity={0.8} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-function InteractiveParticles({ count = 60 }) {
-  const { mouse, viewport } = useThree();
-  const points = useRef<THREE.Points>(null);
-
-  const particlesPosition = useMemo(() => {
-    const positions = new Float32Array(count * 3);
-    for (let i = 0; i < count; i++) {
-      positions[i * 3] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
-      positions[i * 3 + 2] = (Math.random() - 0.5) * 10;
-    }
-    return positions;
-  }, [count]);
-
-  useFrame((state) => {
-    if (!points.current) return;
-    
-    points.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-    points.current.rotation.x = state.clock.getElapsedTime() * 0.02;
-
-    const x = (mouse.x * viewport.width) / 80;
-    const y = (mouse.y * viewport.height) / 80;
-    points.current.position.x += (x - points.current.position.x) * 0.05;
-    points.current.position.y += (y - points.current.position.y) * 0.05;
-  });
-
-  return (
-    <points ref={points}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particlesPosition.length / 3}
-          array={particlesPosition}
-          itemSize={3}
-          args={[particlesPosition, 3]}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.05}
-        color="#ffd700"
-        sizeAttenuation={true}
-        transparent
-        opacity={0.6}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
 
 function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: { position: [number, number, number], type?: "torus" | "icosa" | "octa", color: string, scale?: number, speed?: number }) {
   const meshRef = useRef<THREE.Mesh>(null);
@@ -170,33 +42,100 @@ function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: 
   );
 }
 
-function ConnectionLines() {
-  const count = 20; // Reduced for performance
-  const linesRef = useRef<THREE.Group>(null);
+function PlexusNetwork() {
+  const count = 40;
+  const radius = 15;
+  const connectionDistance = 5;
   
-  const lines = useMemo(() => {
+  const points = useMemo(() => {
     const temp = [];
     for (let i = 0; i < count; i++) {
-      const start = new THREE.Vector3((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 5);
-      const end = new THREE.Vector3((Math.random() - 0.5) * 15, (Math.random() - 0.5) * 15, (Math.random() - 0.5) * 5);
-      temp.push({ start, end });
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = radius * Math.cbrt(Math.random());
+      
+      temp.push({
+        position: new THREE.Vector3(
+          r * Math.sin(phi) * Math.cos(theta),
+          (Math.random() - 0.5) * 5 - 4, // Flattened height, positioned lower
+          r * Math.sin(phi) * Math.sin(theta)
+        ),
+        velocity: new THREE.Vector3(
+          (Math.random() - 0.5) * 0.02,
+          (Math.random() - 0.5) * 0.02,
+          (Math.random() - 0.5) * 0.02
+        )
+      });
     }
     return temp;
   }, []);
 
-  useFrame((state) => {
-    if (!linesRef.current) return;
-    linesRef.current.rotation.y = state.clock.getElapsedTime() * 0.02;
+  const linesGeometry = useRef<THREE.BufferGeometry>(null);
+  const pointsRef = useRef<THREE.Points>(null);
+
+  useFrame(() => {
+    if (!linesGeometry.current || !pointsRef.current) return;
+
+    // Update points
+    points.forEach(point => {
+      point.position.add(point.velocity);
+      
+      // Boundary check
+      if (Math.abs(point.position.x) > 15) point.velocity.x *= -1;
+      if (point.position.y > -2 || point.position.y < -6) point.velocity.y *= -1;
+      if (Math.abs(point.position.z) > 10) point.velocity.z *= -1;
+    });
+
+    // Update lines
+    const positions = [];
+    const pointPositions = [];
+    
+    for (let i = 0; i < count; i++) {
+      pointPositions.push(points[i].position.x, points[i].position.y, points[i].position.z);
+      
+      for (let j = i + 1; j < count; j++) {
+        const dist = points[i].position.distanceTo(points[j].position);
+        if (dist < connectionDistance) {
+          positions.push(
+            points[i].position.x, points[i].position.y, points[i].position.z,
+            points[j].position.x, points[j].position.y, points[j].position.z
+          );
+        }
+      }
+    }
+
+    linesGeometry.current.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(positions, 3)
+    );
+    
+    pointsRef.current.geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(pointPositions, 3)
+    );
   });
 
   return (
-    <group ref={linesRef}>
-      {lines.map((line, i) => {
-        const geometry = new THREE.BufferGeometry().setFromPoints([line.start, line.end]);
-        return (
-          <primitive key={i} object={new THREE.Line(geometry, new THREE.LineBasicMaterial({ color: "#ffffff", transparent: true, opacity: 0.03 }))} />
-        );
-      })}
+    <group>
+      <points ref={pointsRef}>
+        <bufferGeometry />
+        <pointsMaterial
+          size={0.15}
+          color="#ffd700"
+          transparent
+          opacity={0.8}
+          sizeAttenuation
+        />
+      </points>
+      <lineSegments>
+        <bufferGeometry ref={linesGeometry} />
+        <lineBasicMaterial
+          color="#4a5568"
+          transparent
+          opacity={0.15}
+          depthWrite={false}
+        />
+      </lineSegments>
     </group>
   );
 }
@@ -207,13 +146,9 @@ function ScrollRig({ children }: { children: React.ReactNode }) {
   useFrame((state) => {
     if (!group.current) return;
     
-    // Calculate scroll progress directly from window to avoid ScrollControls conflict
-    // Using a safe fallback if document is not ready
     const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
     const scrollProgress = maxScroll > 0 ? window.scrollY / maxScroll : 0;
     
-    // Smooth rotation using dampening
-    // We use a smaller lerp factor for smoother movement
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, scrollProgress * Math.PI * 2, 0.05);
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, scrollProgress * 2, 0.05);
   });
@@ -246,16 +181,12 @@ export default function Scene3D() {
             <ModernShape position={[-2, 3, -1]} type="icosa" color="#ffd700" scale={0.4} speed={0.4} />
             <ModernShape position={[2, -2, -1]} type="torus" color="#444" scale={0.5} speed={0.9} />
             
-            <ConnectionLines />
-            <InteractiveParticles count={60} />
             <Sparkles count={30} scale={12} size={3} speed={0.4} opacity={0.4} color="#ffd700" />
           </group>
         </ScrollRig>
 
-        <NetworkFloor />
+        <PlexusNetwork />
         <Environment preset="city" />
-        
-        {/* Post-processing disabled for stability */}
       </Canvas>
       
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none"></div>
