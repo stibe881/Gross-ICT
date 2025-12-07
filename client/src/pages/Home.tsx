@@ -267,9 +267,18 @@ function BentoCard({
   minimal?: boolean,
   delay?: number
 }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+  
+  const y = useTransform(scrollYProgress, [0, 1], ["-10%", "10%"]);
+
   return (
     <Link href={href}>
       <motion.div 
+        ref={ref}
         initial={{ opacity: 0, scale: 0.9, filter: "blur(10px)" }}
         whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-50px" }}
@@ -306,7 +315,8 @@ function BentoCard({
               src={bgImage} 
               alt={title} 
               loading="lazy"
-              className="w-full h-full object-cover opacity-60"
+              style={{ y }}
+              className="w-full h-[120%] -top-[10%] absolute object-cover opacity-60"
               initial={{ scale: 1.1 }}
               whileHover={{ scale: 1.2 }}
               transition={{ duration: 1.2, ease: "easeOut" }}
