@@ -13,6 +13,7 @@ import { useRef } from "react";
 import { useLanguage } from "@/contexts/LanguageContext";
 import NewsSection from "@/components/NewsSection";
 import Newsletter from "@/components/Newsletter";
+import PartnerMarquee from "@/components/PartnerMarquee";
 
 const fadeIn = {
   initial: { opacity: 0, y: 20 },
@@ -156,6 +157,8 @@ export default function Home() {
       </section>
 
 
+
+      <PartnerMarquee />
 
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
