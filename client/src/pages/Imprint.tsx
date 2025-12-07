@@ -1,12 +1,13 @@
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
+import { companyConfig } from "@/config/company";
 
 export default function Imprint() {
   return (
     <Layout>
       <SEO 
         title="Impressum" 
-        description="Rechtliche Informationen und Kontaktadresse von Gross ICT."
+        description={`Rechtliche Informationen und Kontaktadresse von ${companyConfig.name}.`}
         canonical="/imprint"
         type="article"
       />
@@ -17,13 +18,21 @@ export default function Imprint() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-white">Kontaktadresse</h2>
             <div className="text-muted-foreground">
-              <p className="font-bold text-white">Gross ICT</p>
-              <p>Neuhushof 3</p>
-              <p>6144 Zell LU</p>
-              <p>Schweiz</p>
+              <p className="font-bold text-white">{companyConfig.legalName}</p>
+              <p>{companyConfig.address.street}</p>
+              <p>{companyConfig.address.zip} {companyConfig.address.city} {companyConfig.address.canton}</p>
+              <p>{companyConfig.address.country}</p>
               <br />
-              <p>Email: info@gross-ict.ch</p>
+              <p>Email: <a href={`mailto:${companyConfig.contact.email}`} className="hover:text-primary transition-colors">{companyConfig.contact.email}</a></p>
+              <p>Telefon: <a href={`tel:${companyConfig.contact.phone.replace(/\s/g, '')}`} className="hover:text-primary transition-colors">{companyConfig.contact.phone}</a></p>
             </div>
+          </section>
+
+          <section className="space-y-4">
+            <h2 className="text-2xl font-bold text-white">Vertretungsberechtigte Personen</h2>
+            <p className="text-muted-foreground">
+              {companyConfig.owner}, Inhaber
+            </p>
           </section>
 
           <section className="space-y-4">
@@ -36,7 +45,7 @@ export default function Imprint() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-white">Urheberrechte</h2>
             <p className="text-muted-foreground leading-relaxed">
-              Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf der Website gehören ausschliesslich der Firma Gross ICT oder den speziell genannten Rechtsinhabern. Für die Reproduktion jeglicher Elemente ist die schriftliche Zustimmung der Urheberrechtsträger im Voraus einzuholen.
+              Die Urheber- und alle anderen Rechte an Inhalten, Bildern, Fotos oder anderen Dateien auf der Website gehören ausschliesslich der Firma {companyConfig.name} oder den speziell genannten Rechtsinhabern. Für die Reproduktion jeglicher Elemente ist die schriftliche Zustimmung der Urheberrechtsträger im Voraus einzuholen.
             </p>
           </section>
         </div>

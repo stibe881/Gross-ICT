@@ -1,12 +1,13 @@
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
+import { companyConfig } from "@/config/company";
 
 export default function Privacy() {
   return (
     <Layout>
       <SEO 
         title="Datenschutzerklärung" 
-        description="Datenschutzerklärung von Gross ICT gemäß DSGVO und revDSG."
+        description={`Datenschutzerklärung von ${companyConfig.name} gemäß DSGVO und revDSG.`}
         canonical="/privacy"
         type="article"
       />
@@ -24,11 +25,11 @@ export default function Privacy() {
           <section className="space-y-4">
             <h2 className="text-2xl font-bold text-white">2. Verantwortliche Stelle</h2>
             <div className="text-muted-foreground">
-              <p className="font-bold text-white">Gross ICT</p>
-              <p>Neuhushof 3</p>
-              <p>6144 Zell LU</p>
-              <p>Schweiz</p>
-              <p>Email: info@gross-ict.ch</p>
+              <p className="font-bold text-white">{companyConfig.legalName}</p>
+              <p>{companyConfig.address.street}</p>
+              <p>{companyConfig.address.zip} {companyConfig.address.city} {companyConfig.address.canton}</p>
+              <p>{companyConfig.address.country}</p>
+              <p>Email: <a href={`mailto:${companyConfig.contact.email}`} className="hover:text-primary transition-colors">{companyConfig.contact.email}</a></p>
             </div>
           </section>
 
