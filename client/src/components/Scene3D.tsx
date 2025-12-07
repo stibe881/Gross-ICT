@@ -1,26 +1,29 @@
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float, PerspectiveCamera, Environment, Sparkles, MeshTransmissionMaterial } from "@react-three/drei";
-import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
+import { Float, PerspectiveCamera, Environment, Sparkles } from "@react-three/drei";
+// Post-processing removed for stability
+// import { EffectComposer, Bloom, ChromaticAberration, Noise, Vignette } from '@react-three/postprocessing';
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
 function GridFloor() {
-  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
   
   useFrame((state) => {
-    if (!meshRef.current) return;
-    meshRef.current.position.z = (state.clock.getElapsedTime() * 0.5) % 2;
+    if (!groupRef.current) return;
+    // Move the grid to create an infinite floor effect
+    const t = state.clock.getElapsedTime() * 0.5;
+    groupRef.current.position.z = t % 2;
   });
 
   return (
     <group rotation={[Math.PI / 2, 0, 0]} position={[0, -4, 0]}>
-      <gridHelper 
-        args={[100, 100, 0xffffff, 0xffffff]} 
-        position={[0, 0, 0]} 
-        rotation={[-Math.PI / 2, 0, 0]}
-      >
-        <meshBasicMaterial color="#333" transparent opacity={0.05} />
-      </gridHelper>
+      <group ref={groupRef}>
+        <gridHelper 
+          args={[100, 100, 0x333333, 0x333333]} 
+          position={[0, 0, 0]} 
+          rotation={[-Math.PI / 2, 0, 0]}
+        />
+      </group>
     </group>
   );
 }
@@ -89,15 +92,6 @@ function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: 
     meshRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
   });
 
-  const Geometry = () => {
-    switch(type) {
-      case "torus": return <torusKnotGeometry args={[0.6, 0.2, 128, 32]} />;
-      case "icosa": return <icosahedronGeometry args={[0.8, 0]} />; // Low poly look
-      case "octa": return <octahedronGeometry args={[0.8, 0]} />;
-      default: return <boxGeometry />;
-    }
-  };
-
   return (
     <Float speed={2 * speed} rotationIntensity={0.5} floatIntensity={0.5}>
       <mesh 
@@ -106,23 +100,16 @@ function ModernShape({ position, type = "torus", color, scale = 1, speed = 1 }: 
         onPointerOver={() => setHover(true)}
         onPointerOut={() => setHover(false)}
       >
-        <Geometry />
-        {/* Modern Glass/Metal Material */}
-        <MeshTransmissionMaterial
-          backside
-          samples={2}
-          thickness={0.5}
-          chromaticAberration={0.1}
-          anisotropy={0.1}
-          distortion={0.1}
-          distortionScale={0.1}
-          temporalDistortion={0.1}
-          iridescence={1}
-          iridescenceIOR={1}
-          iridescenceThicknessRange={[0, 1400]}
+        {type === "torus" && <torusKnotGeometry args={[0.6, 0.2, 64, 16]} />}
+        {type === "icosa" && <icosahedronGeometry args={[0.8, 0]} />}
+        {type === "octa" && <octahedronGeometry args={[0.8, 0]} />}
+        {/* Optimized Metal Material */}
+        <meshStandardMaterial
           roughness={0.2}
-          metalness={0.1}
+          metalness={0.8}
           color={color}
+          emissive={color}
+          emissiveIntensity={0.2}
         />
       </mesh>
     </Float>
@@ -183,7 +170,7 @@ function ScrollRig({ children }: { children: React.ReactNode }) {
 export default function Scene3D() {
   return (
     <div className="absolute inset-0 -z-10 h-full w-full">
-      <Canvas gl={{ antialias: false, powerPreference: "high-performance" }} dpr={[1, 1.5]}>
+      <Canvas gl={{ antialias: false }} dpr={[1, 1]}>
         <PerspectiveCamera makeDefault position={[0, 0, 12]} fov={45} />
         
         <color attach="background" args={['#050505']} />
@@ -214,12 +201,7 @@ export default function Scene3D() {
         <GridFloor />
         <Environment preset="city" />
         
-        <EffectComposer>
-          <Bloom luminanceThreshold={1} mipmapBlur intensity={1.5} radius={0.4} />
-          <ChromaticAberration offset={[0.002, 0.002]} />
-          <Noise opacity={0.05} />
-          <Vignette eskil={false} offset={0.1} darkness={0.5} />
-        </EffectComposer>
+        {/* Post-processing disabled for stability */}
       </Canvas>
       
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/60 to-background pointer-events-none"></div>
