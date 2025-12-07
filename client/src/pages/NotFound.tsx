@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { AlertTriangle } from "lucide-react";
@@ -6,6 +7,10 @@ import { AlertTriangle } from "lucide-react";
 export default function NotFound() {
   return (
     <Layout>
+      <SEO 
+        title="404 - Seite nicht gefunden" 
+        description="Die angeforderte Seite konnte nicht gefunden werden."
+      />
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
         <div className="h-20 w-20 bg-destructive/10 rounded-full flex items-center justify-center mb-6 text-destructive">
           <AlertTriangle className="h-10 w-10" />
