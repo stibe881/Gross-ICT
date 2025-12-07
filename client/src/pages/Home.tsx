@@ -143,7 +143,8 @@ export default function Home() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white/30 text-xs tracking-[0.2em] uppercase font-medium"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white/30 text-xs tracking-[0.2em] uppercase font-medium cursor-pointer hover:text-white transition-colors"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
           <span>Scroll</span>
           <div className="w-[1px] h-16 bg-gradient-to-b from-white/30 to-transparent"></div>
