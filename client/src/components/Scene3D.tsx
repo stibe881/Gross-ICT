@@ -5,6 +5,37 @@ import { Float, PerspectiveCamera, Environment, Sparkles } from "@react-three/dr
 import { useRef, useMemo, useState } from "react";
 import * as THREE from "three";
 
+function InteractiveNode({ position, size }: { position: [number, number, number], size: number }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [hovered, setHover] = useState(false);
+
+  useFrame((state) => {
+    if (!meshRef.current) return;
+    
+    // Pulse effect
+    const t = state.clock.getElapsedTime();
+    const scale = hovered ? 2 : 1 + Math.sin(t * 2 + position[0]) * 0.2;
+    
+    meshRef.current.scale.lerp(new THREE.Vector3(scale, scale, scale), 0.1);
+  });
+
+  return (
+    <mesh 
+      ref={meshRef} 
+      position={position}
+      onPointerOver={() => setHover(true)}
+      onPointerOut={() => setHover(false)}
+    >
+      <sphereGeometry args={[size, 8, 8]} />
+      <meshBasicMaterial 
+        color={hovered ? "#ffd700" : "#333"} 
+        transparent 
+        opacity={hovered ? 0.8 : 0.4} 
+      />
+    </mesh>
+  );
+}
+
 function NetworkFloor() {
   const groupRef = useRef<THREE.Group>(null);
   
@@ -32,10 +63,7 @@ function NetworkFloor() {
       <group ref={groupRef}>
         {/* Network Nodes */}
         {nodes.map((node, i) => (
-          <mesh key={i} position={[node.x, 0, node.z]}>
-            <sphereGeometry args={[node.size, 8, 8]} />
-            <meshBasicMaterial color="#333" transparent opacity={0.4} />
-          </mesh>
+          <InteractiveNode key={i} position={[node.x, 0, node.z]} size={node.size} />
         ))}
         
         {/* Connecting Lines */}

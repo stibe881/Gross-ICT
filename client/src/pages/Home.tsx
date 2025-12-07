@@ -5,7 +5,7 @@ import Spotlight from "@/components/Spotlight";
 import SEO from "@/components/SEO";
 
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
+import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3, MessageCircle, Calendar } from "lucide-react";
 import { Link } from "wouter";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -24,6 +24,25 @@ const stagger = {
     }
   }
 };
+
+function ScrollTypography() {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"]
+  });
+
+  const x1 = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const x2 = useTransform(scrollYProgress, [0, 1], [0, -100]);
+  const color = useTransform(scrollYProgress, [0, 0.5], ["#ffffff", "#ffd700"]);
+
+  return (
+    <motion.h1 ref={ref} variants={fadeIn} className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] overflow-hidden py-4">
+      <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl">Future-Proof</motion.span>
+      <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient">Infrastructure.</motion.span>
+    </motion.h1>
+  );
+}
 
 export default function Home() {
   const ref = useRef(null);
@@ -95,27 +114,36 @@ export default function Home() {
               <span className="text-gray-200 tracking-wide uppercase text-xs font-bold">Next-Gen IT Services</span>
             </motion.div>
             
-            <motion.h1 variants={fadeIn} className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9]">
-              <span className="block text-white drop-shadow-2xl">Future-Proof</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient">Infrastructure.</span>
-            </motion.h1>
+            <ScrollTypography />
             
             <motion.p variants={fadeIn} className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
               Wir transformieren Unternehmen mit modernster Web-Technologie, 
               robusten Netzwerken und proaktivem Support.
             </motion.p>
             
-            <motion.div variants={fadeIn} className="flex flex-col sm:flex-row justify-center gap-6 pt-8">
-              <Link href="/contact">
-                <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
-                  Start Project <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-              </Link>
-              <Link href="/services/web">
-                <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
-                  Explore Services
-                </Button>
-              </Link>
+            <motion.div variants={fadeIn} className="flex flex-col items-center gap-8 pt-8">
+              <div className="flex flex-col sm:flex-row justify-center gap-6">
+                <Link href="/contact">
+                  <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
+                    Start Project <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </Link>
+                <Link href="/services/web">
+                  <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
+                    Explore Services
+                  </Button>
+                </Link>
+              </div>
+              
+              <div className="flex gap-4 text-sm text-muted-foreground">
+                <a href="https://wa.me/41794140616" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+                  <MessageCircle className="h-4 w-4" /> WhatsApp
+                </a>
+                <span className="text-white/20">|</span>
+                <a href="mailto:info@gross-ict.ch" className="flex items-center gap-2 hover:text-white transition-colors">
+                  <Calendar className="h-4 w-4" /> Termin vereinbaren
+                </a>
+              </div>
             </motion.div>
           </motion.div>
         </motion.div>
