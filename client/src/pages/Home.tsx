@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import Scene3D from "@/components/Scene3D";
 import AnimatedBackground from "@/components/AnimatedBackground";
-import Marquee from "@/components/Marquee";
+
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
 import { Link } from "wouter";
@@ -96,10 +96,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Marquee Section */}
-      <div className="py-10">
-        <Marquee items={["Web Development", "IT Support", "Network Security", "Cloud Solutions", "Data Analytics", "Managed Services"]} speed="slow" />
-      </div>
+
 
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
@@ -247,7 +244,18 @@ function BentoCard({
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-50px" }}
         transition={{ duration: 0.5, delay, ease: "easeOut" }}
-        whileHover={{ scale: 0.98 }}
+        whileHover={{ scale: 0.98, y: -5 }}
+        animate={{ y: [0, -5, 0] }}
+        // @ts-ignore
+        transition={{ 
+          y: {
+            duration: 4,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: Math.random() * 2
+          },
+          default: { duration: 0.5 }
+        }}
         className={cn(
           "bento-card group relative flex flex-col justify-between p-6 cursor-pointer h-full",
           className
