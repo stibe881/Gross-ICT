@@ -48,7 +48,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background selection:bg-primary/20">
       
       {/* Floating Island Navigation */}
-      <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none">
+      <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pt-4">
         <div className={cn(
           "pointer-events-auto flex items-center gap-2 p-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl shadow-2xl transition-all duration-500",
           isScrolled ? "w-auto px-4" : "w-full max-w-4xl justify-between px-6"

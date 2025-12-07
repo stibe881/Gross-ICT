@@ -38,8 +38,8 @@ function ScrollTypography() {
 
   return (
     <motion.h1 ref={ref} variants={fadeIn} className="text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter leading-[0.9] overflow-hidden py-4">
-      <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl">Future-Proof</motion.span>
-      <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient">Infrastructure.</motion.span>
+      <motion.span style={{ x: x1 }} className="block text-white drop-shadow-2xl whitespace-nowrap">Future-Proof</motion.span>
+      <motion.span style={{ x: x2, color }} className="block text-transparent bg-clip-text bg-gradient-to-r from-[#ffd700] via-[#fff] to-[#ffd700] bg-[length:200%_auto] animate-gradient whitespace-nowrap">Infrastructure.</motion.span>
     </motion.h1>
   );
 }
@@ -140,9 +140,11 @@ export default function Home() {
                   <MessageCircle className="h-4 w-4" /> WhatsApp
                 </a>
                 <span className="text-white/20">|</span>
-                <a href="mailto:info@gross-ict.ch" className="flex items-center gap-2 hover:text-white transition-colors">
-                  <Calendar className="h-4 w-4" /> Termin vereinbaren
-                </a>
+                <Link href="/contact">
+                  <a className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+                    <Calendar className="h-4 w-4" /> Termin vereinbaren
+                  </a>
+                </Link>
               </div>
             </motion.div>
           </motion.div>
