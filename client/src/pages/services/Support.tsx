@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Cpu, Clock, ShieldCheck, Wrench } from "lucide-react";
 import { Link } from "wouter";
@@ -7,6 +8,22 @@ import { motion } from "framer-motion";
 export default function SupportService() {
   return (
     <Layout>
+      <SEO 
+        title="IT Support & Wartung" 
+        description="Zuverlässiger IT-Support für PC und Mac. Wir bieten schnelle Hilfe, Wartungsverträge und proaktives Monitoring für Ihre Systeme."
+        canonical="/services/support"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "IT Support",
+          "provider": {
+            "@type": "ITService",
+            "name": "Gross ICT"
+          },
+          "areaServed": "Switzerland",
+          "description": "24/7 Monitoring und schnelle Hilfe bei Hardware- und Softwareproblemen."
+        }}
+      />
       <div className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-blue-500/5 blur-[150px] pointer-events-none"></div>
         

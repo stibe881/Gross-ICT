@@ -1,8 +1,15 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 
 export default function Imprint() {
   return (
     <Layout>
+      <SEO 
+        title="Impressum" 
+        description="Rechtliche Informationen und Kontaktadresse von Gross ICT."
+        canonical="/imprint"
+        type="article"
+      />
       <div className="container py-32">
         <div className="max-w-3xl mx-auto space-y-8">
           <h1 className="text-4xl font-bold mb-8 text-white">Impressum</h1>

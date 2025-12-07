@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Network, Wifi, Server, Lock } from "lucide-react";
 import { Link } from "wouter";
@@ -7,6 +8,22 @@ import { motion } from "framer-motion";
 export default function NetworkService() {
   return (
     <Layout>
+      <SEO 
+        title="Netzwerk & Infrastruktur" 
+        description="Professionelle Netzwerklösungen von Gross ICT. Wir planen und realisieren sichere, skalierbare Netzwerke, Server-Infrastrukturen und WLAN-Lösungen."
+        canonical="/services/network"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Network Services",
+          "provider": {
+            "@type": "ITService",
+            "name": "Gross ICT"
+          },
+          "areaServed": "Switzerland",
+          "description": "Sichere und skalierbare Netzwerklösungen, Server-Konfiguration und WLAN."
+        }}
+      />
       <div className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-green-500/5 blur-[150px] pointer-events-none"></div>
         

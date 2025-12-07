@@ -2,6 +2,7 @@ import Layout from "@/components/Layout";
 import Scene3D from "@/components/Scene3D";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import Spotlight from "@/components/Spotlight";
+import SEO from "@/components/SEO";
 
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Globe, Cpu, Network, Shield, Zap, BarChart3 } from "lucide-react";
@@ -36,6 +37,26 @@ export default function Home() {
 
   return (
     <Layout>
+      <SEO 
+        title="Home" 
+        description="Gross ICT - Ihr Partner für Next-Gen IT-Lösungen, Webentwicklung und Netzwerkinfrastruktur in Zell LU."
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ITService",
+          "name": "Gross ICT",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Neuhushof 3",
+            "addressLocality": "Zell",
+            "postalCode": "6144",
+            "addressRegion": "LU",
+            "addressCountry": "CH"
+          },
+          "telephone": "+41 79 414 06 16",
+          "url": "https://gross-ict.ch",
+          "priceRange": "$$"
+        }}
+      />
       <AnimatedBackground />
       <Scene3D />
       

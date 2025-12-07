@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Target, Award } from "lucide-react";
 import { Link } from "wouter";
@@ -7,6 +8,24 @@ import { motion } from "framer-motion";
 export default function About() {
   return (
     <Layout>
+      <SEO 
+        title="Über uns" 
+        description="Erfahren Sie mehr über Gross ICT. Wir sind Ihr kompetenter Partner für IT-Lösungen, Webentwicklung und Netzwerkinfrastruktur in der Schweiz."
+        canonical="/about"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "AboutPage",
+          "mainEntity": {
+            "@type": "ITService",
+            "name": "Gross ICT",
+            "description": "Kompetenz, Zuverlässigkeit und Innovation für Ihre digitale Transformation.",
+            "foundingLocation": {
+              "@type": "Place",
+              "name": "Zell LU"
+            }
+          }
+        }}
+      />
       <div className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 blur-[150px] pointer-events-none"></div>
         

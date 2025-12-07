@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -9,6 +10,29 @@ import { motion } from "framer-motion";
 export default function Contact() {
   return (
     <Layout>
+      <SEO 
+        title="Kontakt" 
+        description="Kontaktieren Sie Gross ICT in Zell LU. Wir freuen uns auf Ihre Anfrage zu Webentwicklung, IT-Support oder Netzwerklösungen."
+        canonical="/contact"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "ContactPage",
+          "mainEntity": {
+            "@type": "ITService",
+            "name": "Gross ICT",
+            "telephone": "+41 79 414 06 16",
+            "email": "info@gross-ict.ch",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Neuhushof 3",
+              "addressLocality": "Zell",
+              "postalCode": "6144",
+              "addressRegion": "LU",
+              "addressCountry": "CH"
+            }
+          }
+        }}
+      />
       <div className="container py-32">
         <div className="max-w-5xl mx-auto">
           <motion.div 

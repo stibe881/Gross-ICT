@@ -1,4 +1,5 @@
 import Layout from "@/components/Layout";
+import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Check, ArrowRight, Globe, Smartphone, Search, Code } from "lucide-react";
 import { Link } from "wouter";
@@ -7,6 +8,22 @@ import { motion } from "framer-motion";
 export default function WebService() {
   return (
     <Layout>
+      <SEO 
+        title="Web Development" 
+        description="Professionelle Webentwicklung von Gross ICT. Wir erstellen moderne, responsive und SEO-optimierte Webseiten für Ihren Erfolg."
+        canonical="/services/web"
+        structuredData={{
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Web Development",
+          "provider": {
+            "@type": "ITService",
+            "name": "Gross ICT"
+          },
+          "areaServed": "Switzerland",
+          "description": "High-Performance Webseiten und Applikationen mit modernen Technologien."
+        }}
+      />
       <div className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 blur-[150px] pointer-events-none"></div>
         
