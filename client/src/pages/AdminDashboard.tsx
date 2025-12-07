@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -25,6 +25,7 @@ export default function AdminDashboard() {
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
   const [priorityFilter, setPriorityFilter] = useState<string | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
+  const [showStatistics, setShowStatistics] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
@@ -355,7 +356,18 @@ export default function AdminDashboard() {
 
           {/* Detailed Statistics */}
           <div className="mb-8">
-            <DashboardStatistics />
+            <Button
+              variant="outline"
+              onClick={() => setShowStatistics(!showStatistics)}
+              className="mb-4 border-white/20 bg-white/5 hover:bg-white/10 w-full justify-between"
+            >
+              <span className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Detaillierte Statistiken
+              </span>
+              {showStatistics ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </Button>
+            {showStatistics && <DashboardStatistics />}
           </div>
 
           {!tickets || tickets.length === 0 ? (
@@ -368,7 +380,11 @@ export default function AdminDashboard() {
           ) : (
             <div className="grid gap-4">
               {tickets.map((ticket) => (
-                <Card key={ticket.id} className="bg-white/5 border-white/10">
+                <Card 
+                  key={ticket.id} 
+                  className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
+                  onClick={() => setSelectedTicketId(ticket.id)}
+                >
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <div className="flex-1">

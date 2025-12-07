@@ -48,3 +48,10 @@
 ## Completed
 - [x] Ticket response templates system
 - [x] SLA management with automatic escalations
+
+## Completed
+- [x] Collapsible statistics in ticket dashboard (default: hidden)
+- [x] Fix responsive layout - ticket cards width optimization
+- [x] Clickable ticket cards to open full detail view
+- [x] Enhanced ticket detail modal with full message history
+- [x] Private notes system (visible only to staff, not customers)
