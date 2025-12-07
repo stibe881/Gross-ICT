@@ -250,8 +250,6 @@ export default function Home() {
       </section>
 
       <PartnerMarquee />
-
-      <ProcessTimeline />
       
       <FAQSection />
 

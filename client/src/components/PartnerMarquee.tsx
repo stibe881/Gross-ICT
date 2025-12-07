@@ -13,6 +13,7 @@ const partners = [
   { name: "Lenovo", logo: "/images/partners/lenovo.png" },
   { name: "Swisscom", logo: "/images/partners/swisscom.png" },
   { name: "Ubiquiti", logo: "/images/partners/ubiquiti.png" },
+  { name: "PRTG", logo: "/images/prtg.png" },
 ];
 
 export default function PartnerMarquee() {
