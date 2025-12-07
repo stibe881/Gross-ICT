@@ -166,7 +166,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <div className="text-muted-foreground text-sm leading-relaxed pt-2">
                 <p>Neuhushof 3</p>
                 <p>6144 Zell LU</p>
-                <p className="pt-2">+41 79 414 06 16</p>
+                <p className="pt-2">
+                  <a href="tel:+41794140616" className="hover:text-primary transition-colors">
+                    +41 79 414 06 16
+                  </a>
+                </p>
               </div>
             </div>
             
