@@ -177,128 +177,146 @@ export default function AdminDashboard() {
           </div>
 
           {/* Search and Filters */}
-          <div className="mb-6 space-y-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Suche nach Ticket-Nr, Betreff, Kunde, E-Mail..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              )}
-            </div>
-
-            <div className="flex gap-3 flex-wrap">
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Status
-                </label>
-                <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? undefined : v)}>
-                  <SelectTrigger className="bg-white/10 border-white/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle</SelectItem>
-                    <SelectItem value="open">Offen</SelectItem>
-                    <SelectItem value="in_progress">In Bearbeitung</SelectItem>
-                    <SelectItem value="resolved">Gelöst</SelectItem>
-                    <SelectItem value="closed">Geschlossen</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Priorität
-                </label>
-                <Select value={priorityFilter || "all"} onValueChange={(v) => setPriorityFilter(v === "all" ? undefined : v)}>
-                  <SelectTrigger className="bg-white/10 border-white/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle</SelectItem>
-                    <SelectItem value="low">Niedrig</SelectItem>
-                    <SelectItem value="medium">Mittel</SelectItem>
-                    <SelectItem value="high">Hoch</SelectItem>
-                    <SelectItem value="urgent">Dringend</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex-1 min-w-[200px]">
-                <label className="text-sm text-gray-400 mb-2 block flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Kategorie
-                </label>
-                <Select value={categoryFilter || "all"} onValueChange={(v) => setCategoryFilter(v === "all" ? undefined : v)}>
-                  <SelectTrigger className="bg-white/10 border-white/20">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Alle</SelectItem>
-                    <SelectItem value="network">Netzwerk</SelectItem>
-                    <SelectItem value="security">Sicherheit</SelectItem>
-                    <SelectItem value="hardware">Hardware</SelectItem>
-                    <SelectItem value="software">Software</SelectItem>
-                    <SelectItem value="email">E-Mail</SelectItem>
-                    <SelectItem value="other">Sonstiges</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            {(searchQuery || statusFilter || priorityFilter || categoryFilter) && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-400">Aktive Filter:</span>
-                <div className="flex gap-2 flex-wrap">
-                  {searchQuery && (
-                    <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30">
-                      Suche: {searchQuery}
-                    </Badge>
-                  )}
-                  {statusFilter && (
-                    <Badge variant="outline" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      Status: {statusFilter}
-                    </Badge>
-                  )}
-                  {priorityFilter && (
-                    <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
-                      Priorität: {priorityFilter}
-                    </Badge>
-                  )}
-                  {categoryFilter && (
-                    <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                      Kategorie: {categoryFilter}
-                    </Badge>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setStatusFilter(undefined);
-                      setPriorityFilter(undefined);
-                      setCategoryFilter(undefined);
-                    }}
-                    className="h-6 text-xs"
+          <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 mb-6 backdrop-blur-sm">
+            <CardContent className="p-6 space-y-6">
+              {/* Search Bar */}
+              <div className="relative group">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Suche nach Ticket-Nr, Betreff, Kunde, E-Mail..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-12 pr-12 py-4 bg-black/30 border-2 border-white/10 rounded-xl text-white placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-black/40 transition-all duration-200 text-base"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-lg"
                   >
-                    Alle Filter zurücksetzen
-                  </Button>
+                    <X className="h-5 w-5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Filter Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Status Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <div className="p-1.5 bg-blue-500/20 rounded-lg">
+                      <Filter className="h-4 w-4 text-blue-400" />
+                    </div>
+                    Status
+                  </label>
+                  <Select value={statusFilter || "all"} onValueChange={(v) => setStatusFilter(v === "all" ? undefined : v)}>
+                    <SelectTrigger className="bg-black/30 border-2 border-white/10 hover:border-white/20 transition-colors h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">📊 Alle</SelectItem>
+                      <SelectItem value="open">🔵 Offen</SelectItem>
+                      <SelectItem value="in_progress">🟡 In Bearbeitung</SelectItem>
+                      <SelectItem value="resolved">✅ Gelöst</SelectItem>
+                      <SelectItem value="closed">⚫ Geschlossen</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Priority Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <div className="p-1.5 bg-yellow-500/20 rounded-lg">
+                      <Filter className="h-4 w-4 text-yellow-400" />
+                    </div>
+                    Priorität
+                  </label>
+                  <Select value={priorityFilter || "all"} onValueChange={(v) => setPriorityFilter(v === "all" ? undefined : v)}>
+                    <SelectTrigger className="bg-black/30 border-2 border-white/10 hover:border-white/20 transition-colors h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">📊 Alle</SelectItem>
+                      <SelectItem value="low">🟢 Niedrig</SelectItem>
+                      <SelectItem value="medium">🟡 Mittel</SelectItem>
+                      <SelectItem value="high">🟠 Hoch</SelectItem>
+                      <SelectItem value="urgent">🔴 Dringend</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Category Filter */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <div className="p-1.5 bg-purple-500/20 rounded-lg">
+                      <Filter className="h-4 w-4 text-purple-400" />
+                    </div>
+                    Kategorie
+                  </label>
+                  <Select value={categoryFilter || "all"} onValueChange={(v) => setCategoryFilter(v === "all" ? undefined : v)}>
+                    <SelectTrigger className="bg-black/30 border-2 border-white/10 hover:border-white/20 transition-colors h-12 text-base">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">📊 Alle</SelectItem>
+                      <SelectItem value="network">🌐 Netzwerk</SelectItem>
+                      <SelectItem value="security">🔒 Sicherheit</SelectItem>
+                      <SelectItem value="hardware">💻 Hardware</SelectItem>
+                      <SelectItem value="software">📦 Software</SelectItem>
+                      <SelectItem value="email">✉️ E-Mail</SelectItem>
+                      <SelectItem value="other">📁 Sonstiges</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-            )}
-          </div>
+
+              {/* Active Filters */}
+              {(searchQuery || statusFilter || priorityFilter || categoryFilter) && (
+                <div className="flex items-center gap-3 flex-wrap p-4 bg-black/20 rounded-lg border border-white/10">
+                  <span className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                    <Filter className="h-4 w-4" />
+                    Aktive Filter:
+                  </span>
+                  <div className="flex gap-2 flex-wrap">
+                    {searchQuery && (
+                      <Badge variant="outline" className="bg-primary/20 text-primary border-primary/30 px-3 py-1">
+                        🔍 {searchQuery}
+                      </Badge>
+                    )}
+                    {statusFilter && (
+                      <Badge variant="outline" className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1">
+                        📊 {statusFilter}
+                      </Badge>
+                    )}
+                    {priorityFilter && (
+                      <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 px-3 py-1">
+                        ⚠️ {priorityFilter}
+                      </Badge>
+                    )}
+                    {categoryFilter && (
+                      <Badge variant="outline" className="bg-purple-500/20 text-purple-400 border-purple-500/30 px-3 py-1">
+                        📁 {categoryFilter}
+                      </Badge>
+                    )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setStatusFilter(undefined);
+                        setPriorityFilter(undefined);
+                        setCategoryFilter(undefined);
+                      }}
+                      className="h-7 text-xs hover:bg-white/10"
+                    >
+                      <X className="h-3 w-3 mr-1" />
+                      Zurücksetzen
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
           {!tickets || tickets.length === 0 ? (
             <Card className="bg-white/5 border-white/10">

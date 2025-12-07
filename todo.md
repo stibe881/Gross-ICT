@@ -24,3 +24,6 @@
 ## Completed
 - [x] Ticket filter & search functionality
 - [x] Ticket categories system
+
+## Completed
+- [x] Redesign ticket system filters with improved visual design and UX
