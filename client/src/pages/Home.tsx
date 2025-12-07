@@ -136,9 +136,9 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[300px]">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 auto-rows-[250px] md:auto-rows-[300px]">
             {/* Large Card - Web */}
-            <Spotlight className="md:col-span-2 md:row-span-1">
+            <Spotlight className="col-span-1 md:col-span-2 md:row-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
@@ -152,7 +152,7 @@ export default function Home() {
             </Spotlight>
             
             {/* Medium Card - Support */}
-            <Spotlight className="md:col-span-1 md:row-span-1">
+            <Spotlight className="col-span-1 md:col-span-1 md:row-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.02 // SUPPORT</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
@@ -166,7 +166,7 @@ export default function Home() {
             </Spotlight>
 
             {/* Small Cards Row */}
-            <Spotlight className="md:col-span-1">
+            <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SEC.02 // SHIELD</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
@@ -179,7 +179,7 @@ export default function Home() {
               />
             </Spotlight>
 
-            <Spotlight className="md:col-span-1">
+            <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">OPT.03 // SPEED</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
@@ -192,7 +192,7 @@ export default function Home() {
               />
             </Spotlight>
 
-            <Spotlight className="md:col-span-1">
+            <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">DAT.04 // INSIGHT</div>
               <BentoCard 
                 className="h-full border-none bg-transparent"
@@ -292,9 +292,16 @@ function BentoCard({
         )}
       >
         {bgImage && (
-          <div className="absolute inset-0 z-0">
+          <div className="absolute inset-0 z-0 overflow-hidden rounded-3xl">
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent z-10"></div>
-            <img src={bgImage} alt={title} className="w-full h-full object-cover opacity-50 group-hover:scale-105 transition-transform duration-700" />
+            <motion.img 
+              src={bgImage} 
+              alt={title} 
+              className="w-full h-full object-cover opacity-50"
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.1 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+            />
           </div>
         )}
         
@@ -315,6 +322,7 @@ function BentoCard({
 
         {/* Hover Glow Effect */}
         <div className="absolute inset-0 border-2 border-white/0 rounded-3xl group-hover:border-white/10 transition-all duration-500 pointer-events-none"></div>
+        <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/5 transition-colors duration-500 rounded-3xl pointer-events-none"></div>
       </motion.div>
     </Link>
   );
