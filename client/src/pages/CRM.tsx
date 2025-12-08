@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Plus, Search, User, Eye, Edit, Trash2, Building2, UserCircle, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
+import { CustomerGrowthChart } from "@/components/CustomerGrowthChart";
 
 export default function CRM() {
   const [, setLocation] = useLocation();
@@ -61,6 +62,11 @@ export default function CRM() {
             <Plus className="w-4 h-4" />
             Neuer Kunde
           </Button>
+        </div>
+
+        {/* Customer Growth Chart */}
+        <div className="mb-8">
+          <CustomerGrowthChart />
         </div>
 
         {/* Search and Filters */}

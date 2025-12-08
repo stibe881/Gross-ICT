@@ -5,6 +5,7 @@ import { BarChart3, ArrowLeft } from "lucide-react";
 import { useLocation } from "wouter";
 import Invoices from "./Invoices";
 import Quotes from "./Quotes";
+import { RevenueTrendChart } from "@/components/RevenueTrendChart";
 
 export default function Accounting() {
   const [activeTab, setActiveTab] = useState("invoices");
@@ -36,6 +37,11 @@ export default function Accounting() {
             <BarChart3 className="h-4 w-4" />
             Reporting
           </Button>
+        </div>
+
+        {/* Revenue Trend Chart */}
+        <div className="mb-8">
+          <RevenueTrendChart />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">

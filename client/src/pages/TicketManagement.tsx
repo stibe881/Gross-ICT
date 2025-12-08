@@ -23,7 +23,7 @@ import { CreateTicketDialog } from "@/components/CreateTicketDialog";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { SortableCard } from "@/components/SortableCard";
 import { useWebSocket } from "@/contexts/WebSocketContext";
-import { ActivityFeed } from "@/components/ActivityFeed";
+
 import { FilterPresets } from "@/components/FilterPresets";
 
 export default function TicketManagement() {
@@ -824,19 +824,8 @@ export default function TicketManagement() {
         )}
 
         {/* Activity Feed */}
-        {user?.role === "admin" && (
-          <div className="mb-8">
-            <ActivityFeed limit={8} />
-          </div>
-        )}
-
-        {/* Dashboard Charts */}
-        {user?.role === "admin" && templates[dashboardTemplate as keyof typeof templates]?.showCharts && (
-          <DashboardCharts />
-        )}
-
-        {/* Quick Access Cards */}
-        {user?.role === "admin" && (
+        {/* Quick Access Cards - REMOVED */}
+        {false && user?.role === "admin" && (
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Schnellzugriff</h2>
