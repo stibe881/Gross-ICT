@@ -310,6 +310,9 @@
 ## Current Issues
 - [x] Fix navigation menu overflow - Kontakt button extends beyond screen edge
 
+## Completed - Dashboard Navigation
+- [x] Fix dashboard tile navigation to link to correct sub-dashboards
+
 ## Completed - Dashboard Enhancements
 - [x] Add live data to dashboard quick-access cards (offene Rechnungen, neue Tickets, etc.)
 - [x] Implement notification center with bell icon and dropdown in header
