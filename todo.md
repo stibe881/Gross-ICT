@@ -283,3 +283,9 @@
 ## Current Issues
 - [x] Fix login redirect - user sees "Login erfolgreich" but is not redirected
 - [x] Remove Termin button from navigation to prevent overflow
+
+## Production Issues (Hetzner)
+- [ ] Fix Umami analytics error - Unexpected token '<'
+- [x] Verify admin user stefan@gross-ict.ch exists in database
+- [x] Remove Manus OAuth dependency - implement standalone email/password auth
+- [ ] Fix cookie sameSite settings for production login
