@@ -397,3 +397,10 @@
 - [x] Move revenue trends chart to accounting dashboard
 - [x] Move customer growth chart to CRM dashboard
 - [x] Fix financial dashboard error (statistics tile click)
+- [x] Create tRPC queries for real revenue data from invoices
+- [x] Create tRPC queries for real customer growth data
+- [x] Add time period filter dropdown to RevenueTrendChart
+- [x] Add time period filter dropdown to CustomerGrowthChart
+- [x] Implement click handlers for interactive chart details
+- [x] Create detail modal/dialog for revenue breakdown
+- [x] Create detail modal/dialog for customer details by month

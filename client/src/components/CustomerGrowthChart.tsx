@@ -1,11 +1,19 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { FileImage, FileText, Table } from "lucide-react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { Bar } from "react-chartjs-2";
+import { trpc } from "@/lib/trpc";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -15,6 +23,7 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Register Chart.js components
 ChartJS.register(
@@ -26,12 +35,17 @@ ChartJS.register(
   Legend
 );
 
-interface CustomerGrowthChartProps {
-  customerGrowth?: { month: string; count: number }[];
-}
-
-export function CustomerGrowthChart({ customerGrowth }: CustomerGrowthChartProps) {
+export function CustomerGrowthChart() {
   const chartRef = useRef<HTMLDivElement>(null);
+  const [timeRange, setTimeRange] = useState<number>(6);
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+
+  const { data: customerData, isLoading } = trpc.analytics.getCustomerGrowthByMonth.useQuery({ months: timeRange });
+  const { data: customerDetails } = trpc.analytics.getCustomersByMonth.useQuery(
+    { month: selectedMonth || "" },
+    { enabled: !!selectedMonth }
+  );
 
   const exportToPNG = async () => {
     if (!chartRef.current) return;
@@ -72,9 +86,13 @@ export function CustomerGrowthChart({ customerGrowth }: CustomerGrowthChartProps
   };
 
   const exportToCSV = () => {
-    const data = customerGrowth || [{month: "Jan", count: 5}, {month: "Feb", count: 8}];
-    const csv = data.map(row => Object.values(row).join(",")).join("\n");
-    const header = Object.keys(data[0]).join(",") + "\n";
+    const data = customerData || [];
+    if (data.length === 0) {
+      toast.error("Keine Daten zum Exportieren");
+      return;
+    }
+    const csv = data.map(row => `${row.month},${row.count}`).join("\n");
+    const header = "Monat,Anzahl\n";
     const blob = new Blob([header + csv], { type: "text/csv" });
     const link = document.createElement("a");
     link.download = "kunden-wachstum.csv";
@@ -83,12 +101,21 @@ export function CustomerGrowthChart({ customerGrowth }: CustomerGrowthChartProps
     toast.success("Daten als CSV exportiert");
   };
 
+  const handleChartClick = (event: any, elements: any[]) => {
+    if (elements.length > 0 && customerData) {
+      const index = elements[0].index;
+      const monthData = customerData[index];
+      setSelectedMonth(monthData.fullDate);
+      setDetailsOpen(true);
+    }
+  };
+
   const chartData = {
-    labels: customerGrowth?.map(c => c.month) || ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun"],
+    labels: customerData?.map(c => c.month) || [],
     datasets: [
       {
         label: "Neue Kunden",
-        data: customerGrowth?.map(c => c.count) || [5, 8, 12, 7, 15, 10],
+        data: customerData?.map(c => c.count) || [],
         backgroundColor: "rgba(59, 130, 246, 0.8)",
         borderColor: "rgb(59, 130, 246)",
         borderWidth: 2,
@@ -99,6 +126,7 @@ export function CustomerGrowthChart({ customerGrowth }: CustomerGrowthChartProps
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    onClick: handleChartClick,
     plugins: {
       legend: {
         display: false,
@@ -135,43 +163,110 @@ export function CustomerGrowthChart({ customerGrowth }: CustomerGrowthChartProps
   };
 
   return (
-    <Card className="bg-white/5 border-white/10">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Kunden-Wachstum (Letzte 6 Monate)</CardTitle>
-          <div className="flex gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={exportToPNG}
-              className="h-8 px-2"
-            >
-              <FileImage className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={exportToPDF}
-              className="h-8 px-2"
-            >
-              <FileText className="h-4 w-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={exportToCSV}
-              className="h-8 px-2"
-            >
-              <Table className="h-4 w-4" />
-            </Button>
+    <>
+      <Card className="bg-white/5 border-white/10">
+        <CardHeader>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <CardTitle className="text-lg">Kunden-Wachstum</CardTitle>
+            <div className="flex items-center gap-2">
+              <Select value={timeRange.toString()} onValueChange={(v) => setTimeRange(parseInt(v))}>
+                <SelectTrigger className="w-[140px] h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="3">Letzte 3 Monate</SelectItem>
+                  <SelectItem value="6">Letzte 6 Monate</SelectItem>
+                  <SelectItem value="12">Letztes Jahr</SelectItem>
+                  <SelectItem value="24">Letzte 2 Jahre</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={exportToPNG}
+                className="h-8 px-2"
+              >
+                <FileImage className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={exportToPDF}
+                className="h-8 px-2"
+              >
+                <FileText className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={exportToCSV}
+                className="h-8 px-2"
+              >
+                <Table className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div ref={chartRef} className="h-64">
-          <Bar data={chartData} options={chartOptions} />
-        </div>
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="h-64 flex items-center justify-center">
+              <p className="text-muted-foreground">Lade Daten...</p>
+            </div>
+          ) : customerData && customerData.length > 0 ? (
+            <div ref={chartRef} className="h-64">
+              <Bar data={chartData} options={chartOptions} />
+            </div>
+          ) : (
+            <div className="h-64 flex items-center justify-center">
+              <p className="text-muted-foreground">Keine Kundendaten verfügbar</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Details Dialog */}
+      <Dialog open={detailsOpen} onOpenChange={setDetailsOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              Neue Kunden - {selectedMonth && customerData?.find(d => d.fullDate === selectedMonth)?.month}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {customerDetails && customerDetails.length > 0 ? (
+              <div className="space-y-2">
+                {customerDetails.map((customer: any) => (
+                  <Card key={customer.id} className="p-4 bg-white/5 border-white/10">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-semibold">{customer.name}</p>
+                        <p className="text-sm text-muted-foreground">{customer.email}</p>
+                        {customer.customerNumber && (
+                          <p className="text-xs text-muted-foreground">Kundennr: {customer.customerNumber}</p>
+                        )}
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm capitalize">{customer.type}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(customer.createdAt).toLocaleDateString('de-CH')}
+                        </p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+                <div className="pt-4 border-t border-white/10">
+                  <div className="flex justify-between items-center font-bold">
+                    <span>Gesamt:</span>
+                    <span>{customerDetails.length} neue Kunden</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-muted-foreground text-center py-8">Keine neuen Kunden in diesem Monat</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
