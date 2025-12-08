@@ -132,16 +132,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <RemoteSupportModal />
 
-            <a 
-              href="https://cal.com/gross-ict" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="hidden xl:flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
-            >
-              <Calendar className="w-4 h-4" />
-              <span>{language === 'de' ? 'Termin' : 'Book'}</span>
-            </a>
-
             <Link href="/contact">
               <button className="bg-white text-black px-3 lg:px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-1 lg:gap-2 whitespace-nowrap">
                 <span className="hidden sm:inline">{t.nav.contact}</span>

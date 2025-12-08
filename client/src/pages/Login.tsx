@@ -32,8 +32,16 @@ export default function Login() {
     onSuccess: async () => {
       // Invalidate and refetch the auth.me query to update authentication state
       await utils.auth.me.invalidate();
+      const userData = await utils.auth.me.fetch();
       toast.success("Login erfolgreich!");
-      // Redirect will happen automatically via useEffect when user data is loaded
+      // Redirect based on user role
+      if (userData) {
+        if (userData.role === 'admin' || userData.role === 'support' || userData.role === 'accounting') {
+          setLocation("/admin");
+        } else {
+          setLocation("/dashboard");
+        }
+      }
     },
     onError: (error) => {
       toast.error(error.message || "Login fehlgeschlagen");

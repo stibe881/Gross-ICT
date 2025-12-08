@@ -279,3 +279,7 @@
 - [x] Fix navigation overflow - Kontakt button goes beyond screen edge
 - [x] Check database for user stefan.gross@hotmail.ch
 - [ ] Create admin user stefan@gross-ict.ch
+
+## Current Issues
+- [x] Fix login redirect - user sees "Login erfolgreich" but is not redirected
+- [x] Remove Termin button from navigation to prevent overflow
