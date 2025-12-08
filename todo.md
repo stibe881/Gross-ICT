@@ -274,3 +274,8 @@
 ## Completed - Bug Fixes
 - [x] Fix financial dashboard error (added null checks, improved loading states)
 - [x] Fix login transformation error (convert user.id to string, add fallback values)
+
+## Hetzner Deployment Issues
+- [x] Fix navigation overflow - Kontakt button goes beyond screen edge
+- [x] Check database for user stefan.gross@hotmail.ch
+- [ ] Create admin user stefan@gross-ict.ch
