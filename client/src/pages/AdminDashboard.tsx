@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -31,6 +31,7 @@ export default function AdminDashboard() {
   const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showManagementDropdown, setShowManagementDropdown] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
@@ -48,6 +49,56 @@ export default function AdminDashboard() {
   const { data: stats } = trpc.tickets.stats.useQuery(undefined, {
     enabled: !!user && (user.role === "admin" || user.role === "support"),
   });
+
+  // Live data for dashboard cards
+  const { data: invoicesData } = trpc.invoices.all.useQuery(
+    { status: 'pending' as any },
+    { enabled: !!user && user.role === "admin" }
+  );
+  const { data: reminderLogsData } = trpc.reminderLog.list.useQuery(
+    { page: 1, pageSize: 100 },
+    { enabled: !!user && user.role === "admin" }
+  );
+  const { data: customersData } = trpc.customers.all.useQuery(
+    undefined,
+    { enabled: !!user && user.role === "admin" }
+  );
+
+  const openInvoicesCount = invoicesData?.filter((inv: any) => inv.status === 'pending').length || 0;
+  const overdueRemindersCount = reminderLogsData?.logs?.filter((r: any) => r.status === 'sent' && r.daysOverdue > 0).length || 0;
+  const totalCustomersCount = customersData?.length || 0;
+  const todayTicketsCount = tickets?.filter((t: any) => {
+    const today = new Date();
+    const ticketDate = new Date(t.createdAt);
+    return ticketDate.toDateString() === today.toDateString();
+  }).length || 0;
+
+  // Notifications data
+  const urgentTickets = tickets?.filter((t: any) => t.priority === 'urgent' && t.status === 'open').slice(0, 3) || [];
+  const overdueInvoices = invoicesData?.filter((inv: any) => {
+    if (inv.status !== 'pending' || !inv.dueDate) return false;
+    return new Date(inv.dueDate) < new Date();
+  }).slice(0, 3) || [];
+  const totalNotifications = urgentTickets.length + overdueInvoices.length + (overdueRemindersCount > 0 ? 1 : 0);
+
+  // Favorites
+  const { data: userFavorites } = trpc.favorites.list.useQuery(undefined, {
+    enabled: !!user && user.role === "admin",
+  });
+  
+  const toggleFavoriteMutation = trpc.favorites.toggle.useMutation({
+    onSuccess: (data) => {
+      utils.favorites.list.invalidate();
+      toast.success(data.action === "added" ? "Zu Favoriten hinzugefügt" : "Aus Favoriten entfernt");
+    },
+    onError: (error) => {
+      toast.error(error.message || "Fehler beim Aktualisieren der Favoriten");
+    },
+  });
+  
+  const isFavorite = (itemType: string) => {
+    return userFavorites?.some((fav: any) => fav.itemType === itemType) || false;
+  };
 
   const { data: supportStaff } = trpc.tickets.supportStaff.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
@@ -259,6 +310,103 @@ export default function AdminDashboard() {
                   </div>
                 </>
               )}
+              
+              {/* Notification Center */}
+              {user?.role === "admin" && (
+                <div className="relative">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    className="border-white/20 bg-white/5 hover:bg-white/10 relative"
+                    size="sm"
+                  >
+                    <Bell className="h-4 w-4" />
+                    {totalNotifications > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full text-xs flex items-center justify-center font-bold">
+                        {totalNotifications}
+                      </span>
+                    )}
+                  </Button>
+                  {showNotifications && (
+                    <div className="absolute right-0 mt-2 w-80 bg-black/95 border border-white/10 rounded-lg shadow-xl z-50 backdrop-blur-xl max-h-96 overflow-y-auto">
+                      <div className="p-4">
+                        <div className="flex justify-between items-center mb-4">
+                          <h3 className="font-semibold">Benachrichtigungen</h3>
+                          <Badge variant="secondary" className="bg-red-500/20 text-red-400">
+                            {totalNotifications}
+                          </Badge>
+                        </div>
+                        
+                        {totalNotifications === 0 ? (
+                          <p className="text-sm text-gray-400 text-center py-4">Keine neuen Benachrichtigungen</p>
+                        ) : (
+                          <div className="space-y-2">
+                            {/* Urgent Tickets */}
+                            {urgentTickets.map((ticket: any) => (
+                              <button
+                                key={`ticket-${ticket.id}`}
+                                onClick={() => {
+                                  setSelectedTicketId(ticket.id);
+                                  setShowNotifications(false);
+                                }}
+                                className="w-full p-3 bg-red-500/10 hover:bg-red-500/20 rounded-lg text-left border border-red-500/30 transition-colors"
+                              >
+                                <div className="flex items-start gap-2">
+                                  <AlertTriangle className="h-4 w-4 text-red-400 mt-0.5" />
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Dringendes Ticket #{ticket.id}</p>
+                                    <p className="text-xs text-gray-400 line-clamp-1">{ticket.subject}</p>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                            
+                            {/* Overdue Invoices */}
+                            {overdueInvoices.map((invoice: any) => (
+                              <button
+                                key={`invoice-${invoice.id}`}
+                                onClick={() => {
+                                  setLocation(`/accounting/invoices/${invoice.id}`);
+                                  setShowNotifications(false);
+                                }}
+                                className="w-full p-3 bg-orange-500/10 hover:bg-orange-500/20 rounded-lg text-left border border-orange-500/30 transition-colors"
+                              >
+                                <div className="flex items-start gap-2">
+                                  <Receipt className="h-4 w-4 text-orange-400 mt-0.5" />
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">Überfällige Rechnung {invoice.invoiceNumber}</p>
+                                    <p className="text-xs text-gray-400">Fällig seit {new Date(invoice.dueDate).toLocaleDateString('de-DE')}</p>
+                                  </div>
+                                </div>
+                              </button>
+                            ))}
+                            
+                            {/* Overdue Reminders Summary */}
+                            {overdueRemindersCount > 0 && (
+                              <button
+                                onClick={() => {
+                                  setLocation("/accounting/reminders");
+                                  setShowNotifications(false);
+                                }}
+                                className="w-full p-3 bg-purple-500/10 hover:bg-purple-500/20 rounded-lg text-left border border-purple-500/30 transition-colors"
+                              >
+                                <div className="flex items-start gap-2">
+                                  <Bell className="h-4 w-4 text-purple-400 mt-0.5" />
+                                  <div className="flex-1">
+                                    <p className="text-sm font-medium">{overdueRemindersCount} überfällige Mahnungen</p>
+                                    <p className="text-xs text-gray-400">Jetzt überprüfen</p>
+                                  </div>
+                                </div>
+                              </button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+              
               <Button
                 variant="outline"
                 onClick={() => logoutMutation.mutate()}
@@ -419,60 +567,140 @@ export default function AdminDashboard() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
+        {/* Favorites Section */}
+        {user?.role === "admin" && userFavorites && userFavorites.length > 0 && (
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              <h2 className="text-xl font-bold">Meine Favoriten</h2>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              {userFavorites.map((fav: any) => (
+                <Button
+                  key={fav.id}
+                  variant="outline"
+                  onClick={() => setLocation(fav.itemPath)}
+                  className="border-yellow-400/30 bg-yellow-400/10 hover:bg-yellow-400/20 text-yellow-400"
+                >
+                  <Star className="h-4 w-4 mr-2 fill-yellow-400" />
+                  {fav.itemLabel}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Quick Access Cards */}
         {user?.role === "admin" && (
           <div className="mb-8">
             <h2 className="text-xl font-bold mb-4">Schnellzugriff</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card 
-                className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => setLocation("/accounting")}
+                className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 cursor-pointer hover:scale-105 transition-transform relative group"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-primary/20 rounded-lg">
-                      <Receipt className="h-6 w-6 text-primary" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavoriteMutation.mutate({
+                      itemType: "accounting",
+                      itemLabel: "Finanzen",
+                      itemPath: "/accounting",
+                    });
+                  }}
+                  className="absolute top-2 right-2 p-1.5 hover:bg-primary/20 rounded-full transition-colors z-10"
+                >
+                  <Star className={`h-4 w-4 ${isFavorite("accounting") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
+                </button>
+                <div onClick={() => setLocation("/accounting")}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-primary/20 rounded-lg">
+                        <Receipt className="h-6 w-6 text-primary" />
+                      </div>
+                      <CardTitle className="text-base font-semibold">Finanzen</CardTitle>
                     </div>
-                    <CardTitle className="text-base font-semibold">Finanzen</CardTitle>
-                  </div>
-                </CardHeader>
+                  </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-400">Rechnungen, Zahlungen & Buchhaltung</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-400">Offene Rechnungen</p>
+                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                      {openInvoicesCount}
+                    </Badge>
+                  </div>
                 </CardContent>
+                </div>
               </Card>
 
               <Card 
-                className="bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/30 cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => setLocation("/crm")}
+                className="bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/30 cursor-pointer hover:scale-105 transition-transform relative group"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-500/20 rounded-lg">
-                      <UserCircle className="h-6 w-6 text-blue-400" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavoriteMutation.mutate({
+                      itemType: "crm",
+                      itemLabel: "CRM",
+                      itemPath: "/crm",
+                    });
+                  }}
+                  className="absolute top-2 right-2 p-1.5 hover:bg-blue-500/20 rounded-full transition-colors z-10"
+                >
+                  <Star className={`h-4 w-4 ${isFavorite("crm") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
+                </button>
+                <div onClick={() => setLocation("/crm")}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-blue-500/20 rounded-lg">
+                        <UserCircle className="h-6 w-6 text-blue-400" />
+                      </div>
+                      <CardTitle className="text-base font-semibold">CRM</CardTitle>
                     </div>
-                    <CardTitle className="text-base font-semibold">CRM</CardTitle>
-                  </div>
-                </CardHeader>
+                  </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-400">Kunden & Kontakte verwalten</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-400">Gesamt Kunden</p>
+                    <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
+                      {totalCustomersCount}
+                    </Badge>
+                  </div>
                 </CardContent>
+                </div>
               </Card>
 
               <Card 
-                className="bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => setLocation("/accounting/reminders")}
+                className="bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 cursor-pointer hover:scale-105 transition-transform relative group"
               >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/20 rounded-lg">
-                      <Bell className="h-6 w-6 text-purple-400" />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleFavoriteMutation.mutate({
+                      itemType: "reminders",
+                      itemLabel: "Mahnungs-Log",
+                      itemPath: "/accounting/reminders",
+                    });
+                  }}
+                  className="absolute top-2 right-2 p-1.5 hover:bg-purple-500/20 rounded-full transition-colors z-10"
+                >
+                  <Star className={`h-4 w-4 ${isFavorite("reminders") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
+                </button>
+                <div onClick={() => setLocation("/accounting/reminders")}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 bg-purple-500/20 rounded-lg">
+                        <Bell className="h-6 w-6 text-purple-400" />
+                      </div>
+                      <CardTitle className="text-base font-semibold">Mahnungs-Log</CardTitle>
                     </div>
-                    <CardTitle className="text-base font-semibold">Mahnungs-Log</CardTitle>
-                  </div>
-                </CardHeader>
+                  </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-400">Offene Mahnungen & Zahlungserinnerungen</p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-gray-400">Überfällige Mahnungen</p>
+                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                      {overdueRemindersCount}
+                    </Badge>
+                  </div>
                 </CardContent>
+                </div>
               </Card>
 
               <Card 

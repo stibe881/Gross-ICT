@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, unique } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -162,6 +162,23 @@ export const kbArticles = mysqlTable("kbArticles", {
 
 export type KbArticle = typeof kbArticles.$inferSelect;
 export type InsertKbArticle = typeof kbArticles.$inferInsert;
+
+/**
+ * User favorites table for quick access to frequently used functions
+ */
+export const favorites = mysqlTable("favorites", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  itemType: varchar("itemType", { length: 50 }).notNull(),
+  itemLabel: varchar("itemLabel", { length: 255 }).notNull(),
+  itemPath: varchar("itemPath", { length: 500 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+}, (table) => ({
+  uniqueUserItem: unique("unique_user_item").on(table.userId, table.itemType),
+}));
+
+export type Favorite = typeof favorites.$inferSelect;
+export type InsertFavorite = typeof favorites.$inferInsert;
 
 // Export accounting module tables
 export * from "./schema_accounting";
