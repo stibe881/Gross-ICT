@@ -162,3 +162,6 @@ export const kbArticles = mysqlTable("kbArticles", {
 
 export type KbArticle = typeof kbArticles.$inferSelect;
 export type InsertKbArticle = typeof kbArticles.$inferInsert;
+
+// Export accounting module tables
+export * from "./schema_accounting";

@@ -79,3 +79,22 @@
 
 ## Completed
 - [x] Enable support staff to create tickets on behalf of customers
+
+## Completed - Accounting Module (Phase 1)
+- [x] Design and create database schema (customers, invoices, quotes, line items)
+- [x] Implement customer management API (CRUD operations)
+- [x] Implement invoice management API (create, edit, delete, mark as paid, statistics)
+- [x] Implement quote management API (create, edit, convert to invoice)
+- [x] Create invoice management UI with filters (year, status, search)
+- [x] Implement "Create invoice from tickets" API
+- [x] Add invoices navigation to admin dashboard
+
+## In Progress - Accounting Module (Phase 2)
+- [ ] Add "Create invoice" button in ticket detail modal
+- [ ] Implement quote management UI and conversion to invoices
+- [ ] Add PDF generation for invoices and quotes
+- [ ] Create customer management UI
+- [ ] Create accounting settings page (company info, logo, invoice design)
+- [ ] Add "accounting" role and permissions
+- [ ] Create customer portal for viewing invoices
+- [ ] Add advanced reporting dashboard (revenue charts, customer analytics)
