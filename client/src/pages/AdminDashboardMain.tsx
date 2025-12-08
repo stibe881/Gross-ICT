@@ -4,6 +4,55 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useLocation } from "wouter";
 import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
+import { trpc } from "@/lib/trpc";
+
+function QuickStats() {
+  const { data: stats, isLoading } = trpc.dashboardStats.getQuickStats.useQuery();
+
+  if (isLoading) {
+    return (
+      <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i}>
+            <CardHeader className="pb-2">
+              <CardDescription>Laden...</CardDescription>
+              <CardTitle className="text-3xl">--</CardTitle>
+            </CardHeader>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4">
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>Offene Tickets</CardDescription>
+          <CardTitle className="text-3xl">{stats?.openTickets || 0}</CardTitle>
+        </CardHeader>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>Kunden</CardDescription>
+          <CardTitle className="text-3xl">{stats?.totalCustomers || 0}</CardTitle>
+        </CardHeader>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>Offene Rechnungen</CardDescription>
+          <CardTitle className="text-3xl">{stats?.openInvoices || 0}</CardTitle>
+        </CardHeader>
+      </Card>
+      <Card>
+        <CardHeader className="pb-2">
+          <CardDescription>KB-Artikel</CardDescription>
+          <CardTitle className="text-3xl">{stats?.totalKbArticles || 0}</CardTitle>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+}
 
 export default function AdminDashboardMain() {
   const { user, loading: authLoading, logout } = useAuth();
@@ -165,32 +214,7 @@ export default function AdminDashboardMain() {
         </div>
 
         {/* Quick Stats */}
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Offene Tickets</CardDescription>
-              <CardTitle className="text-3xl">--</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Kunden</CardDescription>
-              <CardTitle className="text-3xl">--</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Offene Rechnungen</CardDescription>
-              <CardTitle className="text-3xl">--</CardTitle>
-            </CardHeader>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>KB-Artikel</CardDescription>
-              <CardTitle className="text-3xl">--</CardTitle>
-            </CardHeader>
-          </Card>
-        </div>
+        <QuickStats />
       </main>
     </div>
   );

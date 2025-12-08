@@ -387,3 +387,4 @@
 - [x] Move ticket system to separate TicketManagement dashboard
 - [x] Add back buttons to all sub-dashboards (Buchhaltung, CRM, Wissensdatenbank, Verwaltung, Tickets)
 - [x] Update routing structure for new dashboard organization
+- [x] Implement live data for admin dashboard statistics cards (offene Tickets, Kunden, offene Rechnungen, KB-Artikel)
