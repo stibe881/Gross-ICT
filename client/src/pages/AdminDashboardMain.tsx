@@ -2,12 +2,45 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3 } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { useWebSocket } from "@/contexts/WebSocketContext";
+import { useEffect } from "react";
 
 function QuickStats() {
-  const { data: stats, isLoading } = trpc.dashboardStats.getQuickStats.useQuery();
+  const { data: stats, isLoading, refetch } = trpc.dashboardStats.getQuickStats.useQuery();
+  const [, setLocation] = useLocation();
+  const { socket, connected } = useWebSocket();
+
+  // Listen for WebSocket events to refresh statistics
+  useEffect(() => {
+    if (!socket || !connected) return;
+
+    const handleStatsUpdate = () => {
+      console.log('[Dashboard] Received stats update event, refetching...');
+      refetch();
+    };
+
+    // Listen for various events that should trigger stats refresh
+    socket.on('ticket:created', handleStatsUpdate);
+    socket.on('ticket:updated', handleStatsUpdate);
+    socket.on('customer:created', handleStatsUpdate);
+    socket.on('invoice:created', handleStatsUpdate);
+    socket.on('invoice:updated', handleStatsUpdate);
+    socket.on('kb:created', handleStatsUpdate);
+    socket.on('stats:refresh', handleStatsUpdate);
+
+    return () => {
+      socket.off('ticket:created', handleStatsUpdate);
+      socket.off('ticket:updated', handleStatsUpdate);
+      socket.off('customer:created', handleStatsUpdate);
+      socket.off('invoice:created', handleStatsUpdate);
+      socket.off('invoice:updated', handleStatsUpdate);
+      socket.off('kb:created', handleStatsUpdate);
+      socket.off('stats:refresh', handleStatsUpdate);
+    };
+  }, [socket, connected, refetch]);
 
   if (isLoading) {
     return (
@@ -24,32 +57,76 @@ function QuickStats() {
     );
   }
 
+  const statsCards = [
+    {
+      label: 'Offene Tickets',
+      value: stats?.openTickets || 0,
+      trend: stats?.openTicketsTrend || 0,
+      path: '/admin/tickets',
+      color: 'from-orange-500 to-red-600',
+    },
+    {
+      label: 'Kunden',
+      value: stats?.totalCustomers || 0,
+      trend: stats?.customersTrend || 0,
+      path: '/crm',
+      color: 'from-blue-500 to-cyan-600',
+    },
+    {
+      label: 'Offene Rechnungen',
+      value: stats?.openInvoices || 0,
+      trend: stats?.openInvoicesTrend || 0,
+      path: '/accounting',
+      color: 'from-green-500 to-emerald-600',
+    },
+    {
+      label: 'KB-Artikel',
+      value: stats?.totalKbArticles || 0,
+      trend: stats?.kbArticlesTrend || 0,
+      path: '/admin/knowledge-base',
+      color: 'from-purple-500 to-pink-600',
+    },
+  ];
+
+  const getTrendIcon = (trend: number) => {
+    if (trend > 0) return <TrendingUp className="h-4 w-4 text-green-500" />;
+    if (trend < 0) return <TrendingDown className="h-4 w-4 text-red-500" />;
+    return <Minus className="h-4 w-4 text-gray-400" />;
+  };
+
+  const getTrendText = (trend: number) => {
+    if (trend === 0) return 'Keine Änderung';
+    const sign = trend > 0 ? '+' : '';
+    return `${sign}${trend} seit letzter Woche`;
+  };
+
   return (
     <div className="mt-12 grid grid-cols-1 md:grid-cols-4 gap-4">
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Offene Tickets</CardDescription>
-          <CardTitle className="text-3xl">{stats?.openTickets || 0}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Kunden</CardDescription>
-          <CardTitle className="text-3xl">{stats?.totalCustomers || 0}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>Offene Rechnungen</CardDescription>
-          <CardTitle className="text-3xl">{stats?.openInvoices || 0}</CardTitle>
-        </CardHeader>
-      </Card>
-      <Card>
-        <CardHeader className="pb-2">
-          <CardDescription>KB-Artikel</CardDescription>
-          <CardTitle className="text-3xl">{stats?.totalKbArticles || 0}</CardTitle>
-        </CardHeader>
-      </Card>
+      {statsCards.map((card) => (
+        <Card
+          key={card.label}
+          className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 group"
+          onClick={() => setLocation(card.path)}
+        >
+          <div className={`h-1 bg-gradient-to-r ${card.color} group-hover:h-2 transition-all`} />
+          <CardHeader className="pb-2">
+            <CardDescription className="group-hover:text-primary transition-colors">
+              {card.label}
+            </CardDescription>
+            <div className="flex items-baseline gap-3">
+              <CardTitle className="text-3xl group-hover:text-primary transition-colors">
+                {card.value}
+              </CardTitle>
+              <div className="flex items-center gap-1 text-xs">
+                {getTrendIcon(card.trend)}
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              {getTrendText(card.trend)}
+            </p>
+          </CardHeader>
+        </Card>
+      ))}
     </div>
   );
 }

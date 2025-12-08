@@ -388,3 +388,6 @@
 - [x] Add back buttons to all sub-dashboards (Buchhaltung, CRM, Wissensdatenbank, Verwaltung, Tickets)
 - [x] Update routing structure for new dashboard organization
 - [x] Implement live data for admin dashboard statistics cards (offene Tickets, Kunden, offene Rechnungen, KB-Artikel)
+- [x] Make statistics cards clickable with navigation to filtered views
+- [x] Add trend indicators showing weekly comparison (↑↓)
+- [x] Integrate WebSocket for real-time statistics updates
