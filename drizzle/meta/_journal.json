@@ -71,6 +71,13 @@
       "when": 1765182025116,
       "tag": "0009_fast_wallflower",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1765184478484,
+      "tag": "0010_friendly_kylun",
+      "breakpoints": true
     }
   ]
 }

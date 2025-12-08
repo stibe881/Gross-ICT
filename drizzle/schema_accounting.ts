@@ -244,3 +244,28 @@ export const accountingSettings = mysqlTable("accountingSettings", {
 
 export type AccountingSettings = typeof accountingSettings.$inferSelect;
 export type InsertAccountingSettings = typeof accountingSettings.$inferInsert;
+
+/**
+ * Products table for product catalog
+ */
+export const products = mysqlTable("products", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Product SKU/Article number */
+  sku: varchar("sku", { length: 100 }).unique(),
+  /** Product name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Product description */
+  description: text("description"),
+  /** Category (e.g., "Hardware", "Software", "Service") */
+  category: varchar("category", { length: 100 }),
+  /** Unit price */
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  /** Unit (e.g., "Stück", "Stunde", "Monat") */
+  unit: varchar("unit", { length: 50 }).default("Stück").notNull(),
+  /** Default VAT rate */
+  vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("8.10").notNull(),
+  /** Is product active/available */
+  isActive: boolean("isActive").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});

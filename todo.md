@@ -115,12 +115,15 @@
 - [ ] Add checkboxes to select multiple tickets
 - [ ] Add bulk actions bar (assign, change status, delete)
 - [ ] Implement "select all" functionality
-- [ ] Add confirmation dialogs for bulk operations
+- [ ] Add confirmation dialogs for bulk delete
 
-## In Progress - Product Catalog
-- [ ] Create product catalog database schema (name, description, price, unit, SKU, category)
-- [ ] Implement product management API (CRUD operations)
-- [ ] Create product catalog UI (list, create, edit, delete)
-- [ ] Add product selection dropdown in invoice creation (replace manual input)
-- [ ] Add product selection dropdown in quote creation (replace manual input)
+## Completed - Product Catalog
+- [x] Create product catalog database schema (SKU, name, description, category, price, unit, VAT)
+- [x] Implement product management API (CRUD operations)
+- [x] Create product catalog UI (list, create, edit, delete, search, filter by category)
+- [x] Add products navigation to admin dashboard
+
+## In Progress - Product Integration
+- [ ] Integrate product selection into invoice creation (dropdown to select products)
+- [ ] Integrate product selection into quote creation (dropdown to select products)
 - [ ] Auto-fill price and unit when product is selected
