@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -29,6 +29,8 @@ export default function AdminDashboard() {
   const [showStatistics, setShowStatistics] = useState(false);
   const [showCreateTicket, setShowCreateTicket] = useState(false);
   const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showManagementDropdown, setShowManagementDropdown] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
@@ -154,15 +156,16 @@ export default function AdminDashboard() {
               <h1 className="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
             </div>
-            <div className="flex items-center gap-2">
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center gap-2">
               <Button
                 variant="default"
                 onClick={() => setShowCreateTicket(true)}
                 className="bg-primary hover:bg-primary/90"
                 size="sm"
               >
-                <Plus className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Ticket erstellen</span>
+                <Plus className="h-4 w-4 mr-2" />
+                Ticket erstellen
               </Button>
               {user?.role === "admin" && (
                 <>
@@ -172,8 +175,8 @@ export default function AdminDashboard() {
                     className="border-white/20 bg-white/5 hover:bg-white/10"
                     size="sm"
                   >
-                    <Receipt className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Buchhaltung</span>
+                    <Receipt className="h-4 w-4 mr-2" />
+                    Buchhaltung
                   </Button>
                   <Button
                     variant="outline"
@@ -181,8 +184,8 @@ export default function AdminDashboard() {
                     className="border-white/20 bg-white/5 hover:bg-white/10"
                     size="sm"
                   >
-                    <UserCircle className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">CRM</span>
+                    <UserCircle className="h-4 w-4 mr-2" />
+                    CRM
                   </Button>
                   <Button
                     variant="outline"
@@ -190,18 +193,70 @@ export default function AdminDashboard() {
                     className="border-white/20 bg-white/5 hover:bg-white/10"
                     size="sm"
                   >
-                    <BookOpen className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Wissensdatenbank</span>
+                    <BookOpen className="h-4 w-4 mr-2" />
+                    Wissensdatenbank
                   </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLocation("/accounting-settings")}
-                    className="border-white/20 bg-white/5 hover:bg-white/10"
-                    size="sm"
-                  >
-                    <Settings className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Einstellungen</span>
-                  </Button>
+                  
+                  {/* Management Dropdown */}
+                  <div className="relative">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowManagementDropdown(!showManagementDropdown)}
+                      className="border-white/20 bg-white/5 hover:bg-white/10"
+                      size="sm"
+                    >
+                      <Settings className="h-4 w-4 mr-2" />
+                      Verwaltung
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                    {showManagementDropdown && (
+                      <div className="absolute right-0 mt-2 w-56 bg-black/95 border border-white/10 rounded-lg shadow-xl z-50 backdrop-blur-xl">
+                        <div className="py-2">
+                          <button
+                            onClick={() => {
+                              setLocation("/user-management");
+                              setShowManagementDropdown(false);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-white/10 flex items-center gap-2"
+                          >
+                            <Users className="h-4 w-4" />
+                            Benutzerverwaltung
+                          </button>
+                          <button
+                            onClick={() => {
+                              setLocation("/products");
+                              setShowManagementDropdown(false);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-white/10 flex items-center gap-2"
+                          >
+                            <Package className="h-4 w-4" />
+                            Produkte
+                          </button>
+                          <button
+                            onClick={() => {
+                              setLocation("/templates");
+                              setShowManagementDropdown(false);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-white/10 flex items-center gap-2"
+                          >
+                            <FileStack className="h-4 w-4" />
+                            Vorlagen
+                          </button>
+                          <div className="border-t border-white/10 my-2"></div>
+                          <button
+                            onClick={() => {
+                              setLocation("/accounting-settings");
+                              setShowManagementDropdown(false);
+                            }}
+                            className="w-full px-4 py-2 text-left text-sm hover:bg-white/10 flex items-center gap-2"
+                          >
+                            <Settings className="h-4 w-4" />
+                            Einstellungen
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </>
               )}
               <Button
@@ -211,16 +266,235 @@ export default function AdminDashboard() {
                 className="border-white/20 bg-white/5 hover:bg-white/10"
                 size="sm"
               >
-                <LogOut className="h-4 w-4 md:mr-2" />
-                <span className="hidden md:inline">Abmelden</span>
+                <LogOut className="h-4 w-4 mr-2" />
+                Abmelden
               </Button>
             </div>
+            
+            {/* Mobile Menu Button */}
+            <Button
+              variant="outline"
+              onClick={() => setShowMobileMenu(!showMobileMenu)}
+              className="lg:hidden border-white/20 bg-white/5 hover:bg-white/10"
+              size="sm"
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </div>
 
+      {/* Mobile Slide-In Menu */}
+      {showMobileMenu && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm" onClick={() => setShowMobileMenu(false)}>
+          <div 
+            className="absolute right-0 top-0 h-full w-80 max-w-[85vw] bg-black border-l border-white/10 shadow-2xl overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold">Menü</h2>
+                <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-white/10 rounded-full">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              
+              <div className="space-y-2">
+                <button
+                  onClick={() => {
+                    setShowCreateTicket(true);
+                    setShowMobileMenu(false);
+                  }}
+                  className="w-full px-4 py-3 bg-primary hover:bg-primary/90 rounded-lg text-left font-medium flex items-center gap-3"
+                >
+                  <Plus className="h-5 w-5" />
+                  Ticket erstellen
+                </button>
+                
+                {user?.role === "admin" && (
+                  <>
+                    <div className="border-t border-white/10 my-4"></div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Hauptmenü</p>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/accounting");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <Receipt className="h-5 w-5" />
+                      Buchhaltung
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/crm");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <UserCircle className="h-5 w-5" />
+                      CRM
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/admin/knowledge-base");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <BookOpen className="h-5 w-5" />
+                      Wissensdatenbank
+                    </button>
+                    
+                    <div className="border-t border-white/10 my-4"></div>
+                    <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-2 mb-2">Verwaltung</p>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/user-management");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <Users className="h-5 w-5" />
+                      Benutzerverwaltung
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/products");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <Package className="h-5 w-5" />
+                      Produkte
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/templates");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <FileStack className="h-5 w-5" />
+                      Vorlagen
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setLocation("/accounting-settings");
+                        setShowMobileMenu(false);
+                      }}
+                      className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
+                    >
+                      <Settings className="h-5 w-5" />
+                      Einstellungen
+                    </button>
+                  </>
+                )}
+                
+                <div className="border-t border-white/10 my-4"></div>
+                
+                <button
+                  onClick={() => {
+                    logoutMutation.mutate();
+                    setShowMobileMenu(false);
+                  }}
+                  disabled={logoutMutation.isPending}
+                  className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3 text-red-400"
+                >
+                  <LogOut className="h-5 w-5" />
+                  Abmelden
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8">
+        {/* Quick Access Cards */}
+        {user?.role === "admin" && (
+          <div className="mb-8">
+            <h2 className="text-xl font-bold mb-4">Schnellzugriff</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card 
+                className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setLocation("/accounting")}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-primary/20 rounded-lg">
+                      <Receipt className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-base font-semibold">Finanzen</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-400">Rechnungen, Zahlungen & Buchhaltung</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/30 cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setLocation("/crm")}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-500/20 rounded-lg">
+                      <UserCircle className="h-6 w-6 text-blue-400" />
+                    </div>
+                    <CardTitle className="text-base font-semibold">CRM</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-400">Kunden & Kontakte verwalten</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setLocation("/accounting/reminders")}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-purple-500/20 rounded-lg">
+                      <Bell className="h-6 w-6 text-purple-400" />
+                    </div>
+                    <CardTitle className="text-base font-semibold">Mahnungs-Log</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-400">Offene Mahnungen & Zahlungserinnerungen</p>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="bg-gradient-to-br from-green-500/20 to-green-500/5 border-green-500/30 cursor-pointer hover:scale-105 transition-transform"
+                onClick={() => setShowStatistics(!showStatistics)}
+              >
+                <CardHeader className="pb-3">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-green-500/20 rounded-lg">
+                      <TrendingUp className="h-6 w-6 text-green-400" />
+                    </div>
+                    <CardTitle className="text-base font-semibold">Statistiken</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-400">Detaillierte Ticket-Analysen</p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        )}
+
         {/* Statistics */}
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
