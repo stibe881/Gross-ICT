@@ -90,8 +90,8 @@
 - [x] Add invoices navigation to admin dashboard
 
 ## In Progress - Accounting Module (Phase 2)
-- [ ] Add "Create invoice" button in ticket detail modal
-- [ ] Implement quote management UI and conversion to invoices
+- [x] Add "Create invoice" button in ticket detail modal
+- [x] Implement quote management UI and conversion to invoices
 - [ ] Add PDF generation for invoices and quotes
 - [ ] Create customer management UI
 - [ ] Create accounting settings page (company info, logo, invoice design)

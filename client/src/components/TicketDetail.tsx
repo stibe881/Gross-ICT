@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
+import { CreateInvoiceFromTicketDialog } from "@/components/CreateInvoiceFromTicketDialog";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck, BookOpen, Search } from "lucide-react";
+import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck, BookOpen, Search, Receipt } from "lucide-react";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -29,6 +30,7 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [kbSearchOpen, setKbSearchOpen] = useState(false);
   const [kbSearchQuery, setKbSearchQuery] = useState("");
+  const [invoiceDialogOpen, setInvoiceDialogOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const utils = trpc.useUtils();
 
@@ -206,9 +208,22 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                 <p className="text-sm text-gray-400 mt-1">{ticket.subject}</p>
               )}
             </div>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              {isStaff && ticket && ticket.status === "closed" && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setInvoiceDialogOpen(true)}
+                  className="border-primary/50 hover:bg-primary/10"
+                >
+                  <Receipt className="h-4 w-4 mr-2" />
+                  Rechnung erstellen
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={onClose}>
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardHeader>
 
@@ -577,6 +592,13 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
         </CardContent>
       </Card>
       </div>
+
+      {/* Invoice Creation Dialog */}
+      <CreateInvoiceFromTicketDialog
+        open={invoiceDialogOpen}
+        onOpenChange={setInvoiceDialogOpen}
+        ticketId={ticketId}
+      />
     </div>
   );
 }

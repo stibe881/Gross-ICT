@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, FileCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -182,6 +182,15 @@ export default function AdminDashboard() {
                   >
                     <Receipt className="h-4 w-4 md:mr-2" />
                     <span className="hidden md:inline">Rechnungen</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation("/quotes")}
+                    className="border-white/20 bg-white/5 hover:bg-white/10"
+                    size="sm"
+                  >
+                    <FileCheck className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Angebote</span>
                   </Button>
                 </>
               )}
