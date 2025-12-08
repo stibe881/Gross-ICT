@@ -1,0 +1,65 @@
+{
+  "query": "SELECT id, subject, customerName, customerEmail, company, category, priority, status, createdAt FROM tickets ORDER BY id DESC LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute SELECT id, subject, customerName, customerEmail, company, category, priority, status, createdAt FROM tickets ORDER BY id DESC LIMIT 5;",
+  "rows": [
+    {
+      "id": "90001",
+      "subject": "Drucker funktioniert nicht",
+      "customerName": "Maria Müller",
+      "customerEmail": "maria.mueller@beispiel.ch",
+      "company": "Müller GmbH",
+      "category": "hardware",
+      "priority": "medium",
+      "status": "open",
+      "createdAt": "2025-12-08 07:58:19"
+    },
+    {
+      "id": "60030",
+      "subject": "Test Ticket for Permission Test",
+      "customerName": "Test Customer 3",
+      "customerEmail": "customer3@test.com",
+      "company": "NULL",
+      "category": "other",
+      "priority": "low",
+      "status": "open",
+      "createdAt": "2025-12-07 23:49:31"
+    },
+    {
+      "id": "60029",
+      "subject": "Test Ticket for Unassignment",
+      "customerName": "Test Customer 2",
+      "customerEmail": "customer2@test.com",
+      "company": "NULL",
+      "category": "security",
+      "priority": "high",
+      "status": "open",
+      "createdAt": "2025-12-07 23:49:31"
+    },
+    {
+      "id": "60028",
+      "subject": "Test Ticket for Assignment",
+      "customerName": "Test Customer",
+      "customerEmail": "customer@test.com",
+      "company": "NULL",
+      "category": "network",
+      "priority": "medium",
+      "status": "open",
+      "createdAt": "2025-12-07 23:49:30"
+    },
+    {
+      "id": "60027",
+      "subject": "Test Ticket with Account",
+      "customerName": "New User",
+      "customerEmail": "newuser-1765151370955@test.com",
+      "company": "NULL",
+      "category": "other",
+      "priority": "high",
+      "status": "open",
+      "createdAt": "2025-12-07 23:49:30"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tsubject\tcustomerName\tcustomerEmail\tcompany\tcategory\tpriority\tstatus\tcreatedAt\n90001\tDrucker funktioniert nicht\tMaria Müller\tmaria.mueller@beispiel.ch\tMüller GmbH\thardware\tmedium\topen\t2025-12-08 07:58:19\n60030\tTest Ticket for Permission Test\tTest Customer 3\tcustomer3@test.com\tNULL\tother\tlow\topen\t2025-12-07 23:49:31\n60029\tTest Ticket for Unassignment\tTest Customer 2\tcustomer2@test.com\tNULL\tsecurity\thigh\topen\t2025-12-07 23:49:31\n60028\tTest Ticket for Assignment\tTest Customer\tcustomer@test.com\tNULL\tnetwork\tmedium\topen\t2025-12-07 23:49:30\n60027\tTest Ticket with Account\tNew User\tnewuser-1765151370955@test.com\tNULL\tother\thigh\topen\t2025-12-07 23:49:30\n",
+  "stderr": "",
+  "execution_time_ms": 127
+}

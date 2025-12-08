@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
 import { DashboardStatistics } from "@/components/DashboardStatistics";
+import { CreateTicketDialog } from "@/components/CreateTicketDialog";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -26,6 +27,7 @@ export default function AdminDashboard() {
   const [priorityFilter, setPriorityFilter] = useState<string | undefined>(undefined);
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   const [showStatistics, setShowStatistics] = useState(false);
+  const [showCreateTicket, setShowCreateTicket] = useState(false);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
@@ -134,8 +136,16 @@ export default function AdminDashboard() {
               <h1 className="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
             </div>
-            <div className="flex items-center gap-2">
-              {user.role === "admin" && (
+            <div className="flex items-center gap-2">              <Button
+                variant="default"
+                onClick={() => setShowCreateTicket(true)}
+                className="bg-primary hover:bg-primary/90"
+                size="sm"
+              >
+                <Plus className="h-4 w-4 md:mr-2" />
+                <span className="hidden md:inline">Ticket erstellen</span>
+              </Button>
+              {user?.role === "admin" && (
                 <>
                   <Button
                     variant="outline"
@@ -542,12 +552,11 @@ export default function AdminDashboard() {
       </div>
 
       {/* Ticket Detail Modal */}
-      {selectedTicketId && (
-        <TicketDetail
-          ticketId={selectedTicketId}
-          onClose={() => setSelectedTicketId(null)}
-        />
+        {selectedTicketId && (
+        <TicketDetail ticketId={selectedTicketId} onClose={() => setSelectedTicketId(null)} />
       )}
+
+      <CreateTicketDialog open={showCreateTicket} onOpenChange={setShowCreateTicket} />
     </div>
   );
 }

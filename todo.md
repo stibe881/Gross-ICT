@@ -76,3 +76,6 @@
 ## Completed
 - [x] Create seed data with initial FAQ articles for KB (8 articles: 7 public, 1 internal)
 - [x] Implement KB article rating system (helpful/not helpful buttons)
+
+## Completed
+- [x] Enable support staff to create tickets on behalf of customers
