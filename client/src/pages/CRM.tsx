@@ -660,7 +660,7 @@ function ViewCustomerDialog({ customerId, onClose }: any) {
 
         <div className="space-y-6 mt-4">
           {/* Customer Info */}
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-semibold mb-3">Kontaktinformationen</h3>
               <div className="space-y-2 text-sm">
@@ -690,7 +690,7 @@ function ViewCustomerDialog({ customerId, onClose }: any) {
           {/* Statistics */}
           <div>
             <h3 className="font-semibold mb-3">Statistiken</h3>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card className="p-4">
                 <p className="text-sm text-muted-foreground">Gesamtumsatz</p>
                 <p className="text-2xl font-bold">{totalRevenue.toFixed(2)} CHF</p>

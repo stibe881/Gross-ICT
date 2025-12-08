@@ -127,3 +127,7 @@
 - [ ] Integrate product selection into invoice creation (dropdown to select products)
 - [ ] Integrate product selection into quote creation (dropdown to select products)
 - [ ] Auto-fill price and unit when product is selected
+
+## Completed - Customer Improvements
+- [x] Optimize customer details view for mobile devices (responsive grid layout)
+- [x] Set customer number to start at 101

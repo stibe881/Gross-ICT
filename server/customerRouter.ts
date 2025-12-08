@@ -97,13 +97,16 @@ export const customerRouter = router({
         .orderBy(desc(customers.id))
         .limit(1);
 
-      let customerNumber = "K-0001";
+      let customerNumber = "K-0101";
       if (lastCustomer?.customerNumber) {
         const match = lastCustomer.customerNumber.match(/K-(\d+)/);
         if (match) {
           const nextNum = parseInt(match[1]) + 1;
           customerNumber = `K-${nextNum.toString().padStart(4, "0")}`;
         }
+      } else {
+        // First customer starts at 101
+        customerNumber = "K-0101";
       }
 
       const [result] = await db!.insert(customers).values({
