@@ -350,6 +350,21 @@ function CreateCustomerDialog({ open, onOpenChange, onSuccess }: any) {
             </div>
           </div>
 
+          <div>
+            <label className="text-sm font-medium mb-2 block">Sprache für Rechnungen</label>
+            <Select value={formData.language} onValueChange={(v: any) => setFormData({ ...formData, language: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                <SelectItem value="en">🇬🇧 English</SelectItem>
+                <SelectItem value="fr">🇫🇷 Français</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">Rechnungen und E-Mails werden in dieser Sprache versendet</p>
+          </div>
+
           <div className="grid grid-cols-3 gap-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Zahlungsziel (Tage)</label>
@@ -437,6 +452,7 @@ function EditCustomerDialog({ customerId, onClose, onSuccess }: any) {
       postalCode: customer.postalCode || "",
       city: customer.city || "",
       country: customer.country || "Schweiz",
+      language: customer.language || "de",
       paymentTermsDays: customer.paymentTermsDays || 30,
       defaultVatRate: customer.defaultVatRate || "8.10",
       defaultDiscount: customer.defaultDiscount || "0.00",
@@ -571,6 +587,21 @@ function EditCustomerDialog({ customerId, onClose, onSuccess }: any) {
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
               />
             </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium mb-2 block">Sprache für Rechnungen</label>
+            <Select value={formData.language} onValueChange={(v: any) => setFormData({ ...formData, language: v })}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="de">🇩🇪 Deutsch</SelectItem>
+                <SelectItem value="en">🇬🇧 English</SelectItem>
+                <SelectItem value="fr">🇫🇷 Français</SelectItem>
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground mt-1">Rechnungen und E-Mails werden in dieser Sprache versendet</p>
           </div>
 
           <div className="grid grid-cols-3 gap-4">

@@ -38,6 +38,7 @@ const CustomerPortal = lazy(() => import("@/pages/CustomerPortal"));
 const ReportingDashboard = lazy(() => import("@/pages/ReportingDashboard"));
 const FinancialDashboard = lazy(() => import("@/pages/FinancialDashboard"));
 const ReminderLog = lazy(() => import("@/pages/ReminderLog"));
+const InvoiceTemplateEditor = lazy(() => import("@/pages/InvoiceTemplateEditor"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -66,7 +67,8 @@ function Router() {
         <Route path="/crm" component={CRM} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
-        <Route path="/accounting-settings" component={AccountingSettings} />
+        <Route path={"/accounting-settings"} component={AccountingSettings} />
+        <Route path={"/invoice-template-editor"} component={InvoiceTemplateEditor} />
         <Route path="/accounting-dashboard" component={AccountingDashboard} />
         <Route path="/customer-portal" component={CustomerPortal} />
         <Route path="/reporting" component={ReportingDashboard} />

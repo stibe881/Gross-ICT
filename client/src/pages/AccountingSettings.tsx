@@ -81,10 +81,16 @@ export default function AccountingSettings() {
           <h2 className="text-2xl font-bold">Buchhaltungseinstellungen</h2>
           <p className="text-muted-foreground">Firmeninformationen und Rechnungsdesign verwalten</p>
         </div>
-        <Button onClick={handleSave} disabled={saveMutation.isPending}>
-          <Save className="w-4 h-4 mr-2" />
-          {saveMutation.isPending ? "Speichere..." : "Speichern"}
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" onClick={() => window.location.href = '/invoice-template-editor'}>
+            <Palette className="w-4 h-4 mr-2" />
+            Vorlagen-Editor
+          </Button>
+          <Button onClick={handleSave} disabled={saveMutation.isPending}>
+            <Save className="w-4 h-4 mr-2" />
+            {saveMutation.isPending ? "Speichere..." : "Speichern"}
+          </Button>
+        </div>
       </div>
 
       {/* Company Information */}

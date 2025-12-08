@@ -224,3 +224,18 @@
 - [x] Update email service for multilingual notifications
 - [x] Create multilingual invoice email templates
 - [x] Create multilingual payment reminder email templates
+
+## Completed - Language Selection UI
+- [x] Add language dropdown to customer creation form
+- [x] Add language dropdown to customer edit form
+- [x] Language field already supported in customer router (schema updated)
+- [x] UI shows flag emojis for DE/EN/FR selection
+
+## Completed - Invoice Template Editor
+- [x] Create template editor page UI
+- [x] Add color picker for primary color (with preset colors)
+- [x] Add logo upload functionality (with URL input)
+- [x] Add live template preview (invoice/quote toggle)
+- [x] Save template settings to accountingSettings
+- [x] PDF generation already uses custom settings (primaryColor, logoUrl)
+- [x] Add navigation button in AccountingSettings
