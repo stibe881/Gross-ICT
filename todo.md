@@ -72,3 +72,7 @@
 
 ## Current Issues
 - [x] Fix JavaScript error on published site related to Select component
+
+## Completed
+- [x] Create seed data with initial FAQ articles for KB (8 articles: 7 public, 1 internal)
+- [x] Implement KB article rating system (helpful/not helpful buttons)

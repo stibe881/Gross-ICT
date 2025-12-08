@@ -1,0 +1,1 @@
+ALTER TABLE `kbArticles` ADD `notHelpfulCount` int DEFAULT 0 NOT NULL;

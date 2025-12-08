@@ -150,6 +150,8 @@ export const kbArticles = mysqlTable("kbArticles", {
   viewCount: int("viewCount").default(0).notNull(),
   /** Helpful count (upvotes) */
   helpfulCount: int("helpfulCount").default(0).notNull(),
+  /** Not helpful count (downvotes) */
+  notHelpfulCount: int("notHelpfulCount").default(0).notNull(),
   /** Author user ID */
   authorId: int("authorId").notNull(),
   /** Created timestamp */

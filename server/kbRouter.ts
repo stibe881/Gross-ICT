@@ -179,7 +179,29 @@ export const kbRouter = router({
         .set({ helpfulCount: article.helpfulCount + 1 })
         .where(eq(kbArticles.id, input.id));
 
-      return { success: true };
+      return { success: true, helpfulCount: article.helpfulCount + 1 };
+    }),
+
+  // Mark article as not helpful
+  markNotHelpful: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      const [article] = await db!
+        .select()
+        .from(kbArticles)
+        .where(eq(kbArticles.id, input.id));
+
+      if (!article) {
+        throw new Error("Article not found");
+      }
+
+      await db!
+        .update(kbArticles)
+        .set({ notHelpfulCount: article.notHelpfulCount + 1 })
+        .where(eq(kbArticles.id, input.id));
+
+      return { success: true, notHelpfulCount: article.notHelpfulCount + 1 };
     }),
 
   // Get categories

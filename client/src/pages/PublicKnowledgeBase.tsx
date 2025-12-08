@@ -11,7 +11,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Search, BookOpen, ThumbsUp, Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { Search, BookOpen, ThumbsUp, ThumbsDown, Eye, ChevronDown, ChevronUp } from "lucide-react";
+import { toast } from "sonner";
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -21,6 +22,8 @@ export default function PublicKnowledgeBase() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [expandedArticle, setExpandedArticle] = useState<number | null>(null);
+  const [ratedArticles, setRatedArticles] = useState<Set<number>>(new Set());
+  const utils = trpc.useUtils();
 
   const { data: articles, isLoading } = trpc.kb.all.useQuery({
     search: searchQuery || undefined,
@@ -29,6 +32,35 @@ export default function PublicKnowledgeBase() {
   });
 
   const { data: categories } = trpc.kb.categories.useQuery();
+
+  const markHelpfulMutation = trpc.kb.markHelpful.useMutation({
+    onSuccess: () => {
+      utils.kb.all.invalidate();
+      toast.success("Vielen Dank für Ihr Feedback!");
+    },
+  });
+
+  const markNotHelpfulMutation = trpc.kb.markNotHelpful.useMutation({
+    onSuccess: () => {
+      utils.kb.all.invalidate();
+      toast.success("Vielen Dank für Ihr Feedback!");
+    },
+  });
+
+  const handleRating = (articleId: number, isHelpful: boolean) => {
+    if (ratedArticles.has(articleId)) {
+      toast.info("Sie haben diesen Artikel bereits bewertet");
+      return;
+    }
+
+    if (isHelpful) {
+      markHelpfulMutation.mutate({ id: articleId });
+    } else {
+      markNotHelpfulMutation.mutate({ id: articleId });
+    }
+
+    setRatedArticles(prev => new Set(prev).add(articleId));
+  };
 
   const toggleArticle = (id: number) => {
     setExpandedArticle(expandedArticle === id ? null : id);
@@ -120,14 +152,45 @@ export default function PublicKnowledgeBase() {
                       <div className="prose prose-invert max-w-none mb-4">
                         <p className="whitespace-pre-wrap">{article.content}</p>
                       </div>
-                      <div className="flex items-center gap-6 text-sm text-muted-foreground pt-4 border-t border-border">
-                        <div className="flex items-center gap-2">
-                          <Eye className="h-4 w-4" />
-                          {article.viewCount} Aufrufe
+                      <div className="space-y-4 pt-4 border-t border-border">
+                        <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2">
+                            <Eye className="h-4 w-4" />
+                            {article.viewCount} Aufrufe
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <ThumbsUp className="h-4 w-4" />
+                            {article.helpfulCount} Hilfreich
+                          </div>
+                          {article.notHelpfulCount > 0 && (
+                            <div className="flex items-center gap-2">
+                              <ThumbsDown className="h-4 w-4" />
+                              {article.notHelpfulCount}
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-2">
-                          <ThumbsUp className="h-4 w-4" />
-                          {article.helpfulCount} Hilfreich
+                        <div className="flex items-center gap-3 pt-2">
+                          <p className="text-sm font-medium">War dieser Artikel hilfreich?</p>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRating(article.id, true)}
+                            disabled={ratedArticles.has(article.id) || markHelpfulMutation.isPending}
+                            className="gap-2"
+                          >
+                            <ThumbsUp className="h-4 w-4" />
+                            Ja
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleRating(article.id, false)}
+                            disabled={ratedArticles.has(article.id) || markNotHelpfulMutation.isPending}
+                            className="gap-2"
+                          >
+                            <ThumbsDown className="h-4 w-4" />
+                            Nein
+                          </Button>
                         </div>
                       </div>
                     </CardContent>
