@@ -289,3 +289,7 @@
 - [x] Verify admin user stefan@gross-ict.ch exists in database
 - [x] Remove Manus OAuth dependency - implement standalone email/password auth
 - [ ] Fix cookie sameSite settings for production login
+
+## UI Improvements
+- [x] Simplify admin dashboard menu - remove redundant dashboard links
+- [x] Reorganize menu items for better space utilization

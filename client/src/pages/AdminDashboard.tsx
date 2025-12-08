@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -154,7 +154,8 @@ export default function AdminDashboard() {
               <h1 className="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
               <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
             </div>
-            <div className="flex items-center gap-2">              <Button
+            <div className="flex items-center gap-2">
+              <Button
                 variant="default"
                 onClick={() => setShowCreateTicket(true)}
                 className="bg-primary hover:bg-primary/90"
@@ -167,48 +168,12 @@ export default function AdminDashboard() {
                 <>
                   <Button
                     variant="outline"
-                    onClick={() => setLocation("/admin/templates")}
-                    className="border-white/20 bg-white/5 hover:bg-white/10"
-                    size="sm"
-                  >
-                    <FileText className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Vorlagen</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLocation("/admin/users")}
-                    className="border-white/20 bg-white/5 hover:bg-white/10"
-                    size="sm"
-                  >
-                    <Users className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Benutzerverwaltung</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLocation("/admin/knowledge-base")}
-                    className="border-white/20 bg-white/5 hover:bg-white/10"
-                    size="sm"
-                  >
-                    <BookOpen className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Wissensdatenbank</span>
-                  </Button>
-                  <Button
-                    variant="outline"
                     onClick={() => setLocation("/accounting")}
                     className="border-white/20 bg-white/5 hover:bg-white/10"
                     size="sm"
                   >
                     <Receipt className="h-4 w-4 md:mr-2" />
                     <span className="hidden md:inline">Buchhaltung</span>
-                  </Button>
-                  <Button
-                    variant="outline"
-                    onClick={() => setLocation("/financial-dashboard")}
-                    className="border-white/20 bg-white/5 hover:bg-white/10"
-                    size="sm"
-                  >
-                    <TrendingUp className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Finanzen</span>
                   </Button>
                   <Button
                     variant="outline"
@@ -221,12 +186,12 @@ export default function AdminDashboard() {
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => setLocation("/products")}
+                    onClick={() => setLocation("/admin/knowledge-base")}
                     className="border-white/20 bg-white/5 hover:bg-white/10"
                     size="sm"
                   >
-                    <Package className="h-4 w-4 md:mr-2" />
-                    <span className="hidden md:inline">Produkte</span>
+                    <BookOpen className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Wissensdatenbank</span>
                   </Button>
                   <Button
                     variant="outline"
