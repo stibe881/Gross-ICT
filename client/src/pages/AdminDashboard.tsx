@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical, Layout } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
@@ -22,10 +22,12 @@ import { DashboardStatistics } from "@/components/DashboardStatistics";
 import { CreateTicketDialog } from "@/components/CreateTicketDialog";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { SortableCard } from "@/components/SortableCard";
+import { useWebSocket } from "@/contexts/WebSocketContext";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const { socket, connected } = useWebSocket();
   const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<string | undefined>(undefined);
@@ -36,6 +38,7 @@ export default function AdminDashboard() {
   const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showManagementDropdown, setShowManagementDropdown] = useState(false);
+  const [showTemplateDropdown, setShowTemplateDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const utils = trpc.useUtils();
 
@@ -86,6 +89,62 @@ export default function AdminDashboard() {
   }).slice(0, 3) || [];
   const totalNotifications = urgentTickets.length + overdueInvoices.length + (overdueRemindersCount > 0 ? 1 : 0);
 
+  // WebSocket real-time updates
+  useEffect(() => {
+    if (!socket || !connected) return;
+
+    // Listen for ticket updates
+    socket.on("ticket:created", () => {
+      utils.tickets.filtered.invalidate();
+      utils.tickets.stats.invalidate();
+      toast.success("Neues Ticket erstellt", {
+        description: "Dashboard wurde aktualisiert",
+      });
+    });
+
+    socket.on("ticket:updated", () => {
+      utils.tickets.filtered.invalidate();
+      utils.tickets.stats.invalidate();
+    });
+
+    // Listen for invoice updates
+    socket.on("invoice:created", () => {
+      utils.invoices.all.invalidate();
+      toast.success("Neue Rechnung erstellt", {
+        description: "Dashboard wurde aktualisiert",
+      });
+    });
+
+    socket.on("invoice:updated", () => {
+      utils.invoices.all.invalidate();
+    });
+
+    // Listen for reminder updates
+    socket.on("reminder:created", () => {
+      utils.reminderLog.list.invalidate();
+      toast.info("Neue Mahnung gesendet", {
+        description: "Dashboard wurde aktualisiert",
+      });
+    });
+
+    // Listen for customer updates
+    socket.on("customer:created", () => {
+      utils.customers.all.invalidate();
+      toast.success("Neuer Kunde erstellt", {
+        description: "Dashboard wurde aktualisiert",
+      });
+    });
+
+    return () => {
+      socket.off("ticket:created");
+      socket.off("ticket:updated");
+      socket.off("invoice:created");
+      socket.off("invoice:updated");
+      socket.off("reminder:created");
+      socket.off("customer:created");
+    };
+  }, [socket, connected, utils]);
+
   // Favorites
   const { data: userFavorites } = trpc.favorites.list.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
@@ -111,6 +170,54 @@ export default function AdminDashboard() {
     const saved = localStorage.getItem("dashboardCardOrder");
     return saved ? JSON.parse(saved) : defaultCardOrder;
   });
+
+  // Dashboard template state
+  const [dashboardTemplate, setDashboardTemplate] = useState<string>(() => {
+    return localStorage.getItem("dashboardTemplate") || "default";
+  });
+
+  // Template configurations
+  const templates = {
+    default: {
+      name: "Standard",
+      description: "Ausgewogene Ansicht aller Funktionen",
+      cardOrder: ["accounting", "crm", "reminders", "statistics"],
+      showCharts: true,
+      showTickets: true,
+    },
+    finance: {
+      name: "Finanzen",
+      description: "Fokus auf Buchhaltung und Rechnungen",
+      cardOrder: ["accounting", "reminders", "crm", "statistics"],
+      showCharts: true,
+      showTickets: false,
+    },
+    support: {
+      name: "Support",
+      description: "Fokus auf Tickets und Kundenservice",
+      cardOrder: ["statistics", "crm", "accounting", "reminders"],
+      showCharts: false,
+      showTickets: true,
+    },
+    management: {
+      name: "Management",
+      description: "Übersicht mit Statistiken und Charts",
+      cardOrder: ["statistics", "accounting", "crm", "reminders"],
+      showCharts: true,
+      showTickets: false,
+    },
+  };
+
+  const applyTemplate = (templateKey: string) => {
+    const template = templates[templateKey as keyof typeof templates];
+    if (template) {
+      setCardOrder(template.cardOrder);
+      setDashboardTemplate(templateKey);
+      localStorage.setItem("dashboardCardOrder", JSON.stringify(template.cardOrder));
+      localStorage.setItem("dashboardTemplate", templateKey);
+      toast.success(`Vorlage "${template.name}" aktiviert`);
+    }
+  };
 
   // Save card order to localStorage
   useEffect(() => {
@@ -286,6 +393,48 @@ export default function AdminDashboard() {
                     Wissensdatenbank
                   </Button>
                   
+                  {/* Template Switcher */}
+                  <div className="relative">
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowTemplateDropdown(!showTemplateDropdown)}
+                      className="border-white/20 bg-white/5 hover:bg-white/10"
+                      size="sm"
+                    >
+                      <Layout className="h-4 w-4 mr-2" />
+                      Vorlage
+                      <ChevronDown className="h-3 w-3 ml-1" />
+                    </Button>
+                    {showTemplateDropdown && (
+                      <div className="absolute right-0 mt-2 w-64 bg-black/95 border border-white/10 rounded-lg shadow-xl z-50 backdrop-blur-xl">
+                        <div className="py-2">
+                          {Object.entries(templates).map(([key, template]) => (
+                            <button
+                              key={key}
+                              onClick={() => {
+                                applyTemplate(key);
+                                setShowTemplateDropdown(false);
+                              }}
+                              className={`w-full px-4 py-3 text-left hover:bg-white/10 transition-colors ${
+                                dashboardTemplate === key ? "bg-white/5" : ""
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-sm font-semibold">{template.name}</div>
+                                  <div className="text-xs text-gray-400 mt-0.5">{template.description}</div>
+                                </div>
+                                {dashboardTemplate === key && (
+                                  <div className="h-2 w-2 rounded-full bg-primary" />
+                                )}
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
                   {/* Management Dropdown */}
                   <div className="relative">
                     <Button
@@ -629,7 +778,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Dashboard Charts */}
-        {user?.role === "admin" && (
+        {user?.role === "admin" && templates[dashboardTemplate as keyof typeof templates]?.showCharts && (
           <DashboardCharts />
         )}
 
@@ -811,6 +960,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Tickets List */}
+        {(user?.role === "admin" || user?.role === "support") && templates[dashboardTemplate as keyof typeof templates]?.showTickets && (
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold flex items-center gap-2">
@@ -1173,6 +1323,7 @@ export default function AdminDashboard() {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* Ticket Detail Modal */}

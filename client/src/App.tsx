@@ -5,6 +5,7 @@ import { HelmetProvider } from "react-helmet-async";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
+import { WebSocketProvider } from "./contexts/WebSocketContext";
 import Preloader from "@/components/Preloader";
 import { Suspense, lazy } from "react";
 
@@ -103,11 +104,13 @@ function App() {
           switchable
         >
           <LanguageProvider>
-            <TooltipProvider>
-              <Preloader />
-              <Toaster />
-              <Router />
-            </TooltipProvider>
+            <WebSocketProvider>
+              <TooltipProvider>
+                <Preloader />
+                <Toaster />
+                <Router />
+              </TooltipProvider>
+            </WebSocketProvider>
           </LanguageProvider>
         </ThemeProvider>
       </ErrorBoundary>

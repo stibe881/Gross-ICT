@@ -319,3 +319,9 @@
 - [x] Install Chart.js and create dashboard chart widgets (Umsatz-Trend, Ticket-Status-Verteilung, Kunden-Wachstum)
 - [x] Implement notification settings page with configurable preferences (E-Mail, Push, Kategorien)
 - [x] Create dashboard personalization with drag-and-drop for card reordering and widget management
+
+## Completed - Real-time Updates & Export Features
+- [x] Implement WebSocket connections for real-time dashboard updates (tickets, invoices, reminders)
+- [x] Add export functionality to charts (PNG, PDF, CSV download)
+- [x] Create predefined dashboard templates (Finanz-fokussiert, Support-fokussiert, Management-Übersicht)
+- [x] Add template switcher UI with one-click activation
