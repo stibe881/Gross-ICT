@@ -52,10 +52,10 @@ export const authRouter = router({
       return {
         success: true,
         user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          id: String(user.id),
+          email: user.email || '',
+          name: user.name || '',
+          role: user.role || 'user',
         },
       };
     }),

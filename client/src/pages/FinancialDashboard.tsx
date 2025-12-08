@@ -13,7 +13,7 @@ export default function FinancialDashboard() {
   const { data: forecast, isLoading: forecastLoading } = trpc.financialDashboard.getRevenueForecast.useQuery({ months: 3 });
   const { data: comparison, isLoading: comparisonLoading } = trpc.financialDashboard.getMonthlyComparison.useQuery();
 
-  if (summaryLoading) {
+  if (summaryLoading || cashflowLoading || outstandingLoading || forecastLoading || comparisonLoading) {
     return (
       <div className="container py-8">
         <h1 className="text-3xl font-bold mb-8">Finanz-Dashboard</h1>

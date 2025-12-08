@@ -92,7 +92,7 @@ export const financialDashboardRouter = router({
       const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
 
       for (const invoice of unpaidInvoices) {
-        const amount = parseFloat(invoice.totalAmount);
+        const amount = invoice.totalAmount ? parseFloat(invoice.totalAmount) : 0;
         totalOutstanding += amount;
 
         const dueDate = new Date(invoice.dueDate);
