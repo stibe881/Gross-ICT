@@ -180,3 +180,12 @@
 - [x] Schedule reminder emails based on due date (daily at 9 AM)
 - [x] Three-stage reminder system: 7 days, 14 days, 21 days overdue
 - [x] Automatic status update to 'overdue' after first reminder
+
+## Completed - Financial Dashboard Widgets
+- [x] Create financial dashboard API endpoints (cashflow, outstanding, forecasts)
+- [x] Build cashflow widget (income vs expenses)
+- [x] Build outstanding invoices widget (overdue amounts)
+- [x] Build revenue forecast widget (based on recurring invoices)
+- [x] Build monthly comparison widget
+- [x] Integrate widgets into admin dashboard
+- [x] Add navigation button to AdminDashboard

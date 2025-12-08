@@ -36,6 +36,7 @@ const AccountingSettings = lazy(() => import("@/pages/AccountingSettings"));
 const AccountingDashboard = lazy(() => import("@/pages/AccountingDashboard"));
 const CustomerPortal = lazy(() => import("@/pages/CustomerPortal"));
 const ReportingDashboard = lazy(() => import("@/pages/ReportingDashboard"));
+const FinancialDashboard = lazy(() => import("@/pages/FinancialDashboard"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -68,6 +69,7 @@ function Router() {
         <Route path="/accounting-dashboard" component={AccountingDashboard} />
         <Route path="/customer-portal" component={CustomerPortal} />
         <Route path="/reporting" component={ReportingDashboard} />
+        <Route path="/financial-dashboard" component={FinancialDashboard} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
