@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const [categoryFilter, setCategoryFilter] = useState<string | undefined>(undefined);
   const [showStatistics, setShowStatistics] = useState(false);
   const [showCreateTicket, setShowCreateTicket] = useState(false);
+  const [selectedTickets, setSelectedTickets] = useState<number[]>([]);
   const utils = trpc.useUtils();
 
   const { data: tickets, isLoading: ticketsLoading } = trpc.tickets.filtered.useQuery(
@@ -73,6 +74,17 @@ export default function AdminDashboard() {
     },
     onError: (error) => {
       toast.error(error.message || "Fehler beim Aktualisieren");
+    },
+  });
+
+  const bulkDeleteMutation = trpc.tickets.bulkDelete.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} Ticket(s) erfolgreich gelöscht`);
+      setSelectedTickets([]);
+      utils.tickets.filtered.invalidate();
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
     },
   });
 
@@ -416,6 +428,54 @@ export default function AdminDashboard() {
             {showStatistics && <DashboardStatistics />}
           </div>
 
+          {/* Bulk Actions Bar */}
+          {selectedTickets.length > 0 && (
+            <Card className="bg-blue-500/10 border-blue-500/30 mb-4">
+              <CardContent className="py-4">
+                <div className="flex flex-wrap items-center gap-4">
+                  <span className="text-white font-medium">
+                    {selectedTickets.length} Ticket(s) ausgewählt
+                  </span>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setSelectedTickets([])}
+                      className="border-white/20 bg-white/5 hover:bg-white/10"
+                    >
+                      Auswahl aufheben
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (tickets) {
+                          setSelectedTickets(tickets.map(t => t.id));
+                        }
+                      }}
+                      className="border-white/20 bg-white/5 hover:bg-white/10"
+                    >
+                      Alle auswählen
+                    </Button>
+                  </div>
+                  <div className="h-6 w-px bg-white/20" />
+                  {/* Bulk Actions */}
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => {
+                      if (confirm(`Möchten Sie ${selectedTickets.length} Ticket(s) wirklich löschen?`)) {
+                        bulkDeleteMutation.mutate({ ticketIds: selectedTickets });
+                      }
+                    }}
+                  >
+                    Löschen
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {!tickets || tickets.length === 0 ? (
             <Card className="bg-white/5 border-white/10">
               <CardContent className="py-12 text-center">
@@ -428,9 +488,23 @@ export default function AdminDashboard() {
               {tickets.map((ticket) => (
                 <Card 
                   key={ticket.id} 
-                  className="bg-white/5 border-white/10 cursor-pointer hover:bg-white/10 transition-colors"
-                  onClick={() => setSelectedTicketId(ticket.id)}
+                  className="bg-white/5 border-white/10 hover:bg-white/10 transition-colors"
                 >
+                  <div className="flex items-start gap-3 p-6">
+                    <input
+                      type="checkbox"
+                      checked={selectedTickets.includes(ticket.id)}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        if (e.target.checked) {
+                          setSelectedTickets([...selectedTickets, ticket.id]);
+                        } else {
+                          setSelectedTickets(selectedTickets.filter(id => id !== ticket.id));
+                        }
+                      }}
+                      className="mt-1 h-4 w-4 rounded border-gray-300"
+                    />
+                    <div className="flex-1 cursor-pointer" onClick={() => setSelectedTicketId(ticket.id)}>
                   <CardHeader>
                     <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                       <div className="flex-1">
@@ -571,6 +645,8 @@ export default function AdminDashboard() {
                       )}
                     </div>
                   </CardContent>
+                    </div>
+                  </div>
                 </Card>
               ))}
             </div>

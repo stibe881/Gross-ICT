@@ -409,4 +409,61 @@ export const ticketRouter = router({
         return new Date(ticket.slaDueDate) < now;
       });
     }),
+
+  // Bulk delete tickets
+  bulkDelete: adminOrSupportProcedure
+    .input(z.object({
+      ticketIds: z.array(z.number()),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { inArray } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+      
+      await db.delete(tickets).where(inArray(tickets.id, input.ticketIds));
+      return { success: true, count: input.ticketIds.length };
+    }),
+
+  // Bulk update status
+  bulkUpdateStatus: adminOrSupportProcedure
+    .input(z.object({
+      ticketIds: z.array(z.number()),
+      status: z.enum(['open', 'in_progress', 'resolved', 'closed']),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { inArray } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+      
+      await db.update(tickets)
+        .set({ status: input.status })
+        .where(inArray(tickets.id, input.ticketIds));
+      return { success: true, count: input.ticketIds.length };
+    }),
+
+  // Bulk assign tickets
+  bulkAssign: adminOrSupportProcedure
+    .input(z.object({
+      ticketIds: z.array(z.number()),
+      assignedTo: z.number(),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { inArray } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+      
+      await db.update(tickets)
+        .set({ assignedTo: input.assignedTo })
+        .where(inArray(tickets.id, input.ticketIds));
+      return { success: true, count: input.ticketIds.length };
+    }),
 });

@@ -111,11 +111,11 @@
 - [x] Filter by customer type (company/individual)
 - [x] CRM navigation in admin dashboard
 
-## In Progress - Ticket Bulk Operations
-- [ ] Add checkboxes to select multiple tickets
-- [ ] Add bulk actions bar (assign, change status, delete)
-- [ ] Implement "select all" functionality
-- [ ] Add confirmation dialogs for bulk delete
+## Completed - Ticket Bulk Operations
+- [x] Add checkboxes to select multiple tickets
+- [x] Add bulk actions bar with select/deselect all
+- [x] Implement bulk delete functionality with confirmation
+- [x] Add bulk operation API endpoints (delete, status change, assign)
 
 ## Completed - Product Catalog
 - [x] Create product catalog database schema (SKU, name, description, category, price, unit, VAT)
