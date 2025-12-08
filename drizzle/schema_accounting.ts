@@ -269,3 +269,39 @@ export const products = mysqlTable("products", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
+
+/**
+ * Recurring Invoices table for automated billing
+ */
+export const recurringInvoices = mysqlTable("recurringInvoices", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Reference to customer */
+  customerId: int("customerId").notNull(),
+  /** Template name for identification */
+  templateName: varchar("templateName", { length: 255 }).notNull(),
+  /** Recurrence interval */
+  interval: mysqlEnum("interval", ["monthly", "quarterly", "yearly"]).notNull(),
+  /** Next scheduled run date */
+  nextRunDate: timestamp("nextRunDate").notNull(),
+  /** Last run date (when last invoice was created) */
+  lastRunDate: timestamp("lastRunDate"),
+  /** Is this recurring invoice active */
+  isActive: boolean("isActive").default(true).notNull(),
+  /** Internal notes */
+  notes: text("notes"),
+  /** Invoice template data (JSON string of invoice items) */
+  items: text("items").notNull(),
+  /** Default discount */
+  discount: varchar("discount", { length: 20 }).default("0"),
+  /** Default tax rate */
+  taxRate: varchar("taxRate", { length: 10 }).default("8.1"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+}, (table) => ({
+  customerIdx: index("customer_idx").on(table.customerId),
+  nextRunDateIdx: index("next_run_date_idx").on(table.nextRunDate),
+  isActiveIdx: index("is_active_idx").on(table.isActive),
+}));
+
+export type RecurringInvoice = typeof recurringInvoices.$inferSelect;
+export type InsertRecurringInvoice = typeof recurringInvoices.$inferInsert;

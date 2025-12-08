@@ -31,6 +31,7 @@ const PublicKnowledgeBase = lazy(() => import("@/pages/PublicKnowledgeBase"));
 const Accounting = lazy(() => import("@/pages/Accounting"));
 const CRM = lazy(() => import("@/pages/CRM"));
 const Products = lazy(() => import("@/pages/Products"));
+const RecurringInvoices = lazy(() => import("@/pages/RecurringInvoices"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -58,6 +59,7 @@ function Router() {
         <Route path="/accounting" component={Accounting} />
         <Route path="/crm" component={CRM} />
         <Route path="/products" component={Products} />
+        <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

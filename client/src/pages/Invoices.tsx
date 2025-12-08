@@ -465,6 +465,19 @@ function ViewInvoiceDialog({ invoiceId, onClose, onSuccess }: any) {
     },
   });
 
+  const sendEmail = trpc.email.sendInvoice.useMutation({
+    onSuccess: (data) => {
+      toast.success("Rechnung erfolgreich per E-Mail versendet");
+      if (data.previewUrl) {
+        console.log("E-Mail Vorschau:", data.previewUrl);
+      }
+      onSuccess();
+    },
+    onError: (error) => {
+      toast.error(`Fehler beim Versenden: ${error.message}`);
+    },
+  });
+
   if (isLoading || !invoice) {
     return (
       <Dialog open={true} onOpenChange={onClose}>
@@ -533,6 +546,13 @@ function ViewInvoiceDialog({ invoiceId, onClose, onSuccess }: any) {
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
+            <Button 
+              variant="outline"
+              onClick={() => sendEmail.mutate({ invoiceId })}
+              disabled={sendEmail.isPending}
+            >
+              {sendEmail.isPending ? "Wird gesendet..." : "Per E-Mail versenden"}
+            </Button>
             {invoice.status !== "paid" && (
               <Button onClick={() => markPaid.mutate({ id: invoiceId })}>
                 Als bezahlt markieren

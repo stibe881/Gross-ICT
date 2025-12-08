@@ -131,3 +131,16 @@
 ## Completed - Customer Improvements
 - [x] Optimize customer details view for mobile devices (responsive grid layout)
 - [x] Set customer number to start at 101
+
+## Completed - Invoice Automation
+- [x] Create recurring invoice database schema (interval, next run date, template)
+- [x] Implement recurring invoice API (create, edit, delete, pause/resume)
+- [x] Add email sending functionality for invoices (SMTP configuration with nodemailer)
+- [x] Create UI for managing recurring invoices
+- [x] Add "Send via Email" button to invoice detail view
+- [x] Add recurring invoices route and navigation
+
+## Future Enhancements
+- [ ] Implement automatic invoice generation scheduler (requires cron job or background worker)
+- [ ] Add email templates customization
+- [ ] Add PDF attachment to invoice emails
