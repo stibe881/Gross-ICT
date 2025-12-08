@@ -89,12 +89,14 @@
 - [x] Implement "Create invoice from tickets" API
 - [x] Add invoices navigation to admin dashboard
 
-## In Progress - Accounting Module (Phase 2)
+## Completed - Accounting Module (Phase 2)
 - [x] Add "Create invoice" button in ticket detail modal
 - [x] Implement quote management UI and conversion to invoices
-- [ ] Add PDF generation for invoices and quotes
-- [ ] Create customer management UI
-- [ ] Create accounting settings page (company info, logo, invoice design)
+- [x] Add PDF generation for invoices and quotes
+- [x] Create customer management UI (CRM)
+- [x] Create accounting settings page (company info, bank details, invoice design)
+
+## In Progress - Accounting Module (Phase 3)
 - [ ] Add "accounting" role and permissions
 - [ ] Create customer portal for viewing invoices
 - [ ] Add advanced reporting dashboard (revenue charts, customer analytics)

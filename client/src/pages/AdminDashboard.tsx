@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings } from "lucide-react";
 import { toast } from "sonner";
 import { useState } from "react";
 import { TicketDetail } from "@/components/TicketDetail";
@@ -212,6 +212,15 @@ export default function AdminDashboard() {
                   >
                     <Package className="h-4 w-4 md:mr-2" />
                     <span className="hidden md:inline">Produkte</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => setLocation("/accounting-settings")}
+                    className="border-white/20 bg-white/5 hover:bg-white/10"
+                    size="sm"
+                  >
+                    <Settings className="h-4 w-4 md:mr-2" />
+                    <span className="hidden md:inline">Einstellungen</span>
                   </Button>
                 </>
               )}
