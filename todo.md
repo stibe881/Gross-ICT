@@ -239,3 +239,20 @@
 - [x] Save template settings to accountingSettings
 - [x] PDF generation already uses custom settings (primaryColor, logoUrl)
 - [x] Add navigation button in AccountingSettings
+
+## Completed - Website Optimization
+- [x] Fix TypeScript errors in CRM.tsx (language field)
+- [x] Remove code duplicates and improve code quality (N+1 queries fixed)
+- [x] Optimize database queries and add indexes
+- [x] Create comprehensive database indexes (45+ indexes)
+- [x] Fix N+1 query problem in recurringInvoiceRouter
+- [x] Improve error handling and validation (already implemented in routers)
+- [x] Enhance UI/UX and responsive design
+- [x] Add loading states and skeleton screens (LoadingSkeleton component)
+- [ ] Optimize bundle size and lazy loading
+- [ ] Improve accessibility (ARIA labels, keyboard navigation)
+- [x] Add input validation and sanitization (Zod schemas implemented)
+- [x] Enhance security (SQL injection, XSS prevention)
+- [x] Create comprehensive security audit document
+- [ ] Implement rate limiting (high priority)
+- [ ] Add file upload validation (medium priority)

@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -71,7 +72,11 @@ export default function AccountingSettings() {
   };
 
   if (isLoading) {
-    return <div className="p-6">Lade...</div>;
+    return (
+      <div className="space-y-6 p-6">
+        <LoadingSkeleton variant="form" rows={6} />
+      </div>
+    );
   }
 
   return (

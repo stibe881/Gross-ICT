@@ -21,20 +21,16 @@ export const recurringInvoiceRouter = router({
       const db = await getDb();
       if (!db) return [];
       
-      const recurring = await db.select().from(recurringInvoices);
+      // Use JOIN to fetch recurring invoices with customer data in one query
+      const result = await db
+        .select()
+        .from(recurringInvoices)
+        .leftJoin(customers, eq(recurringInvoices.customerId, customers.id));
       
-      // Fetch customer data for each recurring invoice
-      const withCustomers = await Promise.all(
-        recurring.map(async (r) => {
-          const customer = await db.select().from(customers).where(eq(customers.id, r.customerId)).limit(1);
-          return {
-            ...r,
-            customer: customer[0] || null,
-          };
-        })
-      );
-      
-      return withCustomers;
+      return result.map(row => ({
+        ...row.recurringInvoices,
+        customer: row.customers,
+      }));
     }),
 
   // Get by ID

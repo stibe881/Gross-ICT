@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { LoadingSkeleton } from "@/components/LoadingSkeleton";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -72,8 +73,10 @@ export default function InvoiceTemplateEditor() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <p className="text-muted-foreground">Lade Einstellungen...</p>
+      <div className="min-h-screen bg-background p-8">
+        <div className="container mx-auto">
+          <LoadingSkeleton variant="form" rows={8} />
+        </div>
       </div>
     );
   }
