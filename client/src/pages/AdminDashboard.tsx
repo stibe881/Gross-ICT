@@ -23,6 +23,8 @@ import { CreateTicketDialog } from "@/components/CreateTicketDialog";
 import { DashboardCharts } from "@/components/DashboardCharts";
 import { SortableCard } from "@/components/SortableCard";
 import { useWebSocket } from "@/contexts/WebSocketContext";
+import { ActivityFeed } from "@/components/ActivityFeed";
+import { FilterPresets } from "@/components/FilterPresets";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -777,6 +779,13 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Activity Feed */}
+        {user?.role === "admin" && (
+          <div className="mb-8">
+            <ActivityFeed limit={8} />
+          </div>
+        )}
+
         {/* Dashboard Charts */}
         {user?.role === "admin" && templates[dashboardTemplate as keyof typeof templates]?.showCharts && (
           <DashboardCharts />
@@ -972,6 +981,24 @@ export default function AdminDashboard() {
           {/* Search and Filters */}
           <Card className="bg-gradient-to-br from-white/10 to-white/5 border-white/20 mb-6 backdrop-blur-sm">
             <CardContent className="p-6 space-y-6">
+              {/* Filter Presets */}
+              <FilterPresets
+                filterType="tickets"
+                currentFilters={{
+                  search: searchQuery,
+                  status: statusFilter,
+                  priority: priorityFilter,
+                  category: categoryFilter,
+                }}
+                onApplyPreset={(filters) => {
+                  setSearchQuery(filters.search || "");
+                  setStatusFilter(filters.status);
+                  setPriorityFilter(filters.priority);
+                  setCategoryFilter(filters.category);
+                }}
+              />
+              
+              <div className="border-t border-white/10 pt-6" />
               {/* Search Bar */}
               <div className="relative group">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary transition-colors" />

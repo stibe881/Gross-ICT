@@ -1,4 +1,4 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, unique } from "drizzle-orm/mysql-core";
+import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, unique, tinyint } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -179,6 +179,58 @@ export const favorites = mysqlTable("favorites", {
 
 export type Favorite = typeof favorites.$inferSelect;
 export type InsertFavorite = typeof favorites.$inferInsert;
+
+/**
+ * Activity feed table for tracking all system activities
+ */
+export const activities = mysqlTable("activities", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Type of activity (ticket_created, ticket_updated, invoice_created, etc.) */
+  activityType: varchar("activityType", { length: 50 }).notNull(),
+  /** User who performed the action */
+  userId: int("userId").notNull(),
+  /** User name (denormalized for performance) */
+  userName: varchar("userName", { length: 255 }),
+  /** Activity title/summary */
+  title: varchar("title", { length: 500 }).notNull(),
+  /** Activity description */
+  description: text("description"),
+  /** Related entity type (ticket, invoice, customer, etc.) */
+  entityType: varchar("entityType", { length: 50 }),
+  /** Related entity ID */
+  entityId: int("entityId"),
+  /** Activity metadata (JSON) */
+  metadata: text("metadata"),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Activity = typeof activities.$inferSelect;
+export type InsertActivity = typeof activities.$inferInsert;
+
+/**
+ * Saved filter presets for quick access to common searches
+ */
+export const filterPresets = mysqlTable("filterPresets", {
+  id: int("id").autoincrement().primaryKey(),
+  /** User who owns this preset */
+  userId: int("userId").notNull(),
+  /** Preset name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Filter type (tickets, invoices, customers, etc.) */
+  filterType: varchar("filterType", { length: 50 }).notNull(),
+  /** Filter configuration (JSON) */
+  filters: text("filters").notNull(),
+  /** Is this a default/favorite preset */
+  isDefault: tinyint("isDefault").default(0).notNull(),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Updated timestamp */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type FilterPreset = typeof filterPresets.$inferSelect;
+export type InsertFilterPreset = typeof filterPresets.$inferInsert;
 
 // Export accounting module tables
 export * from "./schema_accounting";

@@ -325,3 +325,13 @@
 - [x] Add export functionality to charts (PNG, PDF, CSV download)
 - [x] Create predefined dashboard templates (Finanz-fokussiert, Support-fokussiert, Management-Übersicht)
 - [x] Add template switcher UI with one-click activation
+
+## Completed - Activity Feed & Advanced Filters
+- [x] Create database schema for activity feed (activities table)
+- [x] Implement backend tRPC router for activity logging and retrieval
+- [x] Create ActivityFeed UI component with chronological timeline
+- [x] Add WebSocket events for real-time activity updates
+- [x] Create database schema for saved filter presets
+- [x] Implement backend for saving, loading, and deleting filter presets
+- [x] Add UI for creating, managing, and applying filter presets
+- [x] Integrate filter presets with existing ticket search/filter system
