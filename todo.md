@@ -314,3 +314,8 @@
 - [x] Add live data to dashboard quick-access cards (offene Rechnungen, neue Tickets, etc.)
 - [x] Implement notification center with bell icon and dropdown in header
 - [x] Create favorites system for frequently used functions
+
+## Completed - Advanced Dashboard Features
+- [x] Install Chart.js and create dashboard chart widgets (Umsatz-Trend, Ticket-Status-Verteilung, Kunden-Wachstum)
+- [x] Implement notification settings page with configurable preferences (E-Mail, Push, Kategorien)
+- [x] Create dashboard personalization with drag-and-drop for card reordering and widget management

@@ -11,12 +11,17 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical } from "lucide-react";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, rectSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { TicketDetail } from "@/components/TicketDetail";
 import { DashboardStatistics } from "@/components/DashboardStatistics";
 import { CreateTicketDialog } from "@/components/CreateTicketDialog";
+import { DashboardCharts } from "@/components/DashboardCharts";
+import { SortableCard } from "@/components/SortableCard";
 
 export default function AdminDashboard() {
   const { user, loading: authLoading } = useAuth();
@@ -98,6 +103,39 @@ export default function AdminDashboard() {
   
   const isFavorite = (itemType: string) => {
     return userFavorites?.some((fav: any) => fav.itemType === itemType) || false;
+  };
+
+  // Dashboard card order state
+  const defaultCardOrder = ["accounting", "crm", "reminders", "statistics"];
+  const [cardOrder, setCardOrder] = useState<string[]>(() => {
+    const saved = localStorage.getItem("dashboardCardOrder");
+    return saved ? JSON.parse(saved) : defaultCardOrder;
+  });
+
+  // Save card order to localStorage
+  useEffect(() => {
+    localStorage.setItem("dashboardCardOrder", JSON.stringify(cardOrder));
+  }, [cardOrder]);
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setCardOrder((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+      toast.success("Karten-Reihenfolge gespeichert");
+    }
   };
 
   const { data: supportStaff } = trpc.tickets.supportStaff.useQuery(undefined, {
@@ -296,13 +334,13 @@ export default function AdminDashboard() {
                           <div className="border-t border-white/10 my-2"></div>
                           <button
                             onClick={() => {
-                              setLocation("/accounting-settings");
+                              setLocation("/notification-settings");
                               setShowManagementDropdown(false);
                             }}
                             className="w-full px-4 py-2 text-left text-sm hover:bg-white/10 flex items-center gap-2"
                           >
                             <Settings className="h-4 w-4" />
-                            Einstellungen
+                            Benachrichtigungen
                           </button>
                         </div>
                       </div>
@@ -535,13 +573,13 @@ export default function AdminDashboard() {
                     
                     <button
                       onClick={() => {
-                        setLocation("/accounting-settings");
+                        setLocation("/notification-settings");
                         setShowMobileMenu(false);
                       }}
                       className="w-full px-4 py-3 hover:bg-white/10 rounded-lg text-left flex items-center gap-3"
                     >
                       <Settings className="h-5 w-5" />
-                      Einstellungen
+                      Benachrichtigungen
                     </button>
                   </>
                 )}
@@ -590,136 +628,128 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Dashboard Charts */}
+        {user?.role === "admin" && (
+          <DashboardCharts />
+        )}
+
         {/* Quick Access Cards */}
         {user?.role === "admin" && (
           <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">Schnellzugriff</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card 
-                className="bg-gradient-to-br from-primary/20 to-primary/5 border-primary/30 cursor-pointer hover:scale-105 transition-transform relative group"
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavoriteMutation.mutate({
-                      itemType: "accounting",
-                      itemLabel: "Finanzen",
-                      itemPath: "/accounting",
-                    });
-                  }}
-                  className="absolute top-2 right-2 p-1.5 hover:bg-primary/20 rounded-full transition-colors z-10"
-                >
-                  <Star className={`h-4 w-4 ${isFavorite("accounting") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
-                </button>
-                <div onClick={() => setLocation("/accounting")}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-primary/20 rounded-lg">
-                        <Receipt className="h-6 w-6 text-primary" />
-                      </div>
-                      <CardTitle className="text-base font-semibold">Finanzen</CardTitle>
-                    </div>
-                  </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-400">Offene Rechnungen</p>
-                    <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
-                      {openInvoicesCount}
-                    </Badge>
-                  </div>
-                </CardContent>
-                </div>
-              </Card>
-
-              <Card 
-                className="bg-gradient-to-br from-blue-500/20 to-blue-500/5 border-blue-500/30 cursor-pointer hover:scale-105 transition-transform relative group"
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavoriteMutation.mutate({
-                      itemType: "crm",
-                      itemLabel: "CRM",
-                      itemPath: "/crm",
-                    });
-                  }}
-                  className="absolute top-2 right-2 p-1.5 hover:bg-blue-500/20 rounded-full transition-colors z-10"
-                >
-                  <Star className={`h-4 w-4 ${isFavorite("crm") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
-                </button>
-                <div onClick={() => setLocation("/crm")}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-blue-500/20 rounded-lg">
-                        <UserCircle className="h-6 w-6 text-blue-400" />
-                      </div>
-                      <CardTitle className="text-base font-semibold">CRM</CardTitle>
-                    </div>
-                  </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-400">Gesamt Kunden</p>
-                    <Badge variant="secondary" className="bg-blue-500/20 text-blue-400 border-blue-500/30">
-                      {totalCustomersCount}
-                    </Badge>
-                  </div>
-                </CardContent>
-                </div>
-              </Card>
-
-              <Card 
-                className="bg-gradient-to-br from-purple-500/20 to-purple-500/5 border-purple-500/30 cursor-pointer hover:scale-105 transition-transform relative group"
-              >
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleFavoriteMutation.mutate({
-                      itemType: "reminders",
-                      itemLabel: "Mahnungs-Log",
-                      itemPath: "/accounting/reminders",
-                    });
-                  }}
-                  className="absolute top-2 right-2 p-1.5 hover:bg-purple-500/20 rounded-full transition-colors z-10"
-                >
-                  <Star className={`h-4 w-4 ${isFavorite("reminders") ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
-                </button>
-                <div onClick={() => setLocation("/accounting/reminders")}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="p-2 bg-purple-500/20 rounded-lg">
-                        <Bell className="h-6 w-6 text-purple-400" />
-                      </div>
-                      <CardTitle className="text-base font-semibold">Mahnungs-Log</CardTitle>
-                    </div>
-                  </CardHeader>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-gray-400">Überfällige Mahnungen</p>
-                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                      {overdueRemindersCount}
-                    </Badge>
-                  </div>
-                </CardContent>
-                </div>
-              </Card>
-
-              <Card 
-                className="bg-gradient-to-br from-green-500/20 to-green-500/5 border-green-500/30 cursor-pointer hover:scale-105 transition-transform"
-                onClick={() => setShowStatistics(!showStatistics)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/20 rounded-lg">
-                      <TrendingUp className="h-6 w-6 text-green-400" />
-                    </div>
-                    <CardTitle className="text-base font-semibold">Statistiken</CardTitle>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-400">Detaillierte Ticket-Analysen</p>
-                </CardContent>
-              </Card>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Schnellzugriff</h2>
+              <p className="text-sm text-gray-400">Ziehen Sie die Karten, um die Reihenfolge anzupassen</p>
             </div>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={cardOrder} strategy={rectSortingStrategy}>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {cardOrder.map((cardId) => {
+                    const cardConfig: Record<string, any> = {
+                      accounting: {
+                        icon: Receipt,
+                        title: "Finanzen",
+                        path: "/accounting",
+                        gradient: "from-primary/20 to-primary/5 border-primary/30",
+                        iconBg: "bg-primary/20",
+                        iconColor: "text-primary",
+                        badgeBg: "bg-primary/20 text-primary border-primary/30",
+                        description: "Offene Rechnungen",
+                        count: openInvoicesCount,
+                      },
+                      crm: {
+                        icon: UserCircle,
+                        title: "CRM",
+                        path: "/crm",
+                        gradient: "from-blue-500/20 to-blue-500/5 border-blue-500/30",
+                        iconBg: "bg-blue-500/20",
+                        iconColor: "text-blue-400",
+                        badgeBg: "bg-blue-500/20 text-blue-400 border-blue-500/30",
+                        description: "Gesamt Kunden",
+                        count: totalCustomersCount,
+                      },
+                      reminders: {
+                        icon: Bell,
+                        title: "Mahnungs-Log",
+                        path: "/accounting/reminders",
+                        gradient: "from-purple-500/20 to-purple-500/5 border-purple-500/30",
+                        iconBg: "bg-purple-500/20",
+                        iconColor: "text-purple-400",
+                        badgeBg: "bg-purple-500/20 text-purple-400 border-purple-500/30",
+                        description: "Überfällige Mahnungen",
+                        count: overdueRemindersCount,
+                      },
+                      statistics: {
+                        icon: TrendingUp,
+                        title: "Statistiken",
+                        path: null,
+                        gradient: "from-green-500/20 to-green-500/5 border-green-500/30",
+                        iconBg: "bg-green-500/20",
+                        iconColor: "text-green-400",
+                        badgeBg: null,
+                        description: "Detaillierte Ticket-Analysen",
+                        count: null,
+                      },
+                    };
+
+                    const config = cardConfig[cardId];
+                    if (!config) return null;
+
+                    const Icon = config.icon;
+
+                    return (
+                      <SortableCard key={cardId} id={cardId}>
+                        <Card 
+                          className={`bg-gradient-to-br ${config.gradient} cursor-pointer hover:scale-105 transition-transform relative group`}
+                          onClick={() => {
+                            if (cardId === "statistics") {
+                              setShowStatistics(!showStatistics);
+                            } else if (config.path) {
+                              setLocation(config.path);
+                            }
+                          }}
+                        >
+                          {cardId !== "statistics" && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFavoriteMutation.mutate({
+                                  itemType: cardId,
+                                  itemLabel: config.title,
+                                  itemPath: config.path,
+                                });
+                              }}
+                              className={`absolute top-2 right-2 p-1.5 hover:${config.iconBg} rounded-full transition-colors z-10`}
+                            >
+                              <Star className={`h-4 w-4 ${isFavorite(cardId) ? "fill-yellow-400 text-yellow-400" : "text-gray-400"}`} />
+                            </button>
+                          )}
+                          <CardHeader className="pb-3">
+                            <div className="flex items-center gap-3">
+                              <div className={`p-2 ${config.iconBg} rounded-lg`}>
+                                <Icon className={`h-6 w-6 ${config.iconColor}`} />
+                              </div>
+                              <CardTitle className="text-base font-semibold">{config.title}</CardTitle>
+                            </div>
+                          </CardHeader>
+                          <CardContent>
+                            {config.count !== null ? (
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm text-gray-400">{config.description}</p>
+                                <Badge variant="secondary" className={config.badgeBg}>
+                                  {config.count}
+                                </Badge>
+                              </div>
+                            ) : (
+                              <p className="text-sm text-gray-400">{config.description}</p>
+                            )}
+                          </CardContent>
+                        </Card>
+                      </SortableCard>
+                    );
+                  })}
+                </div>
+              </SortableContext>
+            </DndContext>
           </div>
         )}
 
