@@ -29,6 +29,35 @@ export default function Invoices() {
 
   const { data: customers } = trpc.customers.all.useQuery();
 
+  const downloadPDF = trpc.pdf.generateInvoicePDF.useMutation({
+    onSuccess: (data) => {
+      // Convert base64 to blob and download
+      const byteCharacters = atob(data.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = data.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("PDF erfolgreich heruntergeladen");
+    },
+    onError: (error) => {
+      toast.error(`Fehler beim PDF-Download: ${error.message}`);
+    },
+  });
+
+  const handleDownloadPDF = (invoiceId: number, invoiceNumber: string) => {
+    downloadPDF.mutate({ invoiceId });
+  };
+
   const handleViewInvoice = (invoiceId: number) => {
     setSelectedInvoiceId(invoiceId);
   };
@@ -56,18 +85,14 @@ export default function Invoices() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Rechnungen</h1>
-            <p className="text-muted-foreground mt-1">Verwalten Sie Ihre Rechnungen und Zahlungen</p>
-          </div>
-          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" />
-            Neue Rechnung
-          </Button>
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div />
+        <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Neue Rechnung
+        </Button>
+      </div>
 
         {/* Filters */}
         <Card className="p-4 mb-6">
@@ -171,7 +196,7 @@ export default function Invoices() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => toast.info("PDF-Download wird implementiert")}
+                        onClick={() => handleDownloadPDF(invoice.id, invoice.invoiceNumber)}
                       >
                         <Download className="w-4 h-4 mr-1" />
                         PDF
@@ -203,7 +228,6 @@ export default function Invoices() {
             onSuccess={refetch}
           />
         )}
-      </div>
     </div>
   );
 }

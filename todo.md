@@ -98,3 +98,14 @@
 - [ ] Add "accounting" role and permissions
 - [ ] Create customer portal for viewing invoices
 - [ ] Add advanced reporting dashboard (revenue charts, customer analytics)
+
+## Completed - UI Reorganization
+- [x] Merge invoices and quotes into one "Buchhaltung" module with tabs
+- [x] Fix menu icons (different icons for templates and knowledge base)
+- [ ] Add CRM/Customers navigation button (pending customer management UI)
+
+## In Progress - Ticket Bulk Operations
+- [ ] Add checkboxes to select multiple tickets
+- [ ] Add bulk actions bar (assign, change status, delete)
+- [ ] Implement "select all" functionality
+- [ ] Add confirmation dialogs for bulk operations

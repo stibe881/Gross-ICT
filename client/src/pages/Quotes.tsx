@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Search, FileText, Eye, ArrowRight } from "lucide-react";
+import { Plus, Search, FileText, Eye, ArrowRight, Download } from "lucide-react";
 import { useLocation } from "wouter";
 
 export default function Quotes() {
@@ -28,6 +28,35 @@ export default function Quotes() {
   });
 
   const { data: customers } = trpc.customers.all.useQuery();
+
+  const downloadPDF = trpc.pdf.generateQuotePDF.useMutation({
+    onSuccess: (data) => {
+      // Convert base64 to blob and download
+      const byteCharacters = atob(data.data);
+      const byteNumbers = new Array(byteCharacters.length);
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      const byteArray = new Uint8Array(byteNumbers);
+      const blob = new Blob([byteArray], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = data.filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      toast.success("PDF erfolgreich heruntergeladen");
+    },
+    onError: (error) => {
+      toast.error(`Fehler beim PDF-Download: ${error.message}`);
+    },
+  });
+
+  const handleDownloadPDF = (quoteId: number) => {
+    downloadPDF.mutate({ quoteId });
+  };
 
   const handleViewQuote = (quoteId: number) => {
     setSelectedQuoteId(quoteId);
@@ -56,18 +85,14 @@ export default function Quotes() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Angebote / Offerten</h1>
-            <p className="text-muted-foreground mt-1">Erstellen und verwalten Sie Ihre Angebote</p>
-          </div>
-          <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
-            <Plus className="w-4 h-4" />
-            Neues Angebot
-          </Button>
-        </div>
+    <div>
+      <div className="flex items-center justify-between mb-6">
+        <div />
+        <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
+          <Plus className="w-4 h-4" />
+          Neues Angebot
+        </Button>
+      </div>
 
         {/* Filters */}
         <Card className="p-4 mb-6">
@@ -153,6 +178,14 @@ export default function Quotes() {
                         <Eye className="w-4 h-4 mr-1" />
                         Ansehen
                       </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleDownloadPDF(quote.id)}
+                      >
+                        <Download className="w-4 h-4 mr-1" />
+                        PDF
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -185,7 +218,6 @@ export default function Quotes() {
             }}
           />
         )}
-      </div>
     </div>
   );
 }
