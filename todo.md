@@ -189,3 +189,32 @@
 - [x] Build monthly comparison widget
 - [x] Integrate widgets into admin dashboard
 - [x] Add navigation button to AdminDashboard
+
+## Completed - Export Functions
+- [x] Add Excel export for financial reports (cashflow, revenue forecast)
+- [x] Create export button in FinancialDashboard
+- [x] Generate formatted Excel files with summary data
+- [x] Export outstanding invoices to Excel
+
+## Completed - Payment Reminder Tracking
+- [x] Create payment reminder log table in database
+- [x] Add tracking to payment reminder scheduler
+- [x] Create ReminderLog dashboard page
+- [x] Show sent reminders with status and success rates
+- [x] Add daily statistics chart
+- [x] Add filtering by status and reminder type
+- [x] Add navigation from AccountingDashboard
+
+## In Progress - Multi-Currency Support
+- [ ] Add currency field to customers table
+- [ ] Update invoice schema to support multiple currencies
+- [ ] Add currency conversion API integration
+- [ ] Create currency settings in accounting settings
+- [ ] Update invoice calculations for multi-currency
+
+## In Progress - Multilingual Invoices
+- [ ] Add language field to customers table
+- [ ] Create German invoice template
+- [ ] Create English invoice template
+- [ ] Create French invoice template
+- [ ] Update PDF generation to support multiple languages

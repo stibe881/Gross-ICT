@@ -1,7 +1,9 @@
 import { trpc } from '@/lib/trpc';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Calendar, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, DollarSign, AlertCircle, Calendar, BarChart3, Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 export default function FinancialDashboard() {
@@ -38,9 +40,73 @@ export default function FinancialDashboard() {
     return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
   };
 
+  const exportCashflowMutation = trpc.export.exportCashflowExcel.useMutation({
+    onSuccess: (data) => {
+      const link = document.createElement('a');
+      link.href = `data:${data.mimeType};base64,${data.data}`;
+      link.download = data.filename;
+      link.click();
+      toast.success('Cashflow-Report exportiert');
+    },
+    onError: () => toast.error('Export fehlgeschlagen'),
+  });
+
+  const exportForecastMutation = trpc.export.exportRevenueForecastExcel.useMutation({
+    onSuccess: (data) => {
+      const link = document.createElement('a');
+      link.href = `data:${data.mimeType};base64,${data.data}`;
+      link.download = data.filename;
+      link.click();
+      toast.success('Umsatzprognose exportiert');
+    },
+    onError: () => toast.error('Export fehlgeschlagen'),
+  });
+
+  const exportOutstandingMutation = trpc.export.exportOutstandingInvoicesExcel.useMutation({
+    onSuccess: (data) => {
+      const link = document.createElement('a');
+      link.href = `data:${data.mimeType};base64,${data.data}`;
+      link.download = data.filename;
+      link.click();
+      toast.success('Offene Rechnungen exportiert');
+    },
+    onError: () => toast.error('Export fehlgeschlagen'),
+  });
+
   return (
     <div className="container py-8">
-      <h1 className="text-3xl font-bold mb-8">Finanz-Dashboard</h1>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold">Finanz-Dashboard</h1>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportCashflowMutation.mutate({ months: 6 })}
+            disabled={exportCashflowMutation.isPending}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Cashflow
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportForecastMutation.mutate({ months: 3 })}
+            disabled={exportForecastMutation.isPending}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Prognose
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportOutstandingMutation.mutate()}
+            disabled={exportOutstandingMutation.isPending}
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Offene Rechnungen
+          </Button>
+        </div>
+      </div>
 
       {/* Key Metrics Summary */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

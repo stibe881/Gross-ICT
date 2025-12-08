@@ -165,3 +165,5 @@ export type InsertKbArticle = typeof kbArticles.$inferInsert;
 
 // Export accounting module tables
 export * from "./schema_accounting";
+// Export reminder log tables
+export * from "./schema_reminder_log";

@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, LogOut, Receipt, UserCircle, Package, Settings } from "lucide-react";
+import { Loader2, LogOut, Receipt, UserCircle, Package, Settings, Mail } from "lucide-react";
 import { toast } from "sonner";
 
 /**
@@ -113,7 +113,23 @@ export default function AccountingDashboard() {
             <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
           </button>
 
-          {/* Settings Module */}
+               {/* Reminder Log */}
+          <button
+            onClick={() => setLocation("/reminder-log")}
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 text-left transition-all hover:border-primary/50 hover:bg-white/10 hover:shadow-2xl hover:shadow-primary/10"
+          >
+            <div className="relative z-10">
+              <div className="mb-4 inline-flex rounded-xl bg-orange-500/20 p-3">
+                <Mail className="h-8 w-8 text-orange-500" />
+              </div>
+              <h2 className="mb-2 text-2xl font-bold">Mahnungs-Log</h2>
+              <p className="text-sm text-gray-400">
+                Überwachung gesendeter Zahlungserinnerungen
+              </p>
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />          </button>
+
+          {/* Settings */}
           <button
             onClick={() => setLocation("/accounting-settings")}
             className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-8 text-left transition-all hover:border-purple-500/50 hover:bg-white/10 hover:shadow-2xl hover:shadow-purple-500/10"
