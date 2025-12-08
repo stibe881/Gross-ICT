@@ -249,8 +249,6 @@ export default function Home() {
         </div>
       </section>
 
-      <PartnerMarquee />
-      
       <FAQSection />
 
       <SecurityCheck />
@@ -258,6 +256,7 @@ export default function Home() {
       <StatusDashboard />
 
       <NewsSection />
+      <PartnerMarquee />
       <Newsletter />
     </Layout>
   );

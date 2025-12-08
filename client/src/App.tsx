@@ -43,7 +43,14 @@ const InvoiceTemplateEditor = lazy(() => import("@/pages/InvoiceTemplateEditor")
 function Router() {
   // make sure to consider if you need authentication for certain routes
   return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+    <Suspense fallback={
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    }>
       <Switch>
         <Route path={"/"} component={Home} />
         <Route path={"/contact"} component={Contact} />
