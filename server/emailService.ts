@@ -35,6 +35,153 @@ export async function initializeEmailTransporter() {
  * Send invoice via email
  */
 /**
+ * Send mention notification email
+ */
+export async function sendMentionEmail(options: {
+  to: string;
+  mentionedBy: string;
+  ticketId: number;
+  ticketSubject: string;
+  commentText: string;
+  ticketUrl: string;
+  companyName: string;
+  companyEmail: string;
+}) {
+  if (!transporter) {
+    await initializeEmailTransporter();
+  }
+
+  const subject = `Sie wurden in Ticket #${options.ticketId} erwähnt`;
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none; }
+    .button { display: inline-block; background: #D4AF37; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 15px 0; }
+    .comment { background: white; padding: 15px; border-left: 4px solid #D4AF37; margin: 15px 0; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>🔔 Neue Erwähnung</h2>
+    </div>
+    <div class="content">
+      <p><strong>${options.mentionedBy}</strong> hat Sie in einem Kommentar erwähnt:</p>
+      <p><strong>Ticket:</strong> #${options.ticketId} - ${options.ticketSubject}</p>
+      <div class="comment">
+        <p>${options.commentText}</p>
+      </div>
+      <a href="${options.ticketUrl}" class="button">Ticket anzeigen</a>
+    </div>
+    <div class="footer">
+      <p>${options.companyName}</p>
+      <p>Diese E-Mail wurde automatisch generiert.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  try {
+    const info = await transporter!.sendMail({
+      from: `"${options.companyName}" <${options.companyEmail}>`,
+      to: options.to,
+      subject,
+      html,
+    });
+
+    console.log('[Email] Mention notification sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('[Email] Failed to send mention notification:', error);
+    throw new Error('Failed to send email');
+  }
+}
+
+/**
+ * Send ticket assignment notification email
+ */
+export async function sendAssignmentEmail(options: {
+  to: string;
+  assignedBy: string;
+  ticketId: number;
+  ticketSubject: string;
+  priority: string;
+  ticketUrl: string;
+  companyName: string;
+  companyEmail: string;
+}) {
+  if (!transporter) {
+    await initializeEmailTransporter();
+  }
+
+  const subject = `Neues Ticket zugewiesen: #${options.ticketId}`;
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); color: white; padding: 20px; border-radius: 8px 8px 0 0; }
+    .content { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-top: none; }
+    .button { display: inline-block; background: #D4AF37; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; margin: 15px 0; }
+    .priority { display: inline-block; padding: 4px 12px; border-radius: 4px; font-weight: bold; }
+    .priority-urgent { background: #ef4444; color: white; }
+    .priority-high { background: #f97316; color: white; }
+    .priority-normal { background: #3b82f6; color: white; }
+    .priority-low { background: #10b981; color: white; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h2>📋 Ticket zugewiesen</h2>
+    </div>
+    <div class="content">
+      <p><strong>${options.assignedBy}</strong> hat Ihnen ein neues Ticket zugewiesen:</p>
+      <p><strong>Ticket-Nr:</strong> #${options.ticketId}</p>
+      <p><strong>Betreff:</strong> ${options.ticketSubject}</p>
+      <p><strong>Priorität:</strong> <span class="priority priority-${options.priority.toLowerCase()}">${options.priority}</span></p>
+      <a href="${options.ticketUrl}" class="button">Ticket bearbeiten</a>
+    </div>
+    <div class="footer">
+      <p>${options.companyName}</p>
+      <p>Diese E-Mail wurde automatisch generiert.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  try {
+    const info = await transporter!.sendMail({
+      from: `"${options.companyName}" <${options.companyEmail}>`,
+      to: options.to,
+      subject,
+      html,
+    });
+
+    console.log('[Email] Assignment notification sent:', info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error('[Email] Failed to send assignment notification:', error);
+    throw new Error('Failed to send email');
+  }
+}
+
+/**
  * Send ticket notification email
  */
 export async function sendTicketNotificationEmail(options: {

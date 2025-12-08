@@ -354,3 +354,26 @@
 - [x] Generate new professional logo based on grossICTLogo.png (3 Varianten: modern, minimal, badge)
 - [x] Create multiple logo variations for download
 - [x] Provide logo package to user
+
+## In Progress - Email Integration & SLA System
+- [ ] Configure SMTP settings (host, port, username, password, from address)
+- [ ] Create email notification service with templates
+- [ ] Implement email notifications for mentions (@username)
+- [ ] Add email notifications for ticket assignments
+- [ ] Integrate email sending with automation rules actions
+- [ ] Create SLA policies database schema (response time, resolution time, priority-based)
+- [ ] Implement SLA tracking logic (time calculations, business hours)
+- [ ] Add automatic escalation system for SLA breaches
+- [ ] Build SLA management UI (create, edit, delete policies)
+- [ ] Create SLA monitoring dashboard with breach alerts
+- [ ] Add SLA status indicators to ticket list and detail views
+
+## Logo Replacement
+- [x] Copy large2.png to public folder
+- [x] Update Layout component to use new logo
+- [x] Adjust logo sizing to fit menu without making it larger
+
+## Favicon Update
+- [x] Copy GrossICT-favicon.png to public folder
+- [x] Create multiple favicon sizes (16x16, 32x32, 192x192, 512x512, .ico)
+- [x] Update index.html with new favicon links (already configured)

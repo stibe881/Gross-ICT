@@ -281,6 +281,72 @@ export const filterPresets = mysqlTable("filterPresets", {
 export type FilterPreset = typeof filterPresets.$inferSelect;
 export type InsertFilterPreset = typeof filterPresets.$inferInsert;
 
+/**
+ * SLA Policies - Define service level agreements
+ */
+export const slaPolicies = mysqlTable("slaPolicies", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Policy name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Policy description */
+  description: text("description"),
+  /** Priority this policy applies to (urgent, high, normal, low, or null for all) */
+  priority: varchar("priority", { length: 50 }),
+  /** Response time in minutes (time to first response) */
+  responseTimeMinutes: int("responseTimeMinutes").notNull(),
+  /** Resolution time in minutes (time to resolve) */
+  resolutionTimeMinutes: int("resolutionTimeMinutes").notNull(),
+  /** Warning threshold percentage (e.g., 80 = warn at 80% of time) */
+  warningThreshold: int("warningThreshold").default(80).notNull(),
+  /** Is policy active */
+  isActive: tinyint("isActive").default(1).notNull(),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Updated timestamp */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SlaPolicy = typeof slaPolicies.$inferSelect;
+export type InsertSlaPolicy = typeof slaPolicies.$inferInsert;
+
+/**
+ * SLA Tracking - Track SLA compliance for tickets
+ */
+export const slaTracking = mysqlTable("slaTracking", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Ticket ID */
+  ticketId: int("ticketId").notNull(),
+  /** SLA Policy ID */
+  policyId: int("policyId").notNull(),
+  /** Response deadline */
+  responseDeadline: timestamp("responseDeadline").notNull(),
+  /** Resolution deadline */
+  resolutionDeadline: timestamp("resolutionDeadline").notNull(),
+  /** First response timestamp */
+  firstResponseAt: timestamp("firstResponseAt"),
+  /** Resolution timestamp */
+  resolvedAt: timestamp("resolvedAt"),
+  /** Response SLA status (met, warning, breached) */
+  responseStatus: varchar("responseStatus", { length: 50 }).default("pending").notNull(),
+  /** Resolution SLA status (met, warning, breached) */
+  resolutionStatus: varchar("resolutionStatus", { length: 50 }).default("pending").notNull(),
+  /** Warning email sent for response */
+  responseWarningSent: tinyint("responseWarningSent").default(0).notNull(),
+  /** Breach email sent for response */
+  responseBreachSent: tinyint("responseBreachSent").default(0).notNull(),
+  /** Warning email sent for resolution */
+  resolutionWarningSent: tinyint("resolutionWarningSent").default(0).notNull(),
+  /** Breach email sent for resolution */
+  resolutionBreachSent: tinyint("resolutionBreachSent").default(0).notNull(),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Updated timestamp */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SlaTracking = typeof slaTracking.$inferSelect;
+export type InsertSlaTracking = typeof slaTracking.$inferInsert;
+
 // Export accounting module tables
 export * from "./schema_accounting";
 // Export reminder log tables

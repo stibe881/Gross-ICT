@@ -68,16 +68,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           
           {/* Logo Area */}
           <Link href="/">
-            <div className="flex items-center gap-3 cursor-pointer group px-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-black font-bold text-xs shadow-lg shadow-primary/20">
-                G
-              </div>
-              <span className={cn(
-                "font-bold tracking-tight transition-all duration-300",
-                isScrolled ? "hidden md:block" : "block"
-              )}>
-                Gross <span className="text-primary">ICT</span>
-              </span>
+            <div className="flex items-center cursor-pointer group px-2">
+              <img 
+                src="/logo-new.png" 
+                alt="Gross ICT" 
+                className={cn(
+                  "transition-all duration-300 object-contain",
+                  isScrolled ? "h-8" : "h-10"
+                )}
+              />
             </div>
           </Link>
 

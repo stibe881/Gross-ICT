@@ -102,6 +102,24 @@ export const commentRouter = router({
                 mentionedByUserId: ctx.user!.id,
                 isRead: 0,
               });
+              
+              // Send email notification
+              try {
+                const { sendMentionEmail } = await import('./emailService.js');
+                await sendMentionEmail({
+                  to: mentionedUser.email || '',
+                  mentionedBy: ctx.user!.name || 'User',
+                  ticketId: input.ticketId,
+                  ticketSubject: ticket.subject || 'Ticket',
+                  commentText: input.message,
+                  ticketUrl: `${process.env.VITE_APP_URL || 'https://gross-ict.com'}/admin?ticket=${input.ticketId}`,
+                  companyName: 'Gross ICT',
+                  companyEmail: process.env.SMTP_FROM || 'support@gross-ict.com',
+                });
+              } catch (emailError) {
+                console.error('Failed to send mention email:', emailError);
+                // Don't fail the comment creation if email fails
+              }
             }
           }
         }
