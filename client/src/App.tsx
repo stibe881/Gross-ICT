@@ -29,6 +29,7 @@ const TemplateManagement = lazy(() => import("@/pages/TemplateManagement"));
 const KnowledgeBase = lazy(() => import("@/pages/KnowledgeBase"));
 const PublicKnowledgeBase = lazy(() => import("@/pages/PublicKnowledgeBase"));
 const Accounting = lazy(() => import("@/pages/Accounting"));
+const CRM = lazy(() => import("@/pages/CRM"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -54,6 +55,7 @@ function Router() {
         <Route path="/admin/knowledge-base" component={KnowledgeBase} />
         <Route path="/knowledge-base" component={PublicKnowledgeBase} />
         <Route path="/accounting" component={Accounting} />
+        <Route path="/crm" component={CRM} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

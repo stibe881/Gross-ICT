@@ -102,10 +102,25 @@
 ## Completed - UI Reorganization
 - [x] Merge invoices and quotes into one "Buchhaltung" module with tabs
 - [x] Fix menu icons (different icons for templates and knowledge base)
-- [ ] Add CRM/Customers navigation button (pending customer management UI)
+- [x] Add CRM/Customers navigation button
+
+## Completed - CRM Module
+- [x] Customer management UI with list and search
+- [x] Customer detail view with invoice history and statistics
+- [x] Create/edit/delete customer functionality
+- [x] Filter by customer type (company/individual)
+- [x] CRM navigation in admin dashboard
 
 ## In Progress - Ticket Bulk Operations
 - [ ] Add checkboxes to select multiple tickets
 - [ ] Add bulk actions bar (assign, change status, delete)
 - [ ] Implement "select all" functionality
 - [ ] Add confirmation dialogs for bulk operations
+
+## In Progress - Product Catalog
+- [ ] Create product catalog database schema (name, description, price, unit, SKU, category)
+- [ ] Implement product management API (CRUD operations)
+- [ ] Create product catalog UI (list, create, edit, delete)
+- [ ] Add product selection dropdown in invoice creation (replace manual input)
+- [ ] Add product selection dropdown in quote creation (replace manual input)
+- [ ] Auto-fill price and unit when product is selected
