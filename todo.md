@@ -212,9 +212,15 @@
 - [ ] Create currency settings in accounting settings
 - [ ] Update invoice calculations for multi-currency
 
-## In Progress - Multilingual Invoices
-- [ ] Add language field to customers table
-- [ ] Create German invoice template
-- [ ] Create English invoice template
-- [ ] Create French invoice template
-- [ ] Update PDF generation to support multiple languages
+## Completed - Multilingual Invoices
+- [x] Add language field to customers table
+- [x] Create i18n translations file (DE/EN/FR)
+- [x] Update customer creation/edit forms with language selection (language field available in schema)
+- [x] Create German invoice PDF template
+- [x] Create English invoice PDF template
+- [x] Create French invoice PDF template
+- [x] Update PDF generation to support multiple languages
+- [x] Add multilingual formatting (currency, dates)
+- [x] Update email service for multilingual notifications
+- [x] Create multilingual invoice email templates
+- [x] Create multilingual payment reminder email templates

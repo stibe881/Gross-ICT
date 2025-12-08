@@ -59,13 +59,13 @@ export const emailRouter = router({
         to: customer[0].email,
         customerName: customer[0].name,
         invoiceNumber: invoice[0].invoiceNumber,
-        invoiceDate: new Date(invoice[0].invoiceDate).toLocaleDateString('de-CH'),
-        totalAmount: parseFloat(invoice[0].totalAmount).toFixed(2),
+        totalAmount: `${invoice[0].currency} ${parseFloat(invoice[0].totalAmount).toFixed(2)}`,
         dueDate: new Date(invoice[0].dueDate).toLocaleDateString('de-CH'),
-        pdfBuffer,
+        pdfBuffer: pdfBuffer!,
         companyName: companySettings.companyName || 'Gross ICT',
         companyEmail: companySettings.companyEmail || 'info@gross-ict.ch',
         logoUrl: companySettings.logoUrl || undefined,
+        language: customer[0].language || 'de',
       });
       
       // Update invoice status to "sent" if it was draft

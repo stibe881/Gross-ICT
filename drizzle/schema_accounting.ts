@@ -35,6 +35,8 @@ export const customers = mysqlTable("customers", {
   notes: text("notes"),
   /** Link to user account (if customer has login) */
   userId: int("userId"),
+  /** Preferred language for invoices and communications */
+  language: mysqlEnum("language", ["de", "en", "fr"]).default("de").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({

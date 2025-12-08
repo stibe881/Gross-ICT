@@ -1,0 +1,1 @@
+ALTER TABLE `customers` ADD `language` enum('de','en','fr') DEFAULT 'de' NOT NULL;
