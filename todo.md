@@ -306,3 +306,6 @@
 - [ ] Implement dropdown menu "Verwaltung" for admin management functions (Vorlagen, Benutzerverwaltung, Produkte)
 - [ ] Add dashboard cards in content area with quick links to Finanzen, Mahnungs-Log, etc.
 - [ ] Create mobile-optimized hamburger menu for all admin functions
+
+## Current Issues
+- [x] Fix navigation menu overflow - Kontakt button extends beyond screen edge

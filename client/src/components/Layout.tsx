@@ -98,7 +98,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           {/* User Auth & CTA */}
-          <div className="flex items-center gap-1 lg:gap-2">
+          <div className="flex items-center gap-1">
             {/* User/Login Button */}
             {user ? (
               <Link href={user.role === 'admin' ? '/admin' : '/dashboard'}>
@@ -133,9 +133,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <RemoteSupportModal />
 
             <Link href="/contact">
-              <button className="bg-white text-black px-3 lg:px-5 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-1 lg:gap-2 whitespace-nowrap">
-                <span className="hidden sm:inline">{t.nav.contact}</span>
-                <span className="sm:hidden">Kontakt</span>
+              <button className="bg-white text-black px-3 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap">
+                <span className="hidden lg:inline">{t.nav.contact}</span>
+                <span className="lg:hidden">Kontakt</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             </Link>
