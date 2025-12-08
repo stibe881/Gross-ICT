@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
+import mysql from "mysql2";
 import { InsertUser, users, tickets, InsertTicket, Ticket, ticketComments, InsertTicketComment, TicketComment, ticketAttachments, InsertTicketAttachment, TicketAttachment } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -7,9 +8,26 @@ let _db: ReturnType<typeof drizzle> | null = null;
 
 // Lazily create the drizzle instance so local tooling can run without a DB.
 export async function getDb() {
-  if (!_db && process.env.DATABASE_URL) {
+  if (!_db) {
     try {
-      _db = drizzle(process.env.DATABASE_URL);
+      // Support both DATABASE_URL and separate DB components
+      if (process.env.DATABASE_URL) {
+        _db = drizzle(process.env.DATABASE_URL);
+      } else if (process.env.DB_HOST && process.env.DB_USER && process.env.DB_NAME) {
+        // Create connection with separate components (for passwords with special characters)
+        const connection = mysql.createPool({
+          host: process.env.DB_HOST,
+          port: parseInt(process.env.DB_PORT || '3306'),
+          user: process.env.DB_USER,
+          password: process.env.DB_PASSWORD || '',
+          database: process.env.DB_NAME,
+          waitForConnections: true,
+          connectionLimit: 10,
+          queueLimit: 0
+        });
+        _db = drizzle(connection);
+        console.log('[Database] Connected using separate DB components');
+      }
     } catch (error) {
       console.warn("[Database] Failed to connect:", error);
       _db = null;
