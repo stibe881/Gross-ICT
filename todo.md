@@ -335,3 +335,22 @@
 - [x] Implement backend for saving, loading, and deleting filter presets
 - [x] Add UI for creating, managing, and applying filter presets
 - [x] Integrate filter presets with existing ticket search/filter system
+
+## Completed - Bulk Actions, Collaboration & Automation
+- [x] Implement bulk selection for tickets with checkboxes
+- [x] Create bulk actions toolbar (change status, priority, assignment, delete)
+- [x] Add backend support for bulk operations
+- [x] Extend database schema for internal notes and mentions
+- [x] Implement @mention functionality in comments
+- [x] Create internal notes system (team-only visibility)
+- [x] Add ticket assignment with user selection
+- [x] Implement notification system for mentions and assignments
+- [x] Create automation rules database schema
+- [x] Build rule builder UI with condition-action editor
+- [x] Implement backend rule engine for automatic execution
+- [x] Add rule management interface (create, edit, delete, enable/disable)
+
+## Logo Creation
+- [x] Generate new professional logo based on grossICTLogo.png (3 Varianten: modern, minimal, badge)
+- [x] Create multiple logo variations for download
+- [x] Provide logo package to user

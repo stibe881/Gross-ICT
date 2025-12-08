@@ -499,4 +499,24 @@ export const ticketRouter = router({
         .where(inArray(tickets.id, input.ticketIds));
       return { success: true, count: input.ticketIds.length };
     }),
+
+  // Bulk update priority
+  bulkUpdatePriority: adminOrSupportProcedure
+    .input(z.object({
+      ticketIds: z.array(z.number()),
+      priority: z.enum(['low', 'medium', 'high', 'urgent']),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets } = await import('../drizzle/schema.js');
+      const { inArray } = await import('drizzle-orm');
+      
+      const db = await getDb();
+      if (!db) throw new Error('Database not available');
+      
+      await db.update(tickets)
+        .set({ priority: input.priority })
+        .where(inArray(tickets.id, input.ticketIds));
+      return { success: true, count: input.ticketIds.length };
+    }),
 });

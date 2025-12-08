@@ -79,6 +79,34 @@ export const commentRouter = router({
         isInternal,
       });
 
+      // Process @mentions in the message
+      const mentionRegex = /@(\w+)/g;
+      const mentions = input.message.match(mentionRegex);
+      
+      if (mentions && mentions.length > 0) {
+        const { getDb } = await import('./db.js');
+        const { users, mentions: mentionsTable } = await import('../drizzle/schema.js');
+        const { eq } = await import('drizzle-orm');
+        
+        const db = await getDb();
+        if (db) {
+          for (const mention of mentions) {
+            const username = mention.substring(1); // Remove @
+            const [mentionedUser] = await db.select().from(users).where(eq(users.name, username)).limit(1);
+            
+            if (mentionedUser) {
+              await db.insert(mentionsTable).values({
+                commentId,
+                ticketId: input.ticketId,
+                mentionedUserId: mentionedUser.id,
+                mentionedByUserId: ctx.user!.id,
+                isRead: 0,
+              });
+            }
+          }
+        }
+      }
+
       return {
         success: true,
         commentId,

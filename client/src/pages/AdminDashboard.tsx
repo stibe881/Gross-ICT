@@ -284,6 +284,39 @@ export default function AdminDashboard() {
       utils.tickets.filtered.invalidate();
     },
     onError: (error) => {
+      toast.error(error.message || "Fehler beim Löschen");
+    },
+  });
+
+  const bulkUpdateStatusMutation = trpc.tickets.bulkUpdateStatus.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} Ticket(s) Status aktualisiert`);
+      setSelectedTickets([]);
+      utils.tickets.filtered.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Fehler beim Aktualisieren");
+    },
+  });
+
+  const bulkUpdatePriorityMutation = trpc.tickets.bulkUpdatePriority.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} Ticket(s) Priorität aktualisiert`);
+      setSelectedTickets([]);
+      utils.tickets.filtered.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Fehler beim Aktualisieren");
+    },
+  });
+
+  const bulkAssignMutation = trpc.tickets.bulkAssign.useMutation({
+    onSuccess: (data) => {
+      toast.success(`${data.count} Ticket(s) zugewiesen`);
+      setSelectedTickets([]);
+      utils.tickets.filtered.invalidate();
+    },
+    onError: (error) => {
       toast.error(`Fehler: ${error.message}`);
     },
   });
@@ -1158,17 +1191,43 @@ export default function AdminDashboard() {
                   </div>
                   <div className="h-6 w-px bg-white/20" />
                   {/* Bulk Actions */}
-                  <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => {
-                      if (confirm(`Möchten Sie ${selectedTickets.length} Ticket(s) wirklich löschen?`)) {
-                        bulkDeleteMutation.mutate({ ticketIds: selectedTickets });
-                      }
-                    }}
-                  >
-                    Löschen
-                  </Button>
+                  <div className="flex flex-wrap gap-2">
+                    <Select onValueChange={(status: any) => bulkUpdateStatusMutation.mutate({ ticketIds: selectedTickets, status })}>
+                      <SelectTrigger className="w-[140px] h-9 bg-white/5 border-white/20">
+                        <SelectValue placeholder="Status ändern" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="open">Offen</SelectItem>
+                        <SelectItem value="in_progress">In Bearbeitung</SelectItem>
+                        <SelectItem value="resolved">Gelöst</SelectItem>
+                        <SelectItem value="closed">Geschlossen</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Select onValueChange={(priority: any) => bulkUpdatePriorityMutation.mutate({ ticketIds: selectedTickets, priority })}>
+                      <SelectTrigger className="w-[140px] h-9 bg-white/5 border-white/20">
+                        <SelectValue placeholder="Priorität ändern" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="low">Niedrig</SelectItem>
+                        <SelectItem value="medium">Mittel</SelectItem>
+                        <SelectItem value="high">Hoch</SelectItem>
+                        <SelectItem value="urgent">Dringend</SelectItem>
+                      </SelectContent>
+                    </Select>
+
+                    <Button
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => {
+                        if (confirm(`Möchten Sie ${selectedTickets.length} Ticket(s) wirklich löschen?`)) {
+                          bulkDeleteMutation.mutate({ ticketIds: selectedTickets });
+                        }
+                      }}
+                    >
+                      Löschen
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>

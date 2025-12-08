@@ -87,6 +87,55 @@ export type TicketComment = typeof ticketComments.$inferSelect;
 export type InsertTicketComment = typeof ticketComments.$inferInsert;
 
 /**
+ * Mentions table for tracking @mentions in comments
+ */
+export const mentions = mysqlTable("mentions", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Reference to the comment containing the mention */
+  commentId: int("commentId").notNull(),
+  /** Reference to the ticket */
+  ticketId: int("ticketId").notNull(),
+  /** User who was mentioned */
+  mentionedUserId: int("mentionedUserId").notNull(),
+  /** User who created the mention */
+  mentionedByUserId: int("mentionedByUserId").notNull(),
+  /** Whether the mention has been read */
+  isRead: tinyint("isRead").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Mention = typeof mentions.$inferSelect;
+export type InsertMention = typeof mentions.$inferInsert;
+
+/**
+ * Automation rules table for automatic ticket actions
+ */
+export const automationRules = mysqlTable("automationRules", {
+  id: int("id").autoincrement().primaryKey(),
+  /** Rule name */
+  name: varchar("name", { length: 255 }).notNull(),
+  /** Rule description */
+  description: text("description"),
+  /** Is rule enabled */
+  isEnabled: tinyint("isEnabled").default(1).notNull(),
+  /** Trigger type (ticket_created, ticket_updated, status_changed, etc.) */
+  triggerType: varchar("triggerType", { length: 50 }).notNull(),
+  /** Conditions (JSON) */
+  conditions: text("conditions").notNull(),
+  /** Actions (JSON) */
+  actions: text("actions").notNull(),
+  /** Created by user ID */
+  createdBy: int("createdBy").notNull(),
+  /** Created timestamp */
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  /** Updated timestamp */
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AutomationRule = typeof automationRules.$inferSelect;
+export type InsertAutomationRule = typeof automationRules.$inferInsert;
+
+/**
  * Ticket attachments table for file uploads
  */
 export const ticketAttachments = mysqlTable("ticketAttachments", {

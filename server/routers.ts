@@ -20,6 +20,7 @@ import { reminderLogRouter } from "./reminderLogRouter";
 import { favoritesRouter } from "./favoritesRouter";
 import { activitiesRouter } from "./activitiesRouter";
 import { filterPresetsRouter } from "./filterPresetsRouter";
+import { automationRouter } from "./automationRouter";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -45,6 +46,7 @@ export const appRouter = router({
   favorites: favoritesRouter,
   activities: activitiesRouter,
   filterPresets: filterPresetsRouter,
+  automation: automationRouter,
 });
 
 export type AppRouter = typeof appRouter;

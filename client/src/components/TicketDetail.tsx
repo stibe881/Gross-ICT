@@ -3,6 +3,7 @@ import { CreateInvoiceFromTicketDialog } from "@/components/CreateInvoiceFromTic
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { MentionTextarea } from "@/components/MentionTextarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Send, Paperclip, X, Download, MessageSquare, FileText, Lock, AlertTriangle, User, Calendar, Tag, UserCheck, BookOpen, Search, Receipt } from "lucide-react";
@@ -548,10 +549,10 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
 
                 {/* Add Comment */}
                 <div className="space-y-3">
-                  <Textarea
+                  <MentionTextarea
                     value={commentText}
-                    onChange={(e) => setCommentText(e.target.value)}
-                    placeholder="Kommentar hinzufügen..."
+                    onChange={setCommentText}
+                    placeholder="Kommentar hinzufügen... Verwenden Sie @Name für Erwähnungen"
                     className="bg-white/5 border-white/10 text-white min-h-[100px]"
                   />
                   {isStaff && (

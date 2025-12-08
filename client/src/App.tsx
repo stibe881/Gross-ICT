@@ -41,6 +41,7 @@ const FinancialDashboard = lazy(() => import("@/pages/FinancialDashboard"));
 const ReminderLog = lazy(() => import("@/pages/ReminderLog"));
 const InvoiceTemplateEditor = lazy(() => import("@/pages/InvoiceTemplateEditor"));
 const NotificationSettings = lazy(() => import("@/pages/NotificationSettings"));
+const AutomationRules = lazy(() => import("@/pages/AutomationRules"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -84,6 +85,7 @@ function Router() {
         <Route path={"/financial-dashboard"} component={FinancialDashboard} />
         <Route path={"/reminder-log"} component={ReminderLog} />
         <Route path={"/notification-settings"} component={NotificationSettings} />
+        <Route path={"/automation-rules"} component={AutomationRules} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>
