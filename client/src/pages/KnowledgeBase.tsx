@@ -261,12 +261,12 @@ export default function KnowledgeBase() {
                   className="pl-10 bg-white/5 border-white/10 text-white"
                 />
               </div>
-              <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <Select value={selectedCategory || "all"} onValueChange={(val) => setSelectedCategory(val === "all" ? "" : val)}>
                 <SelectTrigger className="bg-white/5 border-white/10 text-white">
                   <SelectValue placeholder="Alle Kategorien" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-800 border-white/10">
-                  <SelectItem value="">Alle Kategorien</SelectItem>
+                  <SelectItem value="all">Alle Kategorien</SelectItem>
                   {categories?.map((cat: string) => (
                     <SelectItem key={cat} value={cat}>
                       {cat}
@@ -274,12 +274,12 @@ export default function KnowledgeBase() {
                   ))}
                 </SelectContent>
               </Select>
-              <Select value={selectedVisibility} onValueChange={setSelectedVisibility}>
+              <Select value={selectedVisibility || "all"} onValueChange={(val) => setSelectedVisibility(val === "all" ? "" : val)}>
                 <SelectTrigger className="bg-white/5 border-white/10 text-white">
                   <SelectValue placeholder="Alle Sichtbarkeiten" />
                 </SelectTrigger>
                 <SelectContent className="bg-zinc-800 border-white/10">
-                  <SelectItem value="">Alle</SelectItem>
+                  <SelectItem value="all">Alle</SelectItem>
                   <SelectItem value="public">Öffentlich</SelectItem>
                   <SelectItem value="internal">Intern</SelectItem>
                 </SelectContent>

@@ -69,3 +69,6 @@
 - [x] Admin KB management interface
 - [x] KB search integration in ticket detail modal for quick insertion
 - [x] Public KB page for customer self-service (only public articles)
+
+## Current Issues
+- [x] Fix JavaScript error on published site related to Select component

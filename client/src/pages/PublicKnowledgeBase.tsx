@@ -66,12 +66,12 @@ export default function PublicKnowledgeBase() {
                     className="pl-10 h-12 text-lg"
                   />
                 </div>
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+                <Select value={selectedCategory || "all"} onValueChange={(val) => setSelectedCategory(val === "all" ? "" : val)}>
                   <SelectTrigger className="h-12">
                     <SelectValue placeholder="Alle Kategorien" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Alle Kategorien</SelectItem>
+                    <SelectItem value="all">Alle Kategorien</SelectItem>
                     {categories?.map((cat: string) => (
                       <SelectItem key={cat} value={cat}>
                         {cat}
