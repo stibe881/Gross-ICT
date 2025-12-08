@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
-import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical, Layout } from "lucide-react";
+import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical, Layout, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
@@ -26,7 +26,7 @@ import { useWebSocket } from "@/contexts/WebSocketContext";
 import { ActivityFeed } from "@/components/ActivityFeed";
 import { FilterPresets } from "@/components/FilterPresets";
 
-export default function AdminDashboard() {
+export default function TicketManagement() {
   const { user, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { socket, connected } = useWebSocket();
@@ -383,9 +383,20 @@ export default function AdminDashboard() {
       <div className="border-b border-white/10 bg-white/5 backdrop-blur-xl">
         <div className="container mx-auto px-4 py-4">
           <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold">Admin Dashboard</h1>
-              <p className="text-xs md:text-sm text-gray-400">Ticket-Verwaltung</p>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => setLocation('/admin')}
+                className="hover:bg-white/10"
+                size="sm"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück
+              </Button>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">Ticket-Verwaltung</h1>
+                <p className="text-xs md:text-sm text-gray-400">Support-Tickets verwalten</p>
+              </div>
             </div>
             {/* Desktop Navigation */}
             <div className="hidden lg:flex items-center gap-2">

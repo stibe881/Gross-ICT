@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Search, User, Eye, Edit, Trash2, Building2, UserCircle } from "lucide-react";
+import { Plus, Search, User, Eye, Edit, Trash2, Building2, UserCircle, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function CRM() {
+  const [, setLocation] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -41,9 +43,19 @@ export default function CRM() {
     <div className="min-h-screen bg-background">
       <div className="container mx-auto py-8">
         <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold">Kundenverwaltung (CRM)</h1>
-            <p className="text-muted-foreground mt-1">Verwalten Sie Ihre Kundendaten und Kontakte</p>
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => setLocation('/admin')}
+              size="sm"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Zurück
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold">Kundenverwaltung (CRM)</h1>
+              <p className="text-muted-foreground mt-1">Verwalten Sie Ihre Kundendaten und Kontakte</p>
+            </div>
           </div>
           <Button onClick={() => setCreateDialogOpen(true)} className="gap-2">
             <Plus className="w-4 h-4" />

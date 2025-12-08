@@ -377,3 +377,10 @@
 - [x] Copy GrossICT-favicon.png to public folder
 - [x] Create multiple favicon sizes (16x16, 32x32, 192x192, 512x512, .ico)
 - [x] Update index.html with new favicon links (already configured)
+
+## Dashboard Reorganization
+- [x] Create main admin dashboard with selection tiles (Buchhaltung, CRM, Wissensdatenbank, Verwaltung, Tickets)
+- [x] Implement permission-based tile visibility
+- [x] Move ticket system to separate TicketManagement dashboard
+- [x] Add back buttons to all sub-dashboards (Buchhaltung, CRM, Wissensdatenbank, Verwaltung, Tickets)
+- [x] Update routing structure for new dashboard organization

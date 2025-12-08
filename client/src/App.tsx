@@ -24,7 +24,8 @@ const NewsDetail = lazy(() => import("@/pages/NewsDetail"));
 const Calculator = lazy(() => import("@/pages/Calculator"));
 const Login = lazy(() => import("@/pages/Login"));
 const Dashboard = lazy(() => import("@/pages/Dashboard"));
-const AdminDashboard = lazy(() => import("@/pages/AdminDashboard"));
+const AdminDashboardMain = lazy(() => import("@/pages/AdminDashboardMain"));
+const TicketManagement = lazy(() => import("@/pages/TicketManagement"));
 const UserManagement = lazy(() => import("@/pages/UserManagement"));
 const TemplateManagement = lazy(() => import("@/pages/TemplateManagement"));
 const KnowledgeBase = lazy(() => import("@/pages/KnowledgeBase"));
@@ -68,7 +69,8 @@ function Router() {
         <Route path="/calculator" component={Calculator} />
         <Route path="/login" component={Login} />
         <Route path="/dashboard" component={Dashboard} />
-        <Route path="/admin" component={AdminDashboard} />
+        <Route path="/admin" component={AdminDashboardMain} />
+        <Route path="/admin/tickets" component={TicketManagement} />
         <Route path="/admin/users" component={UserManagement} />
         <Route path="/admin/templates" component={TemplateManagement} />
         <Route path="/admin/knowledge-base" component={KnowledgeBase} />

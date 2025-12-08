@@ -20,12 +20,14 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Search, Plus, Edit, Trash2, Eye, ThumbsUp, Lock, Globe } from "lucide-react";
+import { Search, Plus, Edit, Trash2, Eye, ThumbsUp, Lock, Globe, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { useAuth } from "@/_core/hooks/useAuth";
 
 export default function KnowledgeBase() {
   const { user } = useAuth();
+  const [, setLocation] = useLocation();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [selectedVisibility, setSelectedVisibility] = useState<string>("");
@@ -143,9 +145,19 @@ export default function KnowledgeBase() {
       <div className="border-b border-white/10 bg-zinc-900/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h1 className="text-2xl font-bold">Wissensdatenbank</h1>
-              <p className="text-gray-400 text-sm">Verwalten Sie FAQ und Lösungsartikel</p>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => setLocation('/admin')}
+                size="sm"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold">Wissensdatenbank</h1>
+                <p className="text-gray-400 text-sm">Verwalten Sie FAQ und Lösungsartikel</p>
+              </div>
             </div>
             <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
               <DialogTrigger asChild>

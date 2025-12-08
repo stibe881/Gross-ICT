@@ -8,9 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Users, UserPlus, Shield, Trash2, Key, Mail, User as UserIcon } from "lucide-react";
+import { Users, UserPlus, Shield, Trash2, Key, Mail, User as UserIcon, ArrowLeft } from "lucide-react";
+import { useLocation } from "wouter";
 
 export default function UserManagement() {
+  const [, setLocation] = useLocation();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newUser, setNewUser] = useState({
     name: "",
@@ -108,11 +110,23 @@ export default function UserManagement() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                onClick={() => setLocation('/admin')}
+                size="sm"
+              >
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Zurück
+              </Button>
+              <div>
+                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 md:gap-3">
+                  <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
+                  Benutzerverwaltung
+                </h1>
+              </div>
+            </div>
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2 md:gap-3">
-                <Users className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-                Benutzerverwaltung
-              </h1>
               <p className="text-sm md:text-base text-gray-400 mt-1 md:mt-2">Verwalten Sie Benutzer und deren Rollen</p>
             </div>
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
