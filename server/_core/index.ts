@@ -59,6 +59,13 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Start recurring invoice scheduler
+    import('../recurringInvoiceScheduler.js').then(({ startRecurringInvoiceScheduler }) => {
+      startRecurringInvoiceScheduler();
+    }).catch((error) => {
+      console.error('[Server] Failed to start recurring invoice scheduler:', error);
+    });
   });
 }
 

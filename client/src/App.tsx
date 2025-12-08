@@ -33,6 +33,9 @@ const CRM = lazy(() => import("@/pages/CRM"));
 const Products = lazy(() => import("@/pages/Products"));
 const RecurringInvoices = lazy(() => import("@/pages/RecurringInvoices"));
 const AccountingSettings = lazy(() => import("@/pages/AccountingSettings"));
+const AccountingDashboard = lazy(() => import("@/pages/AccountingDashboard"));
+const CustomerPortal = lazy(() => import("@/pages/CustomerPortal"));
+const ReportingDashboard = lazy(() => import("@/pages/ReportingDashboard"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -62,6 +65,9 @@ function Router() {
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path="/accounting-settings" component={AccountingSettings} />
+        <Route path="/accounting-dashboard" component={AccountingDashboard} />
+        <Route path="/customer-portal" component={CustomerPortal} />
+        <Route path="/reporting" component={ReportingDashboard} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

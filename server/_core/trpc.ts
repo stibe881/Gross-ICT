@@ -43,3 +43,39 @@ export const adminProcedure = t.procedure.use(
     });
   }),
 );
+
+// Staff procedure: accessible by support, accounting, and admin roles
+export const staffProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || !['support', 'accounting', 'admin'].includes(ctx.user.role)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "You do not have required permission" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);
+
+// Accounting procedure: accessible by accounting and admin roles only
+export const accountingProcedure = t.procedure.use(
+  t.middleware(async opts => {
+    const { ctx, next } = opts;
+
+    if (!ctx.user || !['accounting', 'admin'].includes(ctx.user.role)) {
+      throw new TRPCError({ code: "FORBIDDEN", message: "You do not have required permission" });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        user: ctx.user,
+      },
+    });
+  }),
+);

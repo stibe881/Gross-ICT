@@ -103,8 +103,14 @@ export default function AdminDashboard() {
     );
   }
 
-  if (!user || user.role !== "admin") {
+  if (!user || !['admin', 'support', 'accounting'].includes(user.role)) {
     setLocation("/login");
+    return null;
+  }
+
+  // Redirect accounting users to accounting dashboard
+  if (user.role === 'accounting') {
+    setLocation('/accounting-dashboard');
     return null;
   }
 

@@ -85,6 +85,13 @@
       "when": 1765186316725,
       "tag": "0011_handy_machine_man",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "5",
+      "when": 1765188414986,
+      "tag": "0012_many_bloodstrike",
+      "breakpoints": true
     }
   ]
 }

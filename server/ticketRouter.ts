@@ -195,17 +195,18 @@ export const ticketRouter = router({
       return ticket;
     }),
 
-  // Update ticket (admin only)
-  update: adminProcedure
+  // Update ticket (admin/support only)
+  update: adminOrSupportProcedure
     .input(z.object({
       id: z.number(),
       status: z.enum(['open', 'in_progress', 'resolved', 'closed']).optional(),
       priority: z.enum(['low', 'medium', 'high', 'urgent']).optional(),
       adminNotes: z.string().optional(),
       assignedTo: z.number().optional(),
+      sendNotification: z.boolean().optional(),
     }))
     .mutation(async ({ input }) => {
-      const { id, ...updates } = input;
+      const { id, sendNotification, ...updates } = input;
 
       const updateData: any = { ...updates };
       if (updates.status === 'resolved' || updates.status === 'closed') {
@@ -213,6 +214,38 @@ export const ticketRouter = router({
       }
 
       await updateTicket(id, updateData);
+
+      // Send email notification if requested and status changed
+      if (sendNotification && updates.status) {
+        try {
+          const ticket = await getTicketById(id);
+          if (ticket) {
+            const { sendTicketNotificationEmail } = await import('./emailService.js');
+            
+            const statusMessages: Record<string, string> = {
+              in_progress: 'Ihr Ticket wird nun bearbeitet. Wir werden uns baldmöglichst bei Ihnen melden.',
+              resolved: 'Ihr Ticket wurde gelöst. Falls Sie weitere Fragen haben, können Sie das Ticket jederzeit wieder öffnen.',
+              closed: 'Ihr Ticket wurde geschlossen. Vielen Dank für Ihre Geduld.',
+            };
+            
+            await sendTicketNotificationEmail({
+              to: ticket.customerEmail || '',
+              customerName: ticket.customerName || 'Kunde',
+              ticketId: ticket.id,
+              subject: ticket.subject || 'Support-Ticket',
+              status: updates.status,
+              updateMessage: statusMessages[updates.status] || 'Der Status Ihres Tickets wurde aktualisiert.',
+              companyName: 'Gross ICT',
+              companyEmail: 'support@gross-ict.ch',
+            });
+            
+            console.log(`[Ticket] Notification email sent for ticket #${id}`);
+          }
+        } catch (error) {
+          console.error(`[Ticket] Failed to send notification email for ticket #${id}:`, error);
+          // Don't fail the mutation if email fails
+        }
+      }
 
       return {
         success: true,

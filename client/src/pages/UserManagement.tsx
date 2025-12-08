@@ -16,7 +16,7 @@ export default function UserManagement() {
     name: "",
     email: "",
     password: "",
-    role: "user" as "user" | "support" | "admin",
+    role: "user" as "user" | "support" | "accounting" | "admin",
   });
 
   const utils = trpc.useUtils();
@@ -62,7 +62,7 @@ export default function UserManagement() {
     createMutation.mutate(newUser);
   };
 
-  const handleRoleChange = (userId: number, newRole: "user" | "support" | "admin") => {
+  const handleRoleChange = (userId: number, newRole: "user" | "support" | "accounting" | "admin") => {
     updateRoleMutation.mutate({ userId, role: newRole });
   };
 
@@ -78,6 +78,8 @@ export default function UserManagement() {
         return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">Admin</Badge>;
       case "support":
         return <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30">Support</Badge>;
+      case "accounting":
+        return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">Buchhaltung</Badge>;
       default:
         return <Badge className="bg-gray-500/20 text-gray-400 border-gray-500/30">Benutzer</Badge>;
     }
@@ -169,6 +171,7 @@ export default function UserManagement() {
                       <SelectContent>
                         <SelectItem value="user">Benutzer</SelectItem>
                         <SelectItem value="support">Support</SelectItem>
+                        <SelectItem value="accounting">Buchhaltung</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>
@@ -225,6 +228,7 @@ export default function UserManagement() {
                       <SelectContent>
                         <SelectItem value="user">Benutzer</SelectItem>
                         <SelectItem value="support">Support</SelectItem>
+                        <SelectItem value="accounting">Buchhaltung</SelectItem>
                         <SelectItem value="admin">Admin</SelectItem>
                       </SelectContent>
                     </Select>

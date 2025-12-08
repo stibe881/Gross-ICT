@@ -44,7 +44,17 @@ export const emailRouter = router({
         companyEmail: 'info@gross-ict.ch',
       };
       
-      // Send email
+      // Generate PDF
+      let pdfBuffer: Buffer | undefined;
+      try {
+        const { generateInvoicePDFBuffer } = await import('./pdfService.js');
+        pdfBuffer = await generateInvoicePDFBuffer(input.invoiceId);
+      } catch (error) {
+        console.error('[Email] Failed to generate PDF:', error);
+        // Continue without PDF attachment
+      }
+      
+      // Send email with PDF attachment
       const result = await sendInvoiceEmail({
         to: customer[0].email,
         customerName: customer[0].name,
@@ -52,6 +62,7 @@ export const emailRouter = router({
         invoiceDate: new Date(invoice[0].invoiceDate).toLocaleDateString('de-CH'),
         totalAmount: parseFloat(invoice[0].totalAmount).toFixed(2),
         dueDate: new Date(invoice[0].dueDate).toLocaleDateString('de-CH'),
+        pdfBuffer,
         companyName: companySettings.companyName || 'Gross ICT',
         companyEmail: companySettings.companyEmail || 'info@gross-ict.ch',
       });

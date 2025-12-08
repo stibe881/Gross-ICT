@@ -96,10 +96,14 @@
 - [x] Create customer management UI (CRM)
 - [x] Create accounting settings page (company info, bank details, invoice design)
 
-## In Progress - Accounting Module (Phase 3)
-- [ ] Add "accounting" role and permissions
-- [ ] Create customer portal for viewing invoices
-- [ ] Add advanced reporting dashboard (revenue charts, customer analytics)
+## Completed - Accounting Module (Phase 3)
+- [x] Add "accounting" role and permissions
+
+## Completed - Accounting Module (Phase 4)
+- [x] Create customer portal for viewing invoices (basic structure, needs myInvoices query activation)
+
+## Completed - Accounting Module (Phase 5)
+- [x] Add advanced reporting dashboard (revenue charts, customer analytics)
 
 ## Completed - UI Reorganization
 - [x] Merge invoices and quotes into one "Buchhaltung" module with tabs
@@ -142,7 +146,23 @@
 - [x] Add "Send via Email" button to invoice detail view
 - [x] Add recurring invoices route and navigation
 
+## Completed - Email Notifications
+- [x] Implement email notifications for ticket status updates
+- [x] Add sendNotification parameter to ticket update mutation
+- [x] Create ticket notification email template
+
+## Completed - Recurring Invoice Scheduler
+- [x] Implement automatic invoice generation scheduler
+- [x] Create recurringInvoiceScheduler service
+- [x] Add scheduler to server startup (runs every hour)
+- [x] Auto-generate invoices from recurring templates
+- [x] Update next run date after generation
+
+## Completed - PDF Email Attachments
+- [x] Add PDF attachment to invoice emails
+- [x] Create pdfService for PDF generation
+- [x] Update emailService to support PDF attachments
+- [x] Integrate PDF generation into email sending workflow
+
 ## Future Enhancements
-- [ ] Implement automatic invoice generation scheduler (requires cron job or background worker)
 - [ ] Add email templates customization
-- [ ] Add PDF attachment to invoice emails

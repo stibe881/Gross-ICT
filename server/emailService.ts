@@ -32,6 +32,150 @@ export async function initializeEmailTransporter() {
 /**
  * Send invoice via email
  */
+/**
+ * Send ticket notification email
+ */
+export async function sendTicketNotificationEmail(options: {
+  to: string;
+  customerName: string;
+  ticketId: number;
+  subject: string;
+  status: string;
+  updateMessage: string;
+  companyName: string;
+  companyEmail: string;
+}) {
+  if (!transporter) {
+    await initializeEmailTransporter();
+  }
+
+  const emailSubject = `Ticket #${options.ticketId} Update: ${options.subject}`;
+  
+  const statusLabels: Record<string, string> = {
+    open: 'Offen',
+    in_progress: 'In Bearbeitung',
+    resolved: 'Gelöst',
+    closed: 'Geschlossen',
+  };
+  
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+    .content { padding: 30px 20px; background: #f9f9f9; }
+    .ticket-details { background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #D4AF37; }
+    .ticket-details table { width: 100%; }
+    .ticket-details td { padding: 8px 0; }
+    .ticket-details td:first-child { font-weight: bold; width: 40%; }
+    .update-message { background: #f0f0f0; padding: 15px; margin: 20px 0; border-radius: 4px; }
+    .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>${options.companyName}</h1>
+    </div>
+    
+    <div class="content">
+      <h2>Guten Tag ${options.customerName},</h2>
+      
+      <p>Es gibt ein Update zu Ihrem Support-Ticket.</p>
+      
+      <div class="ticket-details">
+        <table>
+          <tr>
+            <td>Ticket-Nummer:</td>
+            <td>#${options.ticketId}</td>
+          </tr>
+          <tr>
+            <td>Betreff:</td>
+            <td>${options.subject}</td>
+          </tr>
+          <tr>
+            <td>Status:</td>
+            <td><strong>${statusLabels[options.status] || options.status}</strong></td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="update-message">
+        <strong>Aktualisierung:</strong><br>
+        ${options.updateMessage}
+      </div>
+      
+      <p>Sie können den Status Ihres Tickets jederzeit in Ihrem Dashboard einsehen.</p>
+      
+      <p>Bei Fragen stehen wir Ihnen gerne zur Verfügung.</p>
+      
+      <p>Freundliche Grüsse<br>${options.companyName}</p>
+    </div>
+    
+    <div class="footer">
+      <p>${options.companyName}<br>
+      ${options.companyEmail}</p>
+      <p>Diese E-Mail wurde automatisch generiert. Bitte antworten Sie nicht direkt auf diese E-Mail.</p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  const text = `
+Guten Tag ${options.customerName},
+
+Es gibt ein Update zu Ihrem Support-Ticket.
+
+Ticket-Nummer: #${options.ticketId}
+Betreff: ${options.subject}
+Status: ${statusLabels[options.status] || options.status}
+
+Aktualisierung:
+${options.updateMessage}
+
+Sie können den Status Ihres Tickets jederzeit in Ihrem Dashboard einsehen.
+
+Bei Fragen stehen wir Ihnen gerne zur Verfügung.
+
+Freundliche Grüsse
+${options.companyName}
+  `;
+
+  try {
+    const info = await transporter!.sendMail({
+      from: `"${options.companyName}" <${options.companyEmail}>`,
+      to: options.to,
+      subject: emailSubject,
+      text,
+      html,
+    });
+
+    console.log('[Email] Ticket notification sent:', info.messageId);
+    
+    // For development with test account, log preview URL
+    if (!process.env.SMTP_HOST) {
+      console.log('[Email] Preview URL:', nodemailer.getTestMessageUrl(info));
+    }
+
+    return {
+      success: true,
+      messageId: info.messageId,
+      previewUrl: nodemailer.getTestMessageUrl(info),
+    };
+  } catch (error) {
+    console.error('[Email] Failed to send ticket notification:', error);
+    throw new Error('Failed to send email');
+  }
+}
+
+/**
+ * Send invoice via email
+ */
 export async function sendInvoiceEmail(options: {
   to: string;
   customerName: string;
@@ -40,6 +184,7 @@ export async function sendInvoiceEmail(options: {
   totalAmount: string;
   dueDate: string;
   pdfUrl?: string;
+  pdfBuffer?: Buffer;
   companyName: string;
   companyEmail: string;
 }) {
@@ -143,13 +288,24 @@ ${options.companyName}
   `;
 
   try {
-    const info = await transporter!.sendMail({
+    const mailOptions: any = {
       from: `"${options.companyName}" <${options.companyEmail}>`,
       to: options.to,
       subject,
       text,
       html,
-    });
+    };
+    
+    // Add PDF attachment if provided
+    if (options.pdfBuffer) {
+      mailOptions.attachments = [{
+        filename: `${options.invoiceNumber}.pdf`,
+        content: options.pdfBuffer,
+        contentType: 'application/pdf',
+      }];
+    }
+    
+    const info = await transporter!.sendMail(mailOptions);
 
     console.log('[Email] Invoice sent:', info.messageId);
     

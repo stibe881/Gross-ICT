@@ -747,4 +747,75 @@ export const quoteRouter = router({
 
       return { success: true };
     }),
+
+  // Get invoice statistics
+  statistics: protectedProcedure
+    .input(z.object({ year: z.number() }).optional())
+    .query(async ({ input, ctx }) => {
+      if (!['admin', 'accounting', 'support'].includes(ctx.user.role)) {
+        throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
+      }
+
+      const db = await getDb();
+      const year = input?.year || new Date().getFullYear();
+
+      // Get all invoices for the year
+      const yearInvoices = await db!
+        .select()
+        .from(invoices)
+        .where(
+          and(
+            gte(invoices.invoiceDate, new Date(`${year}-01-01`)),
+            lte(invoices.invoiceDate, new Date(`${year}-12-31`))
+          )
+        );
+
+      const totalRevenue = yearInvoices
+        .filter((inv: any) => inv.status === 'paid')
+        .reduce((sum: number, inv: any) => sum + parseFloat(inv.totalAmount), 0);
+
+      const paidInvoices = yearInvoices.filter((inv: any) => inv.status === 'paid').length;
+
+      return {
+        totalRevenue,
+        totalInvoices: yearInvoices.length,
+        paidInvoices,
+        year,
+      };
+    }),
+
+  // Get invoices for the logged-in customer (customer portal)
+  myInvoices: protectedProcedure.query(async ({ ctx }) => {
+    if (ctx.user.role !== "user") {
+      throw new TRPCError({ code: "FORBIDDEN", message: "Only customers can access this endpoint" });
+    }
+
+    const db = await getDb();
+    
+    // Find customer by user email
+    const [customer] = await db!
+      .select()
+      .from(customers)
+      .where(eq(customers.email, ctx.user.email!))
+      .limit(1);
+
+    if (!customer) {
+      return [];
+    }
+
+    // Get all invoices for this customer (exclude drafts)
+    const customerInvoices = await db!
+      .select()
+      .from(invoices)
+      .where(
+        and(
+          eq(invoices.customerId, customer.id),
+          sql`${invoices.status} != 'draft'`
+        )
+      )
+      .orderBy(desc(invoices.invoiceDate));
+
+    return customerInvoices;
+  }),
 });
+
