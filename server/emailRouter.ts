@@ -65,6 +65,7 @@ export const emailRouter = router({
         pdfBuffer,
         companyName: companySettings.companyName || 'Gross ICT',
         companyEmail: companySettings.companyEmail || 'info@gross-ict.ch',
+        logoUrl: companySettings.logoUrl || undefined,
       });
       
       // Update invoice status to "sent" if it was draft

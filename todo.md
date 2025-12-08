@@ -166,3 +166,17 @@
 
 ## Future Enhancements
 - [ ] Add email templates customization
+
+## Completed - Email Template Customization
+- [x] Add logo support to email templates
+- [x] Update invoice email template with logo
+- [x] Update ticket notification email template with logo
+- [x] Add customizable email header/footer (logo from accounting settings)
+
+## Completed - Payment Reminders
+- [x] Create payment reminder scheduler
+- [x] Add reminder email templates (1st, 2nd, final reminder)
+- [x] Implement automatic overdue invoice detection
+- [x] Schedule reminder emails based on due date (daily at 9 AM)
+- [x] Three-stage reminder system: 7 days, 14 days, 21 days overdue
+- [x] Automatic status update to 'overdue' after first reminder

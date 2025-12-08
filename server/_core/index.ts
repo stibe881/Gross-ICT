@@ -66,6 +66,13 @@ async function startServer() {
     }).catch((error) => {
       console.error('[Server] Failed to start recurring invoice scheduler:', error);
     });
+    
+    // Start payment reminder scheduler
+    import('../paymentReminderScheduler.js').then(({ startPaymentReminderScheduler }) => {
+      startPaymentReminderScheduler();
+    }).catch((error) => {
+      console.error('[Server] Failed to start payment reminder scheduler:', error);
+    });
   });
 }
 
