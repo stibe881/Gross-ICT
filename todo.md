@@ -123,10 +123,10 @@
 - [x] Create product catalog UI (list, create, edit, delete, search, filter by category)
 - [x] Add products navigation to admin dashboard
 
-## In Progress - Product Integration
-- [ ] Integrate product selection into invoice creation (dropdown to select products)
-- [ ] Integrate product selection into quote creation (dropdown to select products)
-- [ ] Auto-fill price and unit when product is selected
+## Completed - Product Integration
+- [x] Integrate product selection into invoice creation (dropdown to select products)
+- [x] Integrate product selection into quote creation (dropdown to select products)
+- [x] Auto-fill price, unit, and VAT when product is selected
 
 ## Completed - Customer Improvements
 - [x] Optimize customer details view for mobile devices (responsive grid layout)

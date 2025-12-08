@@ -224,6 +224,7 @@ export default function Quotes() {
 
 // Create Quote Dialog Component
 function CreateQuoteDialog({ open, onOpenChange, customers, onSuccess }: any) {
+  const { data: products } = trpc.products.all.useQuery({ isActive: true });
   const [customerId, setCustomerId] = useState<number | null>(null);
   const [validUntil, setValidUntil] = useState("");
   const [notes, setNotes] = useState("");
@@ -260,6 +261,22 @@ function CreateQuoteDialog({ open, onOpenChange, customers, onSuccess }: any) {
   const updateItem = (index: number, field: string, value: string) => {
     const newItems = [...items];
     (newItems[index] as any)[field] = value;
+    setItems(newItems);
+  };
+
+  const selectProduct = (index: number, productId: string) => {
+    if (!productId || !products) return;
+    const product = products.find((p) => p.id === parseInt(productId));
+    if (!product) return;
+    
+    const newItems = [...items];
+    newItems[index] = {
+      ...newItems[index],
+      description: product.name,
+      unit: product.unit,
+      unitPrice: product.unitPrice,
+      vatRate: product.vatRate,
+    };
     setItems(newItems);
   };
 
@@ -336,6 +353,20 @@ function CreateQuoteDialog({ open, onOpenChange, customers, onSuccess }: any) {
               {items.map((item, index) => (
                 <Card key={index} className="p-4">
                   <div className="grid grid-cols-12 gap-2">
+                    <div className="col-span-12 mb-2">
+                      <Select onValueChange={(v) => selectProduct(index, v)}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Produkt aus Katalog wählen (optional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {products?.map((product) => (
+                            <SelectItem key={product.id} value={product.id.toString()}>
+                              {product.name} - {parseFloat(product.unitPrice).toFixed(2)} CHF/{product.unit}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                     <div className="col-span-12">
                       <Input
                         placeholder="Beschreibung"
