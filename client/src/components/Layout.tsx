@@ -245,7 +245,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
-              <img src="/logo.svg" alt="Gross ICT" className="h-5 w-auto" />
+              <img src="/logo-new.png" alt="Gross ICT" className="h-8 w-auto" />
               <p>© {new Date().getFullYear()} {t.footer.rights}</p>
             </div>
             <p>Designed with Next-Gen Tech.</p>

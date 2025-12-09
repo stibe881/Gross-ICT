@@ -802,3 +802,6 @@
 - [ ] Check color contrast ratios meet WCAG AA standards
 - [ ] Test keyboard-only navigation on all pages
 - [ ] Verify all images have alt text
+
+## Bug Fixes
+- [x] Fix broken logo images in footer (logo_new references)
