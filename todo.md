@@ -777,3 +777,16 @@
   - [ ] Prioritize issues by severity
   - [ ] Fix critical issues first
   - [ ] Verify fixes with re-testing
+
+## Email Notification Activation
+- [ ] Update emailService to use SMTP settings from database
+- [ ] Add fallback to ENV variables if no DB settings exist
+- [ ] Add navigation links to SMTP Settings in admin menu
+- [ ] Add navigation links to SLA Reports in admin menu
+- [ ] Create vitest tests for email notification system
+- [ ] Test ticket creation email notifications
+- [ ] Test SLA violation email notifications
+- [ ] Test invoice email notifications
+
+## Bug Fixes
+- [x] Fix CRM dashboard DATE_FORMAT SQL query error

@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { getDb } from "../db";
-import { emailLogs } from "../../drizzle/schema";
+import { emailLogs, smtpSettings } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 // Email configuration from environment variables
@@ -13,19 +13,71 @@ const SMTP_FROM_NAME = process.env.SMTP_FROM_NAME || "Gross ICT";
 
 // Create reusable transporter
 let transporter: nodemailer.Transporter | null = null;
+let lastConfigCheck = 0;
+const CONFIG_CHECK_INTERVAL = 60000; // Check for config updates every 60 seconds
 
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465, // true for 465, false for other ports
-      auth: {
+async function getTransporter() {
+  const now = Date.now();
+  
+  // Check if we need to refresh config (every 60 seconds or if no transporter exists)
+  if (!transporter || (now - lastConfigCheck) > CONFIG_CHECK_INTERVAL) {
+    lastConfigCheck = now;
+    
+    // Try to get SMTP settings from database first
+    const db = await getDb();
+    let smtpConfig = null;
+    
+    if (db) {
+      try {
+        const [dbSettings] = await db
+          .select()
+          .from(smtpSettings)
+          .where(eq(smtpSettings.isActive, true))
+          .limit(1);
+        
+        if (dbSettings) {
+          smtpConfig = {
+            host: dbSettings.host,
+            port: dbSettings.port,
+            secure: dbSettings.secure,
+            user: dbSettings.user,
+            password: dbSettings.password,
+            fromEmail: dbSettings.fromEmail,
+            fromName: dbSettings.fromName,
+          };
+          console.log('[EmailService] Using SMTP settings from database');
+        }
+      } catch (error) {
+        console.warn('[EmailService] Failed to load SMTP settings from DB, falling back to ENV:', error);
+      }
+    }
+    
+    // Fallback to environment variables if no DB settings
+    if (!smtpConfig) {
+      smtpConfig = {
+        host: SMTP_HOST,
+        port: SMTP_PORT,
+        secure: SMTP_PORT === 465,
         user: SMTP_USER,
-        pass: SMTP_PASSWORD,
+        password: SMTP_PASSWORD,
+        fromEmail: SMTP_FROM,
+        fromName: SMTP_FROM_NAME,
+      };
+      console.log('[EmailService] Using SMTP settings from environment variables');
+    }
+    
+    // Create new transporter with current config
+    transporter = nodemailer.createTransport({
+      host: smtpConfig.host,
+      port: smtpConfig.port,
+      secure: smtpConfig.secure,
+      auth: {
+        user: smtpConfig.user,
+        pass: smtpConfig.password,
       },
     });
   }
+  
   return transporter;
 }
 
@@ -93,7 +145,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       return false;
     }
 
-    const transport = getTransporter();
+    const transport = await getTransporter();
     if (!transport) {
       throw new Error("Failed to create email transporter");
     }

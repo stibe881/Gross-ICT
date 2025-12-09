@@ -27,7 +27,7 @@ export const analyticsRouter = router({
         .from(invoices)
         .where(
           and(
-            sql`${invoices.invoiceDate} >= ${monthsAgo.toISOString()}`,
+            sql`${invoices.invoiceDate} >= ${monthsAgo.toISOString().slice(0, 10)}`,
             eq(invoices.status, "paid")
           )
         )
@@ -68,7 +68,7 @@ export const analyticsRouter = router({
           count: sql<number>`COUNT(*)`,
         })
         .from(customers)
-        .where(sql`${customers.createdAt} >= ${monthsAgo.toISOString()}`)
+        .where(sql`${customers.createdAt} >= ${monthsAgo.toISOString().slice(0, 10)}`)
         .groupBy(sql`DATE_FORMAT(${customers.createdAt}, '%Y-%m')`)
         .orderBy(sql`DATE_FORMAT(${customers.createdAt}, '%Y-%m')`);
 
