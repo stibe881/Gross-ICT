@@ -28,6 +28,8 @@ import { contractRouter } from "./contractRouter";
 import { contractTemplateRouter } from "./contractTemplateRouter";
 import { contractDashboardRouter } from "./contractDashboardRouter";
 import { slaMonitoringRouter } from "./slaMonitoringRouter";
+import { contractPdfRouter } from "./contractPdfRouter";
+import { contractSignatureRouter } from "./contractSignatureRouter";
 
 export const appRouter = router({
   // if you need to use socket.io, read and register route in server/_core/index.ts, all api should start with '/api/' so that the gateway can route correctly
@@ -61,6 +63,8 @@ export const appRouter = router({
   contractTemplates: contractTemplateRouter,
   contractDashboard: contractDashboardRouter,
   slaMonitoring: slaMonitoringRouter,
+  contractPdf: contractPdfRouter,
+  contractSignature: contractSignatureRouter,
 });
 
 export type AppRouter = typeof appRouter;

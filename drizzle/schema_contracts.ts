@@ -49,6 +49,16 @@ export const contracts = mysqlTable("contracts", {
   slaResponseTime: int("slaResponseTime"),
   /** SLA resolution time in hours (cached from SLA policy) */
   slaResolutionTime: int("slaResolutionTime"),
+  /** Signature status */
+  signatureStatus: varchar("signatureStatus", { length: 50 }).default("unsigned").notNull(),
+  /** Customer signature date */
+  customerSignedAt: timestamp("customerSignedAt"),
+  /** Customer signature name */
+  customerSignedBy: varchar("customerSignedBy", { length: 255 }),
+  /** Company signature date */
+  companySignedAt: timestamp("companySignedAt"),
+  /** Company signature user ID */
+  companySignedBy: int("companySignedBy"),
   /** Internal notes */
   notes: text("notes"),
   /** Terms and conditions */

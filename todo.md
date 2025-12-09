@@ -432,3 +432,11 @@
 - [x] Create SLA monitoring dashboard with compliance metrics
 - [x] Add SLA performance tracking per contract
 - [x] Implement SLA breach notifications
+
+## Contract PDF Export & Digital Signature
+- [x] Create PDF generation backend with professional contract template
+- [x] Implement digital signature fields for both parties
+- [x] Add S3 archiving for signed contracts with versioning (PDFs automatically saved to S3)
+- [x] Build UI for PDF export and download
+- [x] Add signature management interface
+- [x] Implement signature status tracking

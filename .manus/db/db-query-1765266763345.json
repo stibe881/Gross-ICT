@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE contracts \nADD COLUMN signatureStatus varchar(50) DEFAULT 'unsigned' NOT NULL,\nADD COLUMN customerSignedAt datetime,\nADD COLUMN customerSignedBy varchar(255),\nADD COLUMN companySignedAt datetime,\nADD COLUMN companySignedBy int;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute ALTER TABLE contracts \nADD COLUMN signatureStatus varchar(50) DEFAULT 'unsigned' NOT NULL,\nADD COLUMN customerSignedAt datetime,\nADD COLUMN customerSignedBy varchar(255),\nADD COLUMN companySignedAt datetime,\nADD COLUMN companySignedBy int;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1808
+}

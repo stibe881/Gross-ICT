@@ -11,6 +11,9 @@ import {
   FileText,
   User,
   Clock,
+  Download,
+  FileSignature,
+  CheckCircle2,
 } from "lucide-react";
 import {
   Select,
@@ -29,7 +32,10 @@ interface ContractDetailsProps {
 
 export function ContractDetails({ contractId, onClose, onUpdate }: ContractDetailsProps) {
   const { data, isLoading } = trpc.contracts.getById.useQuery({ id: contractId });
+  const { data: signatureStatus } = trpc.contractSignature.getSignatureStatus.useQuery({ contractId });
+  const { data: attachments } = trpc.contractPdf.getAttachments.useQuery({ contractId });
   const [newStatus, setNewStatus] = useState<string>("");
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   const updateStatus = trpc.contracts.updateStatus.useMutation({
     onSuccess: () => {
@@ -55,6 +61,39 @@ export function ContractDetails({ contractId, onClose, onUpdate }: ContractDetai
   const convertToRecurring = trpc.contracts.convertToRecurringInvoice.useMutation({
     onSuccess: () => {
       toast.success("Wiederkehrende Rechnung erstellt");
+      onUpdate();
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
+    },
+  });
+
+  const generatePdf = trpc.contractPdf.generatePdf.useMutation({
+    onSuccess: (result) => {
+      toast.success("PDF erfolgreich generiert");
+      window.open(result.url, "_blank");
+      setIsGeneratingPdf(false);
+      onUpdate();
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
+      setIsGeneratingPdf(false);
+    },
+  });
+
+  const signAsCustomer = trpc.contractSignature.signAsCustomer.useMutation({
+    onSuccess: () => {
+      toast.success("Vertrag als Kunde signiert");
+      onUpdate();
+    },
+    onError: (error) => {
+      toast.error(`Fehler: ${error.message}`);
+    },
+  });
+
+  const signAsCompany = trpc.contractSignature.signAsCompany.useMutation({
+    onSuccess: () => {
+      toast.success("Vertrag als Firma signiert");
       onUpdate();
     },
     onError: (error) => {
@@ -134,6 +173,44 @@ export function ContractDetails({ contractId, onClose, onUpdate }: ContractDetai
     if (confirm("Möchten Sie aus diesem Vertrag eine wiederkehrende Rechnung erstellen?")) {
       convertToRecurring.mutate({ contractId });
     }
+  };
+
+  const handleGeneratePdf = () => {
+    setIsGeneratingPdf(true);
+    generatePdf.mutate({ contractId });
+  };
+
+  const handleSignAsCustomer = () => {
+    const signerName = prompt("Name des Unterzeichners (Kunde):");
+    if (signerName) {
+      signAsCustomer.mutate({ contractId, signerName });
+    }
+  };
+
+  const handleSignAsCompany = () => {
+    if (confirm("Möchten Sie diesen Vertrag als Firma signieren?")) {
+      signAsCompany.mutate({ contractId });
+    }
+  };
+
+  const getSignatureStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      unsigned: "Nicht signiert",
+      customer_signed: "Kunde signiert",
+      company_signed: "Firma signiert",
+      fully_signed: "Vollständig signiert",
+    };
+    return labels[status] || status;
+  };
+
+  const getSignatureStatusColor = (status: string) => {
+    const colors: Record<string, string> = {
+      unsigned: "bg-gray-500",
+      customer_signed: "bg-yellow-500",
+      company_signed: "bg-yellow-500",
+      fully_signed: "bg-green-500",
+    };
+    return colors[status] || "bg-gray-500";
   };
 
   return (
@@ -223,6 +300,114 @@ export function ContractDetails({ contractId, onClose, onUpdate }: ContractDetai
           </p>
         </div>
       )}
+
+      {/* Signature Status */}
+      {signatureStatus && (
+        <div className="p-4 bg-white/5 rounded-lg space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold">Signatur-Status</h4>
+            <Badge className={`${getSignatureStatusColor(signatureStatus.signatureStatus)} text-white`}>
+              {getSignatureStatusLabel(signatureStatus.signatureStatus)}
+            </Badge>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Kunde</span>
+              </div>
+              {signatureStatus.customerSignedAt ? (
+                <div>
+                  <p className="font-medium text-green-400 flex items-center gap-1">
+                    <CheckCircle2 className="h-4 w-4" /> Signiert
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {signatureStatus.customerSignedBy}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {formatDate(signatureStatus.customerSignedAt)}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Ausstehend</p>
+              )}
+            </div>
+            <div className="p-3 bg-white/5 rounded-lg">
+              <div className="flex items-center gap-2 mb-2">
+                <FileSignature className="h-4 w-4 text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">Firma</span>
+              </div>
+              {signatureStatus.companySignedAt ? (
+                <div>
+                  <p className="font-medium text-green-400 flex items-center gap-1">
+                    <CheckCircle2 className="h-4 w-4" /> Signiert
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {formatDate(signatureStatus.companySignedAt)}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">Ausstehend</p>
+              )}
+            </div>
+          </div>
+          {signatureStatus.signatureStatus !== "fully_signed" && (
+            <div className="flex gap-2">
+              {!signatureStatus.customerSignedAt && (
+                <Button onClick={handleSignAsCustomer} variant="outline" size="sm">
+                  <User className="h-4 w-4 mr-2" />
+                  Als Kunde signieren
+                </Button>
+              )}
+              {!signatureStatus.companySignedAt && (
+                <Button onClick={handleSignAsCompany} variant="outline" size="sm">
+                  <FileSignature className="h-4 w-4 mr-2" />
+                  Als Firma signieren
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* PDF Export & Attachments */}
+      <div className="p-4 bg-white/5 rounded-lg space-y-3">
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold">Dokumente</h4>
+          <Button 
+            onClick={handleGeneratePdf} 
+            disabled={isGeneratingPdf}
+            size="sm"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            {isGeneratingPdf ? "Generiere PDF..." : "PDF exportieren"}
+          </Button>
+        </div>
+        {attachments && attachments.length > 0 && (
+          <div className="space-y-2">
+            {attachments.map((att) => (
+              <div key={att.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm font-medium">{att.fileName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {(att.fileSize / 1024).toFixed(2)} KB • {formatDate(att.createdAt)}
+                    </p>
+                  </div>
+                </div>
+                <Button 
+                  size="sm" 
+                  variant="ghost"
+                  onClick={() => window.open(att.fileUrl, "_blank")}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Items */}
       <div className="space-y-3">
