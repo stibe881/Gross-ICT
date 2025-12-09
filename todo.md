@@ -802,3 +802,11 @@
 - [x] Save tile order to localStorage for user-specific persistence
 - [x] Add visual drag handles to tiles
 - [x] Show drop zones during drag operations
+
+## Dashboard Tile Resizing
+- [x] Add size options for tiles (normal, large, extra-large)
+- [x] Implement context menu or size selector for each tile
+- [x] Update grid layout to support different tile sizes (col-span-1, col-span-2, row-span-1, row-span-2)
+- [x] Save tile sizes to localStorage for persistence
+- [x] Add visual indicators for tile size options
+- [x] Ensure responsive behavior on mobile devices

@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, GripVertical } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, GripVertical, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
@@ -24,6 +24,12 @@ import {
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 function QuickStats() {
   const { data: stats, isLoading, refetch } = trpc.dashboardStats.getQuickStats.useQuery();
@@ -148,6 +154,8 @@ function QuickStats() {
   );
 }
 
+type TileSize = 'normal' | 'large' | 'xlarge';
+
 interface DashboardTile {
   id: string;
   title: string;
@@ -158,7 +166,13 @@ interface DashboardTile {
   permission: string;
 }
 
-function SortableTile({ tile }: { tile: DashboardTile }) {
+interface SortableTileProps {
+  tile: DashboardTile;
+  size: TileSize;
+  onSizeChange: (id: string, size: TileSize) => void;
+}
+
+function SortableTile({ tile, size, onSizeChange }: SortableTileProps) {
   const {
     attributes,
     listeners,
@@ -177,10 +191,33 @@ function SortableTile({ tile }: { tile: DashboardTile }) {
   const [, setLocation] = useLocation();
   const Icon = tile.icon;
 
+  // Map size to grid classes
+  const getSizeClasses = (size: TileSize) => {
+    switch (size) {
+      case 'large':
+        return 'md:col-span-2';
+      case 'xlarge':
+        return 'md:col-span-2 md:row-span-2';
+      default:
+        return '';
+    }
+  };
+
+  const getSizeLabel = (size: TileSize) => {
+    switch (size) {
+      case 'normal':
+        return 'Normal';
+      case 'large':
+        return 'Groß';
+      case 'xlarge':
+        return 'Extra Groß';
+    }
+  };
+
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className={getSizeClasses(size)}>
       <Card
-        className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+        className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden h-full"
       >
         <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
         <CardHeader>
@@ -188,13 +225,66 @@ function SortableTile({ tile }: { tile: DashboardTile }) {
             <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
               <Icon className="h-6 w-6" />
             </div>
-            <div
-              {...attributes}
-              {...listeners}
-              className="cursor-grab active:cursor-grabbing p-2 hover:bg-muted rounded-md transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            <div className="flex gap-1">
+              {/* Size selector dropdown */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="p-2 hover:bg-muted rounded-md transition-colors"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <Maximize2 className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSizeChange(tile.id, 'normal');
+                    }}
+                    className={size === 'normal' ? 'bg-accent' : ''}
+                  >
+                    <span className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-current rounded" />
+                      Normal (1x1)
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSizeChange(tile.id, 'large');
+                    }}
+                    className={size === 'large' ? 'bg-accent' : ''}
+                  >
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-4 border-2 border-current rounded" />
+                      Groß (2x1)
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSizeChange(tile.id, 'xlarge');
+                    }}
+                    className={size === 'xlarge' ? 'bg-accent' : ''}
+                  >
+                    <span className="flex items-center gap-2">
+                      <div className="w-6 h-6 border-2 border-current rounded" />
+                      Extra Groß (2x2)
+                    </span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              
+              {/* Drag handle */}
+              <div
+                {...attributes}
+                {...listeners}
+                className="cursor-grab active:cursor-grabbing p-2 hover:bg-muted rounded-md transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
           </div>
           <CardTitle className="mt-4 group-hover:text-primary transition-colors">
@@ -203,8 +293,15 @@ function SortableTile({ tile }: { tile: DashboardTile }) {
           <CardDescription className="text-sm">
             {tile.description}
           </CardDescription>
+          {size !== 'normal' && (
+            <div className="mt-2">
+              <span className="text-xs px-2 py-1 bg-primary/10 text-primary rounded-full">
+                {getSizeLabel(size)}
+              </span>
+            </div>
+          )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="mt-auto">
           <Button
             variant="ghost"
             className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
@@ -323,6 +420,20 @@ export default function AdminDashboardMain() {
     return defaultTiles;
   });
 
+  // Load saved tile sizes from localStorage
+  const [tileSizes, setTileSizes] = useState<Record<string, TileSize>>(() => {
+    const savedSizes = localStorage.getItem('dashboardTileSizes');
+    if (savedSizes) {
+      try {
+        return JSON.parse(savedSizes);
+      } catch (e) {
+        console.error('Failed to parse saved tile sizes:', e);
+        return {};
+      }
+    }
+    return {};
+  });
+
   // Drag and drop sensors
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -351,6 +462,16 @@ export default function AdminDashboardMain() {
         return newOrder;
       });
     }
+  };
+
+  // Handle size change
+  const handleSizeChange = (id: string, size: TileSize) => {
+    setTileSizes(prev => {
+      const newSizes = { ...prev, [id]: size };
+      localStorage.setItem('dashboardTileSizes', JSON.stringify(newSizes));
+      toast.success('Kachelgröße geändert');
+      return newSizes;
+    });
   };
 
   // Redirect if not admin
@@ -412,7 +533,7 @@ export default function AdminDashboardMain() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Wählen Sie einen Bereich</h2>
           <p className="text-muted-foreground">
-            Navigieren Sie zu den verschiedenen Verwaltungsbereichen. Ziehen Sie die Kacheln, um sie neu anzuordnen.
+            Navigieren Sie zu den verschiedenen Verwaltungsbereichen. Ziehen Sie die Kacheln, um sie neu anzuordnen, oder ändern Sie die Größe mit dem Größen-Symbol.
           </p>
         </div>
 
@@ -426,9 +547,14 @@ export default function AdminDashboardMain() {
             items={visibleTiles.map(t => t.id)}
             strategy={rectSortingStrategy}
           >
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-fr">
               {visibleTiles.map((tile) => (
-                <SortableTile key={tile.id} tile={tile} />
+                <SortableTile
+                  key={tile.id}
+                  tile={tile}
+                  size={tileSizes[tile.id] || 'normal'}
+                  onSizeChange={handleSizeChange}
+                />
               ))}
             </div>
           </SortableContext>
