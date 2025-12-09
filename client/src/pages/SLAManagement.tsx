@@ -28,7 +28,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Edit, Trash2, Clock, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { Plus, Edit, Trash2, Clock, AlertTriangle, CheckCircle2, ArrowUpDown, Download } from "lucide-react";
+import { Checkbox as CheckboxUI } from "@/components/ui/checkbox";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -38,15 +39,32 @@ export default function SLAManagement() {
   const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
   const [filterPriority, setFilterPriority] = useState<string>("all");
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [sortField, setSortField] = useState<string>("createdAt");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
+  const [selectedPolicies, setSelectedPolicies] = useState<number[]>([]);
 
   const { data: allPolicies, refetch } = trpc.sla.list.useQuery();
 
-  // Filter policies based on selected filters
-  const policies = allPolicies?.filter((policy) => {
-    const priorityMatch = filterPriority === "all" || policy.priority === filterPriority || (!policy.priority && filterPriority === "all");
-    const statusMatch = filterStatus === "all" || (filterStatus === "active" && policy.isActive === 1) || (filterStatus === "inactive" && policy.isActive === 0);
-    return priorityMatch && statusMatch;
-  });
+  // Filter and sort policies
+  const policies = allPolicies
+    ?.filter((policy) => {
+      const priorityMatch = filterPriority === "all" || policy.priority === filterPriority || (!policy.priority && filterPriority === "all");
+      const statusMatch = filterStatus === "all" || (filterStatus === "active" && policy.isActive === 1) || (filterStatus === "inactive" && policy.isActive === 0);
+      return priorityMatch && statusMatch;
+    })
+    .sort((a, b) => {
+      let aVal: any = a[sortField as keyof typeof a];
+      let bVal: any = b[sortField as keyof typeof b];
+      
+      if (sortField === "name") {
+        aVal = (aVal || "").toLowerCase();
+        bVal = (bVal || "").toLowerCase();
+      }
+      
+      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+      return 0;
+    });
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -153,6 +171,81 @@ export default function SLAManagement() {
     if (confirm("Möchten Sie diese SLA-Richtlinie wirklich löschen?")) {
       deletePolicy.mutate({ id });
     }
+  };
+
+  const handleSort = (field: string) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedPolicies.length === policies?.length) {
+      setSelectedPolicies([]);
+    } else {
+      setSelectedPolicies(policies?.map(p => p.id) || []);
+    }
+  };
+
+  const toggleSelectPolicy = (id: number) => {
+    if (selectedPolicies.includes(id)) {
+      setSelectedPolicies(selectedPolicies.filter(pid => pid !== id));
+    } else {
+      setSelectedPolicies([...selectedPolicies, id]);
+    }
+  };
+
+  const handleBulkDelete = () => {
+    if (selectedPolicies.length === 0) {
+      toast.error("Bitte wählen Sie mindestens eine Richtlinie aus");
+      return;
+    }
+    if (confirm(`Möchten Sie ${selectedPolicies.length} Richtlinie(n) wirklich löschen?`)) {
+      selectedPolicies.forEach(id => deletePolicy.mutate({ id }));
+      setSelectedPolicies([]);
+    }
+  };
+
+  const handleBulkActivate = (activate: boolean) => {
+    if (selectedPolicies.length === 0) {
+      toast.error("Bitte wählen Sie mindestens eine Richtlinie aus");
+      return;
+    }
+    selectedPolicies.forEach(id => {
+      updatePolicy.mutate({ id, isActive: activate });
+    });
+    setSelectedPolicies([]);
+  };
+
+  const exportToCSV = () => {
+    if (!policies || policies.length === 0) {
+      toast.error("Keine Daten zum Exportieren");
+      return;
+    }
+    
+    const headers = ["Name", "Priorität", "Reaktionszeit (Min)", "Lösungszeit (Min)", "Status"];
+    const rows = policies.map(p => [
+      p.name,
+      p.priority || "Alle",
+      p.responseTimeMinutes,
+      p.resolutionTimeMinutes,
+      p.isActive ? "Aktiv" : "Inaktiv"
+    ]);
+    
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(row => row.join(","))
+    ].join("\n");
+    
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `sla-policies-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    toast.success("CSV erfolgreich exportiert");
   };
 
   const formatTime = (minutes: number) => {
@@ -345,20 +438,85 @@ export default function SLAManagement() {
           </Card>
         </div>
 
+        {/* Bulk Actions Toolbar */}
+        {selectedPolicies.length > 0 && (
+          <Card className="bg-muted/50">
+            <CardContent className="py-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-medium">
+                  {selectedPolicies.length} Richtlinie(n) ausgewählt
+                </p>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkActivate(true)}
+                  >
+                    Aktivieren
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleBulkActivate(false)}
+                  >
+                    Deaktivieren
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={handleBulkDelete}
+                  >
+                    Löschen
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Policies Table */}
         <Card>
           <CardHeader>
-            <CardTitle>SLA-Richtlinien</CardTitle>
-            <CardDescription>Verwalten Sie Ihre Service Level Agreements</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle>SLA-Richtlinien</CardTitle>
+                <CardDescription>Verwalten Sie Ihre Service Level Agreements</CardDescription>
+              </div>
+              <Button variant="outline" size="sm" onClick={exportToCSV}>
+                <Download className="h-4 w-4 mr-2" />
+                CSV Export
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
+                  <TableHead className="w-12">
+                    <CheckboxUI
+                      checked={selectedPolicies.length === policies?.length && policies?.length > 0}
+                      onCheckedChange={toggleSelectAll}
+                    />
+                  </TableHead>
+                  <TableHead className="cursor-pointer" onClick={() => handleSort("name")}>
+                    <div className="flex items-center gap-2">
+                      Name
+                      {sortField === "name" && <ArrowUpDown className="h-4 w-4" />}
+                    </div>
+                  </TableHead>
                   <TableHead>Priorität</TableHead>
-                  <TableHead>Reaktionszeit</TableHead>
-                  <TableHead>Lösungszeit</TableHead>
+                  <TableHead className="cursor-pointer" onClick={() => handleSort("responseTimeMinutes")}>
+                    <div className="flex items-center gap-2">
+                      Reaktionszeit
+                      {sortField === "responseTimeMinutes" && <ArrowUpDown className="h-4 w-4" />}
+                    </div>
+                  </TableHead>
+                  <TableHead className="cursor-pointer" onClick={() => handleSort("resolutionTimeMinutes")}>
+                    <div className="flex items-center gap-2">
+                      Lösungszeit
+                      {sortField === "resolutionTimeMinutes" && <ArrowUpDown className="h-4 w-4" />}
+                    </div>
+                  </TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Aktionen</TableHead>
                 </TableRow>
@@ -367,6 +525,12 @@ export default function SLAManagement() {
                 {policies && policies.length > 0 ? (
                   policies.map((policy) => (
                     <TableRow key={policy.id}>
+                      <TableCell>
+                        <CheckboxUI
+                          checked={selectedPolicies.includes(policy.id)}
+                          onCheckedChange={() => toggleSelectPolicy(policy.id)}
+                        />
+                      </TableCell>
                       <TableCell>
                         <div>
                           <div className="font-medium">{policy.name}</div>
@@ -397,7 +561,7 @@ export default function SLAManagement() {
                   ))
                 ) : (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center text-muted-foreground">
                       Keine SLA-Richtlinien vorhanden. Erstellen Sie Ihre erste Richtlinie.
                     </TableCell>
                   </TableRow>

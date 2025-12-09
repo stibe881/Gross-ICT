@@ -523,3 +523,18 @@
 - [x] Implement filter logic to show/hide policies based on selection
 - [x] Filter card with two dropdowns for easy filtering
 - [x] Real-time filtering without page reload
+
+## Completed - SLA Management Enhancements
+- [x] Add column sorting to SLA table (name, response time, resolution time)
+- [x] Implement bulk actions with checkboxes (activate/deactivate/delete multiple policies)
+- [x] Add CSV export for filtered SLA policies
+- [x] Bulk actions toolbar appears when policies are selected
+- [x] Select all checkbox in table header
+- [x] Sort direction indicator with ArrowUpDown icon
+- [ ] Add PDF export for filtered SLA policies (future enhancement)
+
+## Completed - Rate Limiting & Security
+- [x] Implement rate limiting for API endpoints (already configured with express-rate-limit)
+- [x] Configure rate limits per endpoint (stricter for auth, looser for read operations)
+- [x] Add rate limit headers to responses
+- [ ] Adjust trust proxy settings for production deployment (configuration note)
