@@ -173,36 +173,8 @@
     {
       "idx": 24,
       "version": "5",
-      "when": 1765288834716,
-      "tag": "0024_nostalgic_omega_sentinel",
-      "breakpoints": true
-    },
-    {
-      "idx": 25,
-      "version": "5",
-      "when": 1765296615828,
-      "tag": "0025_broad_black_panther",
-      "breakpoints": true
-    },
-    {
-      "idx": 26,
-      "version": "5",
-      "when": 1765299303635,
-      "tag": "0026_flashy_leper_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 27,
-      "version": "5",
-      "when": 1765301714396,
-      "tag": "0027_sudden_the_fallen",
-      "breakpoints": true
-    },
-    {
-      "idx": 28,
-      "version": "5",
-      "when": 1765302125777,
-      "tag": "0028_wonderful_frog_thor",
+      "when": 1765303318091,
+      "tag": "0024_nifty_nightcrawler",
       "breakpoints": true
     }
   ]
