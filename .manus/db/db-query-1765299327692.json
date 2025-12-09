@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS emailLogs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  templateId INT,\n  templateName VARCHAR(100),\n  recipientEmail VARCHAR(320) NOT NULL,\n  recipientName VARCHAR(255),\n  subject VARCHAR(500) NOT NULL,\n  body TEXT NOT NULL,\n  status ENUM('pending', 'sent', 'failed') NOT NULL DEFAULT 'pending',\n  errorMessage TEXT,\n  entityType VARCHAR(50),\n  entityId INT,\n  triggeredBy INT,\n  retryCount INT NOT NULL DEFAULT 0,\n  lastRetryAt TIMESTAMP NULL,\n  sentAt TIMESTAMP NULL,\n  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute CREATE TABLE IF NOT EXISTS emailLogs (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  templateId INT,\n  templateName VARCHAR(100),\n  recipientEmail VARCHAR(320) NOT NULL,\n  recipientName VARCHAR(255),\n  subject VARCHAR(500) NOT NULL,\n  body TEXT NOT NULL,\n  status ENUM('pending', 'sent', 'failed') NOT NULL DEFAULT 'pending',\n  errorMessage TEXT,\n  entityType VARCHAR(50),\n  entityId INT,\n  triggeredBy INT,\n  retryCount INT NOT NULL DEFAULT 0,\n  lastRetryAt TIMESTAMP NULL,\n  sentAt TIMESTAMP NULL,\n  createdAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 196
+}

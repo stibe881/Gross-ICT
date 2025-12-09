@@ -357,3 +357,5 @@ export * from "./schema_contracts";
 export * from "./schema_contract_templates";
 // Export email templates module tables
 export * from "./schema_email_templates";
+// Export email logs module tables
+export * from "./schema_email_logs";

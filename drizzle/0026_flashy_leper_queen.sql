@@ -1,0 +1,20 @@
+CREATE TABLE `emailLogs` (
+	`id` int AUTO_INCREMENT NOT NULL,
+	`templateId` int,
+	`templateName` varchar(100),
+	`recipientEmail` varchar(320) NOT NULL,
+	`recipientName` varchar(255),
+	`subject` varchar(500) NOT NULL,
+	`body` text NOT NULL,
+	`status` enum('pending','sent','failed') NOT NULL DEFAULT 'pending',
+	`errorMessage` text,
+	`entityType` varchar(50),
+	`entityId` int,
+	`triggeredBy` int,
+	`retryCount` int NOT NULL DEFAULT 0,
+	`lastRetryAt` timestamp,
+	`sentAt` timestamp,
+	`createdAt` timestamp NOT NULL DEFAULT (now()),
+	`updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,
+	CONSTRAINT `emailLogs_id` PRIMARY KEY(`id`)
+);

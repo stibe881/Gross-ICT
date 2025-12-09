@@ -183,6 +183,13 @@
       "when": 1765296615828,
       "tag": "0025_broad_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "5",
+      "when": 1765299303635,
+      "tag": "0026_flashy_leper_queen",
+      "breakpoints": true
     }
   ]
 }

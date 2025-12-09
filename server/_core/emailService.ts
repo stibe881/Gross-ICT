@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer";
+import { getDb } from "../db";
+import { emailLogs } from "../../drizzle/schema";
+import { eq } from "drizzle-orm";
 
 // Email configuration from environment variables
 const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
@@ -38,16 +41,55 @@ export interface EmailOptions {
     content?: string | Buffer;
     path?: string;
   }>;
+  // Logging metadata
+  templateId?: number;
+  templateName?: string;
+  recipientName?: string;
+  entityType?: string;
+  entityId?: number;
+  triggeredBy?: number;
 }
 
 /**
  * Send an email
  */
 export async function sendEmail(options: EmailOptions): Promise<boolean> {
+  const recipientEmail = Array.isArray(options.to) ? options.to[0] : options.to;
+  let logId: number | null = null;
+
   try {
+    // Log email attempt to database
+    const db = await getDb();
+    if (db) {
+      const [result] = await db.insert(emailLogs).values({
+        templateId: options.templateId || null,
+        templateName: options.templateName || null,
+        recipientEmail,
+        recipientName: options.recipientName || null,
+        subject: options.subject,
+        body: options.html,
+        status: "pending",
+        entityType: options.entityType || null,
+        entityId: options.entityId || null,
+        triggeredBy: options.triggeredBy || null,
+        retryCount: 0,
+      });
+      logId = result.insertId;
+    }
+
     // Check if SMTP is configured
     if (!SMTP_USER || !SMTP_PASSWORD) {
       console.warn("SMTP not configured, email not sent:", options.subject);
+      
+      // Update log as failed
+      if (db && logId) {
+        await db.update(emailLogs)
+          .set({ 
+            status: "failed",
+            errorMessage: "SMTP not configured"
+          })
+          .where(eq(emailLogs.id, logId));
+      }
       return false;
     }
 
@@ -69,9 +111,32 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
     const info = await transport.sendMail(mailOptions);
     console.log("Email sent:", info.messageId);
+    
+    // Update log as sent
+    if (db && logId) {
+      await db.update(emailLogs)
+        .set({ 
+          status: "sent",
+          sentAt: new Date()
+        })
+        .where(eq(emailLogs.id, logId));
+    }
+    
     return true;
   } catch (error) {
     console.error("Failed to send email:", error);
+    
+    // Update log as failed
+    const db = await getDb();
+    if (db && logId) {
+      await db.update(emailLogs)
+        .set({ 
+          status: "failed",
+          errorMessage: error instanceof Error ? error.message : String(error)
+        })
+        .where(eq(emailLogs.id, logId));
+    }
+    
     return false;
   }
 }

@@ -598,3 +598,22 @@
 - [x] Create helper function to render templates with data (emailTemplateService.ts)
 - [x] Create SLA monitoring background job (runs every 15 minutes)
 - [x] All 7 email templates active and integrated with system
+
+## Completed - Email Versandprotokoll Dashboard
+- [x] Create database schema for email logs (emailLogs table)
+- [x] Update emailService to log all sent emails with status (pending/sent/failed)
+- [x] Create emailLogRouter with filtering and pagination
+  - [x] Filter by status (success, failed, pending)
+  - [x] Filter by template
+  - [x] Filter by recipient
+  - [x] Filter by date range
+  - [x] Pagination support (20 items per page)
+- [x] Build Email Log Dashboard UI
+  - [x] Statistics cards (total sent, success rate, failed count)
+  - [x] Filterable table with all email logs
+  - [x] Status indicators (success/failed/pending) with badges
+  - [x] Email preview/details modal with full HTML content
+  - [x] Retry failed emails functionality
+- [x] Add route to App.tsx (/email-logs)
+- [x] Test dashboard UI and verify empty state
+- [x] Email logging automatically tracks all emails sent through the system
