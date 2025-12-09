@@ -440,3 +440,8 @@
 - [x] Build UI for PDF export and download
 - [x] Add signature management interface
 - [x] Implement signature status tracking
+
+## Customer Growth Chart & Contract Navigation
+- [x] Fix customer growth chart query to show actual customer data (MySQL DATE_FORMAT)
+- [x] Add contract navigation link to admin dashboard (Verträge tile added)
+- [x] Improve contract-customer assignment UX (customer dropdown in contract form)

@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
@@ -180,6 +180,15 @@ export default function AdminDashboardMain() {
       icon: Users,
       path: '/crm',
       color: 'from-blue-500 to-cyan-600',
+      permission: 'admin',
+    },
+    {
+      id: 'vertraege',
+      title: 'Verträge',
+      description: 'Kundenverträge, Vorlagen und SLA-Management',
+      icon: FileText,
+      path: '/contracts',
+      color: 'from-teal-500 to-cyan-600',
       permission: 'admin',
     },
     {

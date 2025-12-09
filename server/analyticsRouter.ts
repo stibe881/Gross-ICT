@@ -21,8 +21,8 @@ export const analyticsRouter = router({
 
       const results = await db
         .select({
-          month: sql<string>`strftime('%Y-%m', ${invoices.invoiceDate})`,
-          amount: sql<number>`CAST(SUM(${invoices.totalAmount}) AS REAL)`,
+          month: sql<string>`DATE_FORMAT(${invoices.invoiceDate}, '%Y-%m')`,
+          amount: sql<number>`CAST(SUM(${invoices.totalAmount}) AS DECIMAL(10,2))`,
         })
         .from(invoices)
         .where(
@@ -31,8 +31,8 @@ export const analyticsRouter = router({
             eq(invoices.status, "paid")
           )
         )
-        .groupBy(sql`strftime('%Y-%m', ${invoices.invoiceDate})`)
-        .orderBy(sql`strftime('%Y-%m', ${invoices.invoiceDate})`);
+        .groupBy(sql`DATE_FORMAT(${invoices.invoiceDate}, '%Y-%m')`)
+        .orderBy(sql`DATE_FORMAT(${invoices.invoiceDate}, '%Y-%m')`);
 
       // Format month names
       const monthNames = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
@@ -43,7 +43,7 @@ export const analyticsRouter = router({
         return {
           month: `${monthNames[monthIndex]} ${year.slice(2)}`,
           fullDate: r.month,
-          amount: r.amount || 0,
+          amount: parseFloat(r.amount as any) || 0,
         };
       });
     }),
@@ -64,13 +64,13 @@ export const analyticsRouter = router({
 
       const results = await db
         .select({
-          month: sql<string>`strftime('%Y-%m', ${customers.createdAt})`,
+          month: sql<string>`DATE_FORMAT(${customers.createdAt}, '%Y-%m')`,
           count: sql<number>`COUNT(*)`,
         })
         .from(customers)
         .where(sql`${customers.createdAt} >= ${monthsAgo.toISOString()}`)
-        .groupBy(sql`strftime('%Y-%m', ${customers.createdAt})`)
-        .orderBy(sql`strftime('%Y-%m', ${customers.createdAt})`);
+        .groupBy(sql`DATE_FORMAT(${customers.createdAt}, '%Y-%m')`)
+        .orderBy(sql`DATE_FORMAT(${customers.createdAt}, '%Y-%m')`);
 
       // Format month names
       const monthNames = ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"];
