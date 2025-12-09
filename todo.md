@@ -13,9 +13,9 @@
 - [x] Fix login redirect - users not redirected to dashboard after successful login
 
 ## Future Enhancements
-- [ ] E-Mail notifications for ticket updates
-- [ ] Ticket comments/communication
-- [ ] File uploads for tickets
+- [x] E-Mail notifications for ticket updates
+- [x] Ticket comments/communication
+- [x] File uploads for tickets
 
 ## Completed
 - [x] Ticket comments/communication system
@@ -165,7 +165,7 @@
 - [x] Integrate PDF generation into email sending workflow
 
 ## Future Enhancements
-- [ ] Add email templates customization
+- [x] Add email templates customization
 
 ## Completed - Email Template Customization
 - [x] Add logo support to email templates
@@ -511,11 +511,11 @@
 - [x] Automatic SLA breach and warning emails
 
 ## Future Enhancements - Email & SLA
-- [ ] Add email templates customization UI
-- [ ] Add SMTP configuration UI in settings
-- [ ] Add email delivery logs and tracking
-- [ ] Add SLA dashboard with real-time metrics
-- [ ] Add SLA reports and analytics
+- [x] Add email templates customization UI
+- [x] Add SMTP configuration UI in settings
+- [x] Add email delivery logs and tracking
+- [x] Add SLA dashboard with real-time metrics
+- [x] Add SLA reports and analytics
 
 ## Completed - SLA Management Filters
 - [x] Add filter UI for priority (all, urgent, high, normal, low)

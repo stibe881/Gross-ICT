@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS `smtp_settings` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `host` varchar(255) NOT NULL,\n  `port` int NOT NULL DEFAULT 587,\n  `secure` boolean NOT NULL DEFAULT false,\n  `user` varchar(320) NOT NULL,\n  `password` text NOT NULL,\n  `fromEmail` varchar(320) NOT NULL,\n  `fromName` varchar(255) NOT NULL DEFAULT 'Gross ICT',\n  `isActive` boolean NOT NULL DEFAULT true,\n  `lastTestStatus` varchar(50),\n  `lastTestedAt` timestamp NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `smtp_settings_id` PRIMARY KEY(`id`)\n)",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute CREATE TABLE IF NOT EXISTS `smtp_settings` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `host` varchar(255) NOT NULL,\n  `port` int NOT NULL DEFAULT 587,\n  `secure` boolean NOT NULL DEFAULT false,\n  `user` varchar(320) NOT NULL,\n  `password` text NOT NULL,\n  `fromEmail` varchar(320) NOT NULL,\n  `fromName` varchar(255) NOT NULL DEFAULT 'Gross ICT',\n  `isActive` boolean NOT NULL DEFAULT true,\n  `lastTestStatus` varchar(50),\n  `lastTestedAt` timestamp NULL,\n  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `smtp_settings_id` PRIMARY KEY(`id`)\n)",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 229
+}
