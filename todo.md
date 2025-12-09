@@ -558,3 +558,16 @@
 - [x] Table with recent SLA violations
 - [x] Auto-refresh toggle and manual refresh button
 - [x] Added to navigation at /fernwartung/sla-dashboard
+
+## Completed - Email Template Editor
+- [x] Create email templates database schema
+- [x] Implement email template management API (CRUD)
+- [x] Build rich text editor UI for email templates
+- [x] Add template variables/placeholders ({{ticketId}}, {{customerName}}, etc.)
+- [x] Add live preview functionality (HTML rendering)
+- [x] Template management (create, edit, delete, duplicate)
+- [x] Filter by category and active status
+- [x] Placeholder insertion buttons
+- [x] Added route at /email-templates
+- [ ] Create default templates for common notifications (future enhancement)
+- [ ] Add template selection in notification settings (future enhancement)

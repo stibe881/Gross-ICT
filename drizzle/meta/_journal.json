@@ -176,6 +176,13 @@
       "when": 1765288834716,
       "tag": "0024_nostalgic_omega_sentinel",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "5",
+      "when": 1765296615828,
+      "tag": "0025_broad_black_panther",
+      "breakpoints": true
     }
   ]
 }
