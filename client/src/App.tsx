@@ -6,7 +6,6 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { WebSocketProvider } from "./contexts/WebSocketContext";
-import Preloader from "@/components/Preloader";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { Suspense, lazy } from "react";
 
@@ -118,7 +117,6 @@ function App() {
             <WebSocketProvider>
               <TooltipProvider>
                 <LoadingScreen />
-                <Preloader />
                 <Toaster />
                 <Router />
               </TooltipProvider>
