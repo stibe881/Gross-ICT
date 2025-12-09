@@ -807,3 +807,10 @@
 - [x] Fix broken logo images in footer (logo_new references)
 - [x] Fix remaining broken logo in footer
 - [x] Adjust footer logo size (currently too large)
+- [ ] Fix TypeScript errors in FinancialDashboard.tsx (Property 'length'/'map' on object instead of array)
+- [x] Fix TypeScript errors in NewsletterDashboard.tsx (missing CSV handler functions)
+
+## Navigation Improvements
+- [x] Add navigation link for SMTP Settings to admin menu
+- [x] Add navigation link for Newsletter Dashboard to admin menu
+- [x] Add navigation link for SLA Reports to admin menu

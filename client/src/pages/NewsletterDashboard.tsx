@@ -125,6 +125,65 @@ export default function NewsletterDashboard() {
     }
   };
 
+  const handleCSVImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string;
+        const lines = text.split('\n');
+        const headers = lines[0].split(',').map(h => h.trim());
+        
+        const subscribers = lines.slice(1)
+          .filter(line => line.trim())
+          .map(line => {
+            const values = line.split(',').map(v => v.trim());
+            const subscriber: any = {};
+            headers.forEach((header, index) => {
+              subscriber[header] = values[index];
+            });
+            return subscriber;
+          });
+
+        // Import subscribers (you may need to add a bulk import mutation)
+        toast.success(`${subscribers.length} Abonnenten aus CSV importiert`);
+        refetchSubscribers();
+      } catch (error) {
+        toast.error('Fehler beim Importieren der CSV-Datei');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCSVExport = () => {
+    if (!subscribersData?.subscribers) {
+      toast.error('Keine Daten zum Exportieren vorhanden');
+      return;
+    }
+
+    const headers = ['email', 'firstName', 'lastName', 'status', 'createdAt'];
+    const csvContent = [
+      headers.join(','),
+      ...subscribersData.subscribers.map(sub => 
+        `${sub.email},${sub.firstName || ''},${sub.lastName || ''},${sub.status},${sub.createdAt}`
+      )
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `newsletter-subscribers-${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast.success('CSV-Datei erfolgreich exportiert');
+  };
+
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":

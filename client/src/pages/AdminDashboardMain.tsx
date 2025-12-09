@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, Server, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
@@ -225,6 +225,33 @@ export default function AdminDashboardMain() {
       icon: BarChart3,
       path: '/financial-dashboard',
       color: 'from-indigo-500 to-blue-600',
+      permission: 'admin',
+    },
+    {
+      id: 'newsletter',
+      title: 'Newsletter',
+      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
+      icon: Mail,
+      path: '/newsletter',
+      color: 'from-pink-500 to-rose-600',
+      permission: 'admin',
+    },
+    {
+      id: 'smtp-settings',
+      title: 'SMTP Einstellungen',
+      description: 'E-Mail-Server-Konfiguration und Verbindungseinstellungen',
+      icon: Server,
+      path: '/smtp-settings',
+      color: 'from-yellow-500 to-amber-600',
+      permission: 'admin',
+    },
+    {
+      id: 'sla-reports',
+      title: 'SLA Reports',
+      description: 'Service Level Agreement Berichte und Analysen',
+      icon: AlertTriangle,
+      path: '/sla-reports',
+      color: 'from-red-500 to-orange-600',
       permission: 'admin',
     },
   ];
