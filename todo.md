@@ -617,3 +617,58 @@
 - [x] Add route to App.tsx (/email-logs)
 - [x] Test dashboard UI and verify empty state
 - [x] Email logging automatically tracks all emails sent through the system
+
+## Completed - Newsletter Dashboard & Management System (Phase 1)
+- [x] Create database schema for newsletter system
+  - [x] newsletterSubscribers table (email, name, status, tags, subscribed date)
+  - [x] newsletterCampaigns table (name, subject, content, status, scheduled date, sent date)
+  - [x] newsletterTemplates table (name, html content, thumbnail)
+  - [x] newsletterSegments table (name, criteria, subscriber count)
+  - [x] newsletterStats table (campaign ID, opens, clicks, bounces, unsubscribes)
+  - [x] newsletterActivity table (tracking individual subscriber interactions)
+- [x] Create newsletterRouter with CRUD operations
+  - [x] Subscriber management (add, edit, delete, list with pagination)
+  - [x] Campaign management (create, edit, delete, send, schedule)
+  - [x] Template management (create, edit, delete, list)
+  - [x] Statistics and analytics endpoints (dashboard stats, subscriber stats)
+  - [x] Send test email functionality
+- [x] Build Newsletter Dashboard UI
+  - [x] Overview tab with key metrics (total subscribers, sent campaigns, avg open rate)
+  - [x] Subscriber list with filtering by status and search
+  - [x] Subscriber stats cards (total, active, unsubscribed, bounced)
+  - [x] Add/Edit/Delete subscriber functionality
+  - [x] Campaigns overview tab
+  - [x] Templates tab (placeholder)
+- [x] Add role-based access control
+  - [x] Added 'marketing' role to user schema
+  - [x] Admin role: full access to newsletter dashboard
+  - [x] Marketing role: full access to newsletter dashboard
+  - [x] Other roles: access denied with proper error messages
+- [x] Add route to App.tsx (/newsletter)
+- [x] Test newsletter dashboard UI and verify functionality
+
+## Remaining - Newsletter Features (Phase 2)
+- [ ] Build Campaign Creation & Management UI
+  - [ ] Campaign wizard (recipients, template, subject, content)
+  - [ ] Rich text editor for newsletter content
+  - [ ] Template selector and preview
+  - [ ] Schedule sending for specific date/time
+  - [ ] A/B testing UI for subject lines
+  - [ ] Send test emails UI
+- [ ] Build Template Editor UI
+  - [ ] Visual template editor with drag-and-drop
+  - [ ] Template gallery with categories
+  - [ ] Template preview and testing
+- [ ] Implement Campaign Sending Logic
+  - [ ] Background job for scheduled campaigns
+  - [ ] Batch email sending with rate limiting
+  - [ ] Track email delivery status
+- [ ] Implement Campaign Statistics & Tracking
+  - [ ] Real-time tracking (opens, clicks, bounces)
+  - [ ] Subscriber engagement analytics
+  - [ ] Campaign performance comparison charts
+  - [ ] Export statistics reports (CSV/PDF)
+- [ ] Add Import/Export Features
+  - [ ] CSV import for bulk subscriber upload
+  - [ ] CSV export for subscriber lists
+  - [ ] Subscriber segmentation and tagging UI

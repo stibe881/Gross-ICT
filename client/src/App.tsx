@@ -50,6 +50,7 @@ const SLAManagement = lazy(() => import("@/pages/SLAManagement"));
 const SLADashboard = lazy(() => import("@/pages/SLADashboard"));
 const EmailTemplateEditor = lazy(() => import("@/pages/EmailTemplateEditor"));
 const EmailLogDashboard = lazy(() => import("@/pages/EmailLogDashboard"));
+const NewsletterDashboard = lazy(() => import("@/pages/NewsletterDashboard"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -91,6 +92,7 @@ function Router() {
               <Route path="/fernwartung/sla-dashboard" component={SLADashboard} />
               <Route path="/email-templates" component={EmailTemplateEditor} />
               <Route path="/email-logs" component={EmailLogDashboard} />
+              <Route path="/newsletter" component={NewsletterDashboard} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />

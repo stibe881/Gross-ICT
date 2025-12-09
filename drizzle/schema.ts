@@ -17,7 +17,7 @@ export const users = mysqlTable("users", {
   email: varchar("email", { length: 320 }),
   password: varchar("password", { length: 255 }), // For local auth (hashed)
   loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "support", "accounting", "admin"]).default("user").notNull(),
+  role: mysqlEnum("role", ["user", "support", "accounting", "marketing", "admin"]).default("user").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
@@ -359,3 +359,5 @@ export * from "./schema_contract_templates";
 export * from "./schema_email_templates";
 // Export email logs module tables
 export * from "./schema_email_logs";
+// Export newsletter module tables
+export * from "./schema_newsletter";
