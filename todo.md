@@ -571,3 +571,14 @@
 - [x] Added route at /email-templates
 - [ ] Create default templates for common notifications (future enhancement)
 - [ ] Add template selection in notification settings (future enhancement)
+
+## Completed - Standard Email Templates
+- [x] Create seed data script for standard email templates
+- [x] Add template: Ticket Created (customer notification)
+- [x] Add template: Ticket Status Changed (customer notification)
+- [x] Add template: SLA Warning (staff notification)
+- [x] Add template: SLA Breach (staff notification)
+- [x] Add template: Invoice Due Reminder (customer notification)
+- [x] Test all templates with preview functionality
+- [x] Verify templates are visible in Email Template Editor
+- [x] 5 professional email templates created and ready for use
