@@ -24,10 +24,21 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script
-      defer
-      src="%VITE_ANALYTICS_ENDPOINT%/umami"
-      data-website-id="%VITE_ANALYTICS_WEBSITE_ID%"></script>
+    <!-- Umami Analytics (only if configured) -->
+    <script>
+      (function() {
+        var endpoint = '%VITE_ANALYTICS_ENDPOINT%';
+        var websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
+        // Only load if env vars are properly set (not placeholders)
+        if (endpoint && websiteId && !endpoint.includes('%') && !websiteId.includes('%')) {
+          var script = document.createElement('script');
+          script.defer = true;
+          script.src = endpoint + '/script.js';
+          script.setAttribute('data-website-id', websiteId);
+          document.head.appendChild(script);
+        }
+      })();
+    </script>
   </body>
 
 </html>

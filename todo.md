@@ -486,3 +486,8 @@
 - [x] Fix forecast data structure (use forecast.forecast)
 - [x] Fix summary card properties (thisMonthRevenue, overdueAmount, etc.)
 - [x] All TypeScript errors resolved - clean build
+
+## Completed - Production Fixes
+- [x] Fix Umami analytics error - Unexpected token '<'
+- [x] Added conditional loading for Umami script (only loads if env vars are set)
+- [x] Verified cookie sameSite settings are correct (lax, secure for HTTPS)
