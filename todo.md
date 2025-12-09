@@ -13,9 +13,9 @@
 - [x] Fix login redirect - users not redirected to dashboard after successful login
 
 ## Future Enhancements
-- [x] E-Mail notifications for ticket updates
-- [x] Ticket comments/communication
-- [x] File uploads for tickets
+- [ ] E-Mail notifications for ticket updates
+- [ ] Ticket comments/communication
+- [ ] File uploads for tickets
 
 ## Completed
 - [x] Ticket comments/communication system
@@ -165,7 +165,7 @@
 - [x] Integrate PDF generation into email sending workflow
 
 ## Future Enhancements
-- [x] Add email templates customization
+- [ ] Add email templates customization
 
 ## Completed - Email Template Customization
 - [x] Add logo support to email templates
@@ -251,13 +251,13 @@
 - [x] Improve error handling and validation (already implemented in routers)
 - [x] Enhance UI/UX and responsive design
 - [x] Add loading states and skeleton screens (LoadingSkeleton component)
-- [x] Optimize bundle size and lazy loading
-- [x] Improve accessibility (ARIA labels, keyboard navigation)
+- [ ] Optimize bundle size and lazy loading
+- [ ] Improve accessibility (ARIA labels, keyboard navigation)
 - [x] Add input validation and sanitization (Zod schemas implemented)
 - [x] Enhance security (SQL injection, XSS prevention)
 - [x] Create comprehensive security audit document
-- [x] Implement rate limiting (high priority)
-- [x] Add file upload validation (medium priority)
+- [ ] Implement rate limiting (high priority)
+- [ ] Add file upload validation (medium priority)
 
 ## Completed - Final Optimizations
 - [x] Move technology partners section above footer on homepage
@@ -287,10 +287,10 @@
 - [x] Remove Termin button from navigation to prevent overflow
 
 ## Production Issues (Hetzner)
-- [x] Fix Umami analytics error - Unexpected token '<'
+- [ ] Fix Umami analytics error - Unexpected token '<'
 - [x] Verify admin user stefan@gross-ict.ch exists in database
 - [x] Remove Manus OAuth dependency - implement standalone email/password auth
-- [x] Fix cookie sameSite settings for production login
+- [ ] Fix cookie sameSite settings for production login
 
 ## UI Improvements
 - [x] Simplify admin dashboard menu - remove redundant dashboard links
@@ -511,11 +511,11 @@
 - [x] Automatic SLA breach and warning emails
 
 ## Future Enhancements - Email & SLA
-- [x] Add email templates customization UI
-- [x] Add SMTP configuration UI in settings
-- [x] Add email delivery logs and tracking
-- [x] Add SLA dashboard with real-time metrics
-- [x] Add SLA reports and analytics
+- [ ] Add email templates customization UI
+- [ ] Add SMTP configuration UI in settings
+- [ ] Add email delivery logs and tracking
+- [ ] Add SLA dashboard with real-time metrics
+- [ ] Add SLA reports and analytics
 
 ## Completed - SLA Management Filters
 - [x] Add filter UI for priority (all, urgent, high, normal, low)
@@ -777,16 +777,3 @@
   - [ ] Prioritize issues by severity
   - [ ] Fix critical issues first
   - [ ] Verify fixes with re-testing
-
-## Email Notification Activation
-- [ ] Update emailService to use SMTP settings from database
-- [ ] Add fallback to ENV variables if no DB settings exist
-- [ ] Add navigation links to SMTP Settings in admin menu
-- [ ] Add navigation links to SLA Reports in admin menu
-- [ ] Create vitest tests for email notification system
-- [ ] Test ticket creation email notifications
-- [ ] Test SLA violation email notifications
-- [ ] Test invoice email notifications
-
-## Bug Fixes
-- [x] Fix CRM dashboard DATE_FORMAT SQL query error

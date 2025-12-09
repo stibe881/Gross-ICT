@@ -62,70 +62,27 @@ export default defineConfig({
     // Bundle optimization
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: {
           // Vendor chunks for better caching
-          if (id.includes('node_modules')) {
-            if (id.includes('react') || id.includes('react-dom')) {
-              return 'react-vendor';
-            }
-            if (id.includes('@radix-ui')) {
-              return 'ui';
-            }
-            if (id.includes('recharts') || id.includes('d3-')) {
-              return 'charts';
-            }
-            if (id.includes('framer-motion')) {
-              return 'animation';
-            }
-            if (id.includes('@trpc') || id.includes('@tanstack/react-query')) {
-              return 'trpc';
-            }
-            if (id.includes('lucide-react')) {
-              return 'icons';
-            }
-            if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-              return 'utils';
-            }
-            if (id.includes('socket.io-client')) {
-              return 'websocket';
-            }
-            // Other node_modules
-            return 'vendor';
-          }
-          
-          // Split large page components
-          if (id.includes('/pages/')) {
-            const pageName = id.split('/pages/')[1].split('.')[0];
-            // Group related pages
-            if (['Accounting', 'AccountingDashboard', 'AccountingSettings', 'Invoices', 'Quotes', 'RecurringInvoices'].includes(pageName)) {
-              return 'pages-accounting';
-            }
-            if (['CRM', 'Contracts', 'ContractDashboard'].includes(pageName)) {
-              return 'pages-crm';
-            }
-            if (['TicketManagement', 'SLADashboard', 'SLAManagement', 'SLAMonitoring'].includes(pageName)) {
-              return 'pages-tickets';
-            }
-            if (['NewsletterDashboard', 'CampaignEditor', 'EmailTemplateEditor'].includes(pageName)) {
-              return 'pages-newsletter';
-            }
-          }
+          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
+          'router': ['wouter'],
+          'ui': [
+            '@radix-ui/react-dialog',
+            '@radix-ui/react-dropdown-menu',
+            '@radix-ui/react-select',
+            '@radix-ui/react-tabs',
+            '@radix-ui/react-tooltip',
+          ],
+          'charts': ['recharts'],
+          'animation': ['framer-motion'],
+          'utils': ['date-fns', 'clsx', 'tailwind-merge'],
         },
       },
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Minification with better tree shaking
+    // Minification (esbuild is default and faster)
     minify: 'esbuild',
-    // Enable CSS code splitting
-    cssCodeSplit: true,
-    // Source maps for production debugging (can be disabled for smaller bundles)
-    sourcemap: false,
-    // Optimize dependencies
-    commonjsOptions: {
-      include: [/node_modules/],
-      transformMixedEsModules: true,
-    },
   },
   server: {
     host: true,

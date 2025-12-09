@@ -53,8 +53,6 @@ const EmailLogDashboard = lazy(() => import("@/pages/EmailLogDashboard"));
 const NewsletterDashboard = lazy(() => import("@/pages/NewsletterDashboard"));
 const CampaignEditor = lazy(() => import("@/pages/CampaignEditor"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
-const SmtpSettings = lazy(() => import("@/pages/SmtpSettings"));
-const SLAReports = lazy(() => import("@/pages/SLAReports"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -110,8 +108,6 @@ function Router() {
         <Route path={"/reminder-log"} component={ReminderLog} />
         <Route path={"/notification-settings"} component={NotificationSettings} />
         <Route path={"/automation-rules"} component={AutomationRules} />
-        <Route path={"/smtp-settings"} component={SmtpSettings} />
-        <Route path={"/sla-reports"} component={SLAReports} />
         <Route component={NotFound} />
       </Switch>
     </Suspense>

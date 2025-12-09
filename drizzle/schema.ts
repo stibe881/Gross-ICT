@@ -361,5 +361,3 @@ export * from "./schema_email_templates";
 export * from "./schema_email_logs";
 // Export newsletter module tables
 export * from "./schema_newsletter";
-// Export SMTP settings module tables
-export * from "./schema_smtp";
