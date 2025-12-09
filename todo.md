@@ -745,3 +745,46 @@
 - [x] Added Eye icon in cyan color
 - [x] Updated grid layout to 4 columns (Responsive, SEO, WCAG, Tech Stack)
 - [x] Feature tile now displays on /services/web page
+
+## Current Task - Newsletter Phase 2, Accessibility Testing & CI/CD Pipeline
+- [ ] Newsletter CSV Import/Export
+  - [ ] Add CSV import UI with file upload
+  - [ ] Implement CSV parser with validation
+  - [ ] Show import preview with error handling
+  - [ ] Add CSV export button with custom field selection
+  - [ ] Test import/export with sample data
+- [ ] Campaign Sending Background Job
+  - [ ] Create scheduled campaign checker (runs every minute)
+  - [ ] Implement batch email sending with rate limiting
+  - [ ] Track sending progress and update campaign status
+  - [ ] Handle email delivery errors and retries
+  - [ ] Update campaign statistics after sending
+- [ ] Email Tracking Implementation
+  - [ ] Add tracking pixel for email opens
+  - [ ] Add click tracking for links
+  - [ ] Record tracking events in database
+  - [ ] Update campaign statistics in real-time
+- [ ] Professional Accessibility Testing
+  - [ ] Install and run WAVE browser extension
+  - [ ] Install and run axe DevTools
+  - [ ] Run Lighthouse accessibility audit
+  - [ ] Document all findings in accessibility-audit.md
+  - [ ] Test keyboard-only navigation
+  - [ ] Verify color contrast ratios
+- [ ] Fix Accessibility Issues
+  - [ ] Fix critical issues (Level A)
+  - [ ] Fix serious issues (Level AA)
+  - [ ] Re-test after fixes
+  - [ ] Update accessibility statement with test results
+- [ ] GitHub Actions CI/CD Pipeline
+  - [ ] Create .github/workflows/ci.yml
+  - [ ] Add TypeScript type checking
+  - [ ] Add linting (ESLint)
+  - [ ] Add build test
+  - [ ] Add deployment workflow
+  - [ ] Test pipeline with test commit
+
+## Completed - Fix Nested Anchor Tag Error
+- [x] Find nested <a> tags on homepage (found in AccessibilityBadge.tsx)
+- [x] Fix nested anchor tags (replaced <a> with <div> inside Link component)
+- [x] Error resolved - Link component already renders <a>, no need for nested anchor
