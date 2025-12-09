@@ -404,3 +404,13 @@
 - [x] Implement click handlers for interactive chart details
 - [x] Create detail modal/dialog for revenue breakdown
 - [x] Create detail modal/dialog for customer details by month
+
+## Contract Management System
+- [x] Create contracts database schema (contracts, contractItems, contractAttachments tables)
+- [x] Create contract tRPC router with CRUD operations
+- [x] Build contract list view in CRM
+- [x] Build create/edit contract form
+- [x] Implement contract-to-invoice conversion
+- [x] Implement contract-to-recurring-invoice conversion
+- [x] Add contract status management (draft, active, expired, cancelled)
+- [x] Add contract renewal notifications

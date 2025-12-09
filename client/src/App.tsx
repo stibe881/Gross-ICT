@@ -32,6 +32,7 @@ const KnowledgeBase = lazy(() => import("@/pages/KnowledgeBase"));
 const PublicKnowledgeBase = lazy(() => import("@/pages/PublicKnowledgeBase"));
 const Accounting = lazy(() => import("@/pages/Accounting"));
 const CRM = lazy(() => import("@/pages/CRM"));
+const Contracts = lazy(() => import("@/pages/Contracts"));
 const Products = lazy(() => import("@/pages/Products"));
 const RecurringInvoices = lazy(() => import("@/pages/RecurringInvoices"));
 const AccountingSettings = lazy(() => import("@/pages/AccountingSettings"));
@@ -77,6 +78,7 @@ function Router() {
         <Route path="/knowledge-base" component={PublicKnowledgeBase} />
         <Route path="/accounting" component={Accounting} />
         <Route path="/crm" component={CRM} />
+        <Route path="/contracts" component={Contracts} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />

@@ -351,3 +351,5 @@ export type InsertSlaTracking = typeof slaTracking.$inferInsert;
 export * from "./schema_accounting";
 // Export reminder log tables
 export * from "./schema_reminder_log";
+// Export contracts module tables
+export * from "./schema_contracts";
