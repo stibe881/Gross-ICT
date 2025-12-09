@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
@@ -227,12 +227,24 @@ export default function AdminDashboardMain() {
       color: 'from-indigo-500 to-blue-600',
       permission: 'admin',
     },
+    {
+      id: 'newsletter',
+      title: 'Newsletter',
+      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
+      icon: Mail,
+      path: '/newsletter',
+      color: 'from-pink-500 to-rose-600',
+      permission: 'marketing', // Admin and marketing roles can access
+    },
   ];
 
   // Filter tiles based on user permissions
   const visibleTiles = dashboardTiles.filter(tile => {
     if (tile.permission === 'admin') {
       return user?.role === 'admin';
+    }
+    if (tile.permission === 'marketing') {
+      return user?.role === 'admin' || user?.role === 'marketing';
     }
     return true; // 'user' permission tiles are visible to all
   });

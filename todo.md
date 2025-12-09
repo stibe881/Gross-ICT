@@ -788,3 +788,10 @@
 - [x] Find nested <a> tags on homepage (found in AccessibilityBadge.tsx)
 - [x] Fix nested anchor tags (replaced <a> with <div> inside Link component)
 - [x] Error resolved - Link component already renders <a>, no need for nested anchor
+
+## Completed - Add Newsletter Tile to Admin Dashboard
+- [x] Find admin dashboard component (AdminDashboardMain.tsx)
+- [x] Add Newsletter management tile with Mail icon
+- [x] Link to /newsletter route
+- [x] Added permission filter for admin and marketing roles
+- [x] Newsletter tile visible in dashboard with pink/rose gradient
