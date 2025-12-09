@@ -805,3 +805,5 @@
 
 ## Bug Fixes
 - [x] Fix broken logo images in footer (logo_new references)
+- [x] Fix remaining broken logo in footer
+- [x] Adjust footer logo size (currently too large)
