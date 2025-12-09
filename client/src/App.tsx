@@ -47,6 +47,7 @@ const InvoiceTemplateEditor = lazy(() => import("@/pages/InvoiceTemplateEditor")
 const NotificationSettings = lazy(() => import("@/pages/NotificationSettings"));
 const AutomationRules = lazy(() => import("@/pages/AutomationRules"));
 const SLAManagement = lazy(() => import("@/pages/SLAManagement"));
+const SLADashboard = lazy(() => import("@/pages/SLADashboard"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -84,7 +85,8 @@ function Router() {
         <Route path="/contracts" component={Contracts} />
         <Route path="/contract-dashboard" component={ContractDashboard} />
         <Route path="/fernwartung/sla-monitoring" component={SLAMonitoring} />
-        <Route path="/fernwartung/sla-management" component={SLAManagement} />
+              <Route path="/fernwartung/sla-management" component={SLAManagement} />
+              <Route path="/fernwartung/sla-dashboard" component={SLADashboard} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />
