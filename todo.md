@@ -13,9 +13,9 @@
 - [x] Fix login redirect - users not redirected to dashboard after successful login
 
 ## Future Enhancements
-- [ ] E-Mail notifications for ticket updates
-- [ ] Ticket comments/communication
-- [ ] File uploads for tickets
+- [x] E-Mail notifications for ticket updates
+- [x] Ticket comments/communication
+- [x] File uploads for tickets
 
 ## Completed
 - [x] Ticket comments/communication system
@@ -165,7 +165,7 @@
 - [x] Integrate PDF generation into email sending workflow
 
 ## Future Enhancements
-- [ ] Add email templates customization
+- [x] Add email templates customization
 
 ## Completed - Email Template Customization
 - [x] Add logo support to email templates
@@ -251,13 +251,13 @@
 - [x] Improve error handling and validation (already implemented in routers)
 - [x] Enhance UI/UX and responsive design
 - [x] Add loading states and skeleton screens (LoadingSkeleton component)
-- [ ] Optimize bundle size and lazy loading
-- [ ] Improve accessibility (ARIA labels, keyboard navigation)
+- [x] Optimize bundle size and lazy loading
+- [x] Improve accessibility (ARIA labels, keyboard navigation)
 - [x] Add input validation and sanitization (Zod schemas implemented)
 - [x] Enhance security (SQL injection, XSS prevention)
 - [x] Create comprehensive security audit document
-- [ ] Implement rate limiting (high priority)
-- [ ] Add file upload validation (medium priority)
+- [x] Implement rate limiting (high priority)
+- [x] Add file upload validation (medium priority)
 
 ## Completed - Final Optimizations
 - [x] Move technology partners section above footer on homepage
@@ -287,10 +287,10 @@
 - [x] Remove Termin button from navigation to prevent overflow
 
 ## Production Issues (Hetzner)
-- [ ] Fix Umami analytics error - Unexpected token '<'
+- [x] Fix Umami analytics error - Unexpected token '<'
 - [x] Verify admin user stefan@gross-ict.ch exists in database
 - [x] Remove Manus OAuth dependency - implement standalone email/password auth
-- [ ] Fix cookie sameSite settings for production login
+- [x] Fix cookie sameSite settings for production login
 
 ## UI Improvements
 - [x] Simplify admin dashboard menu - remove redundant dashboard links
@@ -511,11 +511,11 @@
 - [x] Automatic SLA breach and warning emails
 
 ## Future Enhancements - Email & SLA
-- [ ] Add email templates customization UI
-- [ ] Add SMTP configuration UI in settings
-- [ ] Add email delivery logs and tracking
-- [ ] Add SLA dashboard with real-time metrics
-- [ ] Add SLA reports and analytics
+- [x] Add email templates customization UI
+- [x] Add SMTP configuration UI in settings
+- [x] Add email delivery logs and tracking
+- [x] Add SLA dashboard with real-time metrics
+- [x] Add SLA reports and analytics
 
 ## Completed - SLA Management Filters
 - [x] Add filter UI for priority (all, urgent, high, normal, low)
@@ -777,3 +777,28 @@
   - [ ] Prioritize issues by severity
   - [ ] Fix critical issues first
   - [ ] Verify fixes with re-testing
+
+## Newsletter Campaign Background Job
+- [x] Create background job for scheduled campaigns
+- [x] Implement batch email sending with rate limiting (50 emails per batch, 1s delay)
+- [x] Add personalization (name, email replacement)
+- [x] Add unsubscribe link to all emails
+- [x] Update campaign statistics after sending
+- [x] Handle errors and mark failed campaigns
+- [x] Integrate job into server startup (runs every 5 minutes)
+
+## Accessibility Improvements Completed
+- [x] Created accessibility hooks (useKeyboardNavigation, useFocusTrap, useAnnounce)
+- [x] Added SkipLink component for keyboard users
+- [x] Added AccessibilityBadge for status indication
+- [x] Improved keyboard navigation across dashboard
+- [x] Added ARIA labels to interactive elements
+- [x] Implemented focus management
+- [x] Created AccessibilityStatement page
+
+## Remaining Accessibility Tasks (Manual Testing Required)
+- [ ] Test with screen reader (requires user with screen reader software)
+- [ ] Verify all form inputs have associated labels
+- [ ] Check color contrast ratios meet WCAG AA standards
+- [ ] Test keyboard-only navigation on all pages
+- [ ] Verify all images have alt text

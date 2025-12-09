@@ -88,6 +88,13 @@ async function startServer() {
     }).catch((error) => {
       console.error('[Server] Failed to start SLA monitoring job:', error);
     });
+    
+    // Start newsletter campaign job
+    import('./newsletterCampaignJob.js').then(({ startNewsletterCampaignJob }) => {
+      startNewsletterCampaignJob();
+    }).catch((error) => {
+      console.error('[Server] Failed to start newsletter campaign job:', error);
+    });
   });
 }
 
