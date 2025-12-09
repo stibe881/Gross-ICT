@@ -1,26 +1,20 @@
 import { Link } from "wouter";
-import { Eye, Check } from "lucide-react";
 
 /**
  * Accessibility Badge Component
- * Displays WCAG 2.1 Level AA compliance badge in footer
+ * Displays custom WCAG 2.1 Level AA compliance badge with Gross ICT branding
+ * Can be used on client projects for brand recognition
  */
 
 export default function AccessibilityBadge() {
   return (
     <Link href="/accessibility-statement">
-      <a className="inline-flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group">
-        <div className="flex items-center justify-center w-10 h-10 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors">
-          <Eye className="w-5 h-5" aria-hidden="true" />
-        </div>
-        <div className="text-left">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider">WCAG 2.1</span>
-            <Check className="w-4 h-4" aria-hidden="true" />
-          </div>
-          <div className="text-sm font-bold">Level AA</div>
-          <div className="text-xs opacity-90">Barrierefrei</div>
-        </div>
+      <a className="inline-block transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-yellow-500/20 group">
+        <img 
+          src="/wcag-badge-gross-ict.png" 
+          alt="WCAG 2.1 Level AA Compliance Badge - Certified by Gross ICT" 
+          className="h-16 w-auto rounded-lg shadow-lg group-hover:shadow-yellow-500/30 transition-shadow"
+        />
       </a>
     </Link>
   );
