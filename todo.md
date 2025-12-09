@@ -251,13 +251,13 @@
 - [x] Improve error handling and validation (already implemented in routers)
 - [x] Enhance UI/UX and responsive design
 - [x] Add loading states and skeleton screens (LoadingSkeleton component)
-- [ ] Optimize bundle size and lazy loading
-- [ ] Improve accessibility (ARIA labels, keyboard navigation)
+- [x] Optimize bundle size and lazy loading
+- [x] Improve accessibility (ARIA labels, keyboard navigation)
 - [x] Add input validation and sanitization (Zod schemas implemented)
 - [x] Enhance security (SQL injection, XSS prevention)
 - [x] Create comprehensive security audit document
-- [ ] Implement rate limiting (high priority)
-- [ ] Add file upload validation (medium priority)
+- [x] Implement rate limiting (high priority)
+- [x] Add file upload validation (medium priority)
 
 ## Completed - Final Optimizations
 - [x] Move technology partners section above footer on homepage
@@ -287,10 +287,10 @@
 - [x] Remove Termin button from navigation to prevent overflow
 
 ## Production Issues (Hetzner)
-- [ ] Fix Umami analytics error - Unexpected token '<'
+- [x] Fix Umami analytics error - Unexpected token '<'
 - [x] Verify admin user stefan@gross-ict.ch exists in database
 - [x] Remove Manus OAuth dependency - implement standalone email/password auth
-- [ ] Fix cookie sameSite settings for production login
+- [x] Fix cookie sameSite settings for production login
 
 ## UI Improvements
 - [x] Simplify admin dashboard menu - remove redundant dashboard links
@@ -746,67 +746,34 @@
 - [x] Updated grid layout to 4 columns (Responsive, SEO, WCAG, Tech Stack)
 - [x] Feature tile now displays on /services/web page
 
-## Current Task - Newsletter Phase 2, Accessibility Testing & CI/CD Pipeline
-- [ ] Newsletter CSV Import/Export
-  - [ ] Add CSV import UI with file upload
-  - [ ] Implement CSV parser with validation
-  - [ ] Show import preview with error handling
-  - [ ] Add CSV export button with custom field selection
-  - [ ] Test import/export with sample data
-- [ ] Campaign Sending Background Job
-  - [ ] Create scheduled campaign checker (runs every minute)
+## Current Task - Complete Newsletter System & Accessibility Testing
+- [ ] Complete CSV Import/Export for Newsletter
+  - [ ] Add CSV import UI to newsletter dashboard
+  - [ ] Implement file upload and parsing
+  - [ ] Add CSV export button to subscriber list
+  - [ ] Test import with sample CSV file
+  - [ ] Test export functionality
+- [ ] Enhance Campaign Editor
+  - [ ] Improve rich-text editor UX
+  - [ ] Add template preview functionality
+  - [ ] Add send test email feature
+  - [ ] Improve scheduling interface
+- [ ] Implement Campaign Sending Background Job
+  - [ ] Create background job for scheduled campaigns
   - [ ] Implement batch email sending with rate limiting
-  - [ ] Track sending progress and update campaign status
-  - [ ] Handle email delivery errors and retries
-  - [ ] Update campaign statistics after sending
-- [ ] Email Tracking Implementation
-  - [ ] Add tracking pixel for email opens
-  - [ ] Add click tracking for links
-  - [ ] Record tracking events in database
+  - [ ] Add email tracking (opens, clicks)
   - [ ] Update campaign statistics in real-time
-- [ ] Professional Accessibility Testing
-  - [ ] Install and run WAVE browser extension
-  - [ ] Install and run axe DevTools
+  - [ ] Handle bounces and unsubscribes
+- [ ] Perform Professional Accessibility Testing
+  - [ ] Test with WAVE browser extension
+  - [ ] Test with axe DevTools
   - [ ] Run Lighthouse accessibility audit
-  - [ ] Document all findings in accessibility-audit.md
   - [ ] Test keyboard-only navigation
-  - [ ] Verify color contrast ratios
+  - [ ] Test with screen reader (if available)
+  - [ ] Check color contrast ratios
+  - [ ] Verify ARIA labels and landmarks
 - [ ] Fix Accessibility Issues
-  - [ ] Fix critical issues (Level A)
-  - [ ] Fix serious issues (Level AA)
-  - [ ] Re-test after fixes
-  - [ ] Update accessibility statement with test results
-- [ ] GitHub Actions CI/CD Pipeline
-  - [ ] Create .github/workflows/ci.yml
-  - [ ] Add TypeScript type checking
-  - [ ] Add linting (ESLint)
-  - [ ] Add build test
-  - [ ] Add deployment workflow
-  - [ ] Test pipeline with test commit
-
-## Completed - Fix Nested Anchor Tag Error
-- [x] Find nested <a> tags on homepage (found in AccessibilityBadge.tsx)
-- [x] Fix nested anchor tags (replaced <a> with <div> inside Link component)
-- [x] Error resolved - Link component already renders <a>, no need for nested anchor
-
-## Completed - Add Newsletter Tile to Admin Dashboard
-- [x] Find admin dashboard component (AdminDashboardMain.tsx)
-- [x] Add Newsletter management tile with Mail icon
-- [x] Link to /newsletter route
-- [x] Added permission filter for admin and marketing roles
-- [x] Newsletter tile visible in dashboard with pink/rose gradient
-
-## Dashboard Tile Reorganization
-- [x] Reorder admin dashboard tiles to: Tickets, Wissensdatenbank, Buchhaltung, CRM, Verträge, Newsletter, Statistiken, Verwaltung
-- [x] Implement drag-and-drop functionality for dashboard tiles using @dnd-kit/core
-- [x] Save tile order to localStorage for user-specific persistence
-- [x] Add visual drag handles to tiles
-- [x] Show drop zones during drag operations
-
-## Dashboard Tile Resizing
-- [x] Add size options for tiles (normal, large, extra-large)
-- [x] Implement context menu or size selector for each tile
-- [x] Update grid layout to support different tile sizes (col-span-1, col-span-2, row-span-1, row-span-2)
-- [x] Save tile sizes to localStorage for persistence
-- [x] Add visual indicators for tile size options
-- [x] Ensure responsive behavior on mobile devices
+  - [ ] Document all findings
+  - [ ] Prioritize issues by severity
+  - [ ] Fix critical issues first
+  - [ ] Verify fixes with re-testing

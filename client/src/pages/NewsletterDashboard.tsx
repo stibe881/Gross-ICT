@@ -125,93 +125,6 @@ export default function NewsletterDashboard() {
     }
   };
 
-  const handleCSVImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      try {
-        const text = e.target?.result as string;
-        const lines = text.split('\n').filter(line => line.trim());
-        if (lines.length < 2) {
-          toast.error('CSV-Datei ist leer oder ungültig');
-          return;
-        }
-
-        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-        const emailIndex = headers.findIndex(h => h.includes('email') || h.includes('e-mail'));
-        const firstNameIndex = headers.findIndex(h => h.includes('first') || h.includes('vorname') || h.includes('firstname'));
-        const lastNameIndex = headers.findIndex(h => h.includes('last') || h.includes('nachname') || h.includes('lastname'));
-
-        if (emailIndex === -1) {
-          toast.error('CSV muss eine Email-Spalte enthalten');
-          return;
-        }
-
-        let imported = 0;
-        let skipped = 0;
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
-          const email = values[emailIndex];
-          
-          if (!email || !email.includes('@')) {
-            skipped++;
-            continue;
-          }
-
-          try {
-            await createSubscriberMutation.mutateAsync({
-              email,
-              firstName: firstNameIndex >= 0 ? values[firstNameIndex] || '' : '',
-              lastName: lastNameIndex >= 0 ? values[lastNameIndex] || '' : '',
-            });
-            imported++;
-          } catch (error) {
-            skipped++;
-          }
-        }
-
-        toast.success(`${imported} Abonnenten importiert${skipped > 0 ? `, ${skipped} übersprungen` : ''}`);
-        refetchSubscribers();
-      } catch (error) {
-        toast.error('Fehler beim Importieren der CSV-Datei');
-      }
-    };
-    reader.readAsText(file);
-    event.target.value = '';
-  };
-
-  const handleCSVExport = () => {
-    if (!subscribersData || subscribersData.subscribers.length === 0) {
-      toast.error('Keine Abonnenten zum Exportieren');
-      return;
-    }
-
-    const headers = ['Email', 'Vorname', 'Nachname', 'Status', 'Erstellt am'];
-    const rows = subscribersData.subscribers.map(sub => [
-      sub.email,
-      sub.firstName || '',
-      sub.lastName || '',
-      sub.status,
-      new Date(sub.createdAt).toLocaleDateString('de-CH'),
-    ]);
-
-    const csv = [
-      headers.join(','),
-      ...rows.map(row => row.map(cell => `"${cell}"`).join(',')),
-    ].join('\n');
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `newsletter-abonnenten-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-    URL.revokeObjectURL(link.href);
-    
-    toast.success(`${subscribersData.subscribers.length} Abonnenten exportiert`);
-  };
-
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "active":
@@ -502,7 +415,6 @@ export default function NewsletterDashboard() {
                 <Button
                   variant="outline"
                   onClick={handleCSVExport}
-                  disabled={!subscribersData || subscribersData.subscribers.length === 0}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   CSV Export

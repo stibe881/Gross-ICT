@@ -9,7 +9,7 @@ import { Eye, Check } from "lucide-react";
 export default function AccessibilityBadge() {
   return (
     <Link href="/accessibility-statement">
-      <div className="inline-flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group cursor-pointer">
+      <a className="inline-flex items-center gap-3 px-4 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-lg hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl group">
         <div className="flex items-center justify-center w-10 h-10 bg-white/20 rounded-full group-hover:bg-white/30 transition-colors">
           <Eye className="w-5 h-5" aria-hidden="true" />
         </div>
@@ -21,7 +21,7 @@ export default function AccessibilityBadge() {
           <div className="text-sm font-bold">Level AA</div>
           <div className="text-xs opacity-90">Barrierefrei</div>
         </div>
-      </div>
+      </a>
     </Link>
   );
 }

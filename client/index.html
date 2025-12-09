@@ -27,15 +27,45 @@
     <!-- Umami Analytics (only if configured) -->
     <script>
       (function() {
-        var endpoint = '%VITE_ANALYTICS_ENDPOINT%';
-        var websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
-        // Only load if env vars are properly set (not placeholders)
-        if (endpoint && websiteId && !endpoint.includes('%') && !websiteId.includes('%')) {
+        try {
+          var endpoint = '%VITE_ANALYTICS_ENDPOINT%';
+          var websiteId = '%VITE_ANALYTICS_WEBSITE_ID%';
+          
+          // Validate endpoint and websiteId
+          if (!endpoint || !websiteId || 
+              endpoint.includes('%') || websiteId.includes('%') ||
+              endpoint === '' || websiteId === '' ||
+              endpoint === 'undefined' || websiteId === 'undefined') {
+            console.log('[Analytics] Umami not configured, skipping...');
+            return;
+          }
+          
+          // Validate endpoint URL format
+          try {
+            new URL(endpoint);
+          } catch (e) {
+            console.warn('[Analytics] Invalid endpoint URL:', endpoint);
+            return;
+          }
+          
           var script = document.createElement('script');
           script.defer = true;
+          script.async = true;
           script.src = endpoint + '/script.js';
           script.setAttribute('data-website-id', websiteId);
+          
+          // Add error handler
+          script.onerror = function() {
+            console.warn('[Analytics] Failed to load Umami script from:', endpoint);
+          };
+          
+          script.onload = function() {
+            console.log('[Analytics] Umami loaded successfully');
+          };
+          
           document.head.appendChild(script);
+        } catch (error) {
+          console.warn('[Analytics] Error initializing Umami:', error);
         }
       })();
     </script>
