@@ -736,3 +736,12 @@
 - [x] Add text about implementing accessible websites according to WCAG standards
 - [x] Update language translations (German and English)
 - [x] Web Development description now includes "WCAG 2.1 Level AA Barrierefreiheit"
+
+## Completed - Add WCAG Accessibility Feature Tile to Web Page
+- [x] Find Web page component (services/Web.tsx)
+- [x] Add new feature tile for WCAG accessibility
+- [x] Include text about WCAG 2.1 Level AA compliance
+- [x] Mention that we provide websites with accessibility badge
+- [x] Added Eye icon in cyan color
+- [x] Updated grid layout to 4 columns (Responsive, SEO, WCAG, Tech Stack)
+- [x] Feature tile now displays on /services/web page

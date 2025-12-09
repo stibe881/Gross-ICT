@@ -1,7 +1,7 @@
 import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
-import { Check, ArrowRight, Globe, Smartphone, Search, Code } from "lucide-react";
+import { Check, ArrowRight, Globe, Smartphone, Search, Code, Eye } from "lucide-react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 
@@ -47,7 +47,7 @@ export default function WebService() {
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-20">
             <FeatureCard 
               icon={<Smartphone className="h-8 w-8 text-blue-400" />}
               title="Responsive Design"
@@ -57,6 +57,11 @@ export default function WebService() {
               icon={<Search className="h-8 w-8 text-green-400" />}
               title="SEO Optimiert"
               description="Technische Optimierung für beste Rankings bei Google & Co."
+            />
+            <FeatureCard 
+              icon={<Eye className="h-8 w-8 text-cyan-400" />}
+              title="WCAG Barrierefrei"
+              description="Barrierefreie Websites nach WCAG 2.1 Level AA Standard mit offiziellem Barrierefreiheit-Label."
             />
             <FeatureCard 
               icon={<Code className="h-8 w-8 text-purple-400" />}
