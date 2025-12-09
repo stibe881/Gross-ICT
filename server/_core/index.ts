@@ -81,6 +81,13 @@ async function startServer() {
     }).catch((error) => {
       console.error('[Server] Failed to start payment reminder scheduler:', error);
     });
+    
+    // Start SLA monitoring job
+    import('./slaMonitoringJob.js').then(({ startSLAMonitoring }) => {
+      startSLAMonitoring();
+    }).catch((error) => {
+      console.error('[Server] Failed to start SLA monitoring job:', error);
+    });
   });
 }
 

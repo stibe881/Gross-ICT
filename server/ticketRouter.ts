@@ -5,6 +5,8 @@ import { createTicket, getTicketsByUserId, getAllTickets, getTicketById, updateT
 import { customers, contracts } from '../drizzle/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
+import { sendEmail } from './_core/emailService';
+import { getRenderedEmail, getTicketUrl, formatPriority, formatStatus } from './_core/emailTemplateService';
 
 // Admin or Support procedure
 const adminOrSupportProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -155,6 +157,28 @@ export const ticketRouter = router({
         escalationLevel: 0,
       });
 
+      // Send ticket created email notification
+      try {
+        const emailData = {
+          customerName: input.customerName,
+          ticketId: ticketId.toString(),
+          ticketSubject: input.subject,
+          ticketPriority: formatPriority(finalPriority),
+          ticketStatus: formatStatus('open'),
+          ticketUrl: getTicketUrl(ticketId),
+        };
+
+        const { subject, body } = await getRenderedEmail('ticket_created', emailData);
+        await sendEmail({
+          to: input.customerEmail,
+          subject,
+          html: body,
+        });
+      } catch (emailError) {
+        console.error('Failed to send ticket created email:', emailError);
+        // Don't fail the ticket creation if email fails
+      }
+
       return {
         success: true,
         ticketId,
@@ -266,30 +290,76 @@ export const ticketRouter = router({
       if (sendNotification && updates.status) {
         try {
           const ticket = await getTicketById(id);
-          if (ticket) {
-            const { sendTicketNotificationEmail } = await import('./emailService.js');
-            
+          if (ticket && ticket.customerEmail) {
             const statusMessages: Record<string, string> = {
               in_progress: 'Ihr Ticket wird nun bearbeitet. Wir werden uns baldmöglichst bei Ihnen melden.',
               resolved: 'Ihr Ticket wurde gelöst. Falls Sie weitere Fragen haben, können Sie das Ticket jederzeit wieder öffnen.',
               closed: 'Ihr Ticket wurde geschlossen. Vielen Dank für Ihre Geduld.',
             };
-            
-            await sendTicketNotificationEmail({
-              to: ticket.customerEmail || '',
+
+            const emailData = {
               customerName: ticket.customerName || 'Kunde',
-              ticketId: ticket.id,
-              subject: ticket.subject || 'Support-Ticket',
-              status: updates.status,
-              updateMessage: statusMessages[updates.status] || 'Der Status Ihres Tickets wurde aktualisiert.',
-              companyName: 'Gross ICT',
-              companyEmail: 'support@gross-ict.ch',
+              ticketId: ticket.id.toString(),
+              ticketStatus: formatStatus(updates.status),
+              assignedTo: updates.assignedTo ? 'Support-Team' : 'Nicht zugewiesen',
+              lastMessage: statusMessages[updates.status] || 'Der Status Ihres Tickets wurde aktualisiert.',
+              ticketUrl: getTicketUrl(ticket.id),
+            };
+
+            const { subject, body } = await getRenderedEmail('ticket_status_changed', emailData);
+            await sendEmail({
+              to: ticket.customerEmail,
+              subject,
+              html: body,
             });
             
-            console.log(`[Ticket] Notification email sent for ticket #${id}`);
+            console.log(`[Ticket] Status change notification email sent for ticket #${id}`);
           }
         } catch (error) {
-          console.error(`[Ticket] Failed to send notification email for ticket #${id}:`, error);
+          console.error(`[Ticket] Failed to send status change notification email for ticket #${id}:`, error);
+          // Don't fail the mutation if email fails
+        }
+      }
+
+      // Send ticket assigned email if assignedTo changed
+      if (updates.assignedTo) {
+        try {
+          const ticket = await getTicketById(id);
+          const db = await getDb();
+          if (ticket && db) {
+            // Get assigned user details
+            const { users } = await import('../drizzle/schema');
+            const [assignedUser] = await db
+              .select()
+              .from(users)
+              .where(eq(users.id, updates.assignedTo))
+              .limit(1);
+
+            if (assignedUser && assignedUser.email) {
+              const emailData = {
+                assignedTo: assignedUser.name || assignedUser.email,
+                ticketId: ticket.id.toString(),
+                customerName: ticket.customerName || 'Unbekannt',
+                ticketSubject: ticket.subject || 'Kein Betreff',
+                ticketPriority: formatPriority(ticket.priority || 'medium'),
+                ticketCategory: ticket.category || 'other',
+                createdAt: ticket.createdAt ? new Date(ticket.createdAt).toLocaleString('de-CH') : '',
+                ticketDescription: ticket.message || '',
+                ticketUrl: getTicketUrl(ticket.id),
+              };
+
+              const { subject, body } = await getRenderedEmail('ticket_assigned', emailData);
+              await sendEmail({
+                to: assignedUser.email,
+                subject,
+                html: body,
+              });
+
+              console.log(`[Ticket] Assignment notification email sent for ticket #${id}`);
+            }
+          }
+        } catch (error) {
+          console.error(`[Ticket] Failed to send assignment notification email for ticket #${id}:`, error);
           // Don't fail the mutation if email fails
         }
       }
