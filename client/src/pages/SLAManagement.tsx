@@ -36,8 +36,17 @@ export default function SLAManagement() {
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [selectedPolicy, setSelectedPolicy] = useState<any>(null);
+  const [filterPriority, setFilterPriority] = useState<string>("all");
+  const [filterStatus, setFilterStatus] = useState<string>("all");
 
-  const { data: policies, refetch } = trpc.sla.list.useQuery();
+  const { data: allPolicies, refetch } = trpc.sla.list.useQuery();
+
+  // Filter policies based on selected filters
+  const policies = allPolicies?.filter((policy) => {
+    const priorityMatch = filterPriority === "all" || policy.priority === filterPriority || (!policy.priority && filterPriority === "all");
+    const statusMatch = filterStatus === "all" || (filterStatus === "active" && policy.isActive === 1) || (filterStatus === "inactive" && policy.isActive === 0);
+    return priorityMatch && statusMatch;
+  });
 
   const [formData, setFormData] = useState<{
     name: string;
@@ -254,6 +263,46 @@ export default function SLAManagement() {
           </Dialog>
         </div>
 
+        {/* Filters */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Filter</CardTitle>
+            <CardDescription>SLA-Richtlinien nach Priorität und Status filtern</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Priorität</label>
+                <Select value={filterPriority} onValueChange={setFilterPriority}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle Prioritäten</SelectItem>
+                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                    <SelectItem value="normal">Normal</SelectItem>
+                    <SelectItem value="low">Low</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Status</label>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Alle Status</SelectItem>
+                    <SelectItem value="active">Aktiv</SelectItem>
+                    <SelectItem value="inactive">Inaktiv</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card>
@@ -262,8 +311,8 @@ export default function SLAManagement() {
               <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{policies?.filter(p => p.isActive).length || 0}</div>
-              <p className="text-xs text-muted-foreground">von {policies?.length || 0} gesamt</p>
+              <div className="text-2xl font-bold">{allPolicies?.filter(p => p.isActive).length || 0}</div>
+              <p className="text-xs text-muted-foreground">von {allPolicies?.length || 0} gesamt</p>
             </CardContent>
           </Card>
           <Card>
@@ -273,8 +322,8 @@ export default function SLAManagement() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {policies && policies.length > 0
-                  ? formatTime(Math.round(policies.reduce((acc, p) => acc + p.responseTimeMinutes, 0) / policies.length))
+                {allPolicies && allPolicies.length > 0
+                  ? formatTime(Math.round(allPolicies.reduce((acc: any, p: any) => acc + p.responseTimeMinutes, 0) / allPolicies.length))
                   : "N/A"}
               </div>
               <p className="text-xs text-muted-foreground">über alle Richtlinien</p>
@@ -287,8 +336,8 @@ export default function SLAManagement() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {policies && policies.length > 0
-                  ? formatTime(Math.round(policies.reduce((acc, p) => acc + p.resolutionTimeMinutes, 0) / policies.length))
+                {allPolicies && allPolicies.length > 0
+                  ? formatTime(Math.round(allPolicies.reduce((acc: any, p: any) => acc + p.resolutionTimeMinutes, 0) / allPolicies.length))
                   : "N/A"}
               </div>
               <p className="text-xs text-muted-foreground">über alle Richtlinien</p>

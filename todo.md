@@ -516,3 +516,10 @@
 - [ ] Add email delivery logs and tracking
 - [ ] Add SLA dashboard with real-time metrics
 - [ ] Add SLA reports and analytics
+
+## Completed - SLA Management Filters
+- [x] Add filter UI for priority (all, urgent, high, normal, low)
+- [x] Add filter UI for status (all, active, inactive)
+- [x] Implement filter logic to show/hide policies based on selection
+- [x] Filter card with two dropdowns for easy filtering
+- [x] Real-time filtering without page reload
