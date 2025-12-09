@@ -672,3 +672,67 @@
   - [ ] CSV import for bulk subscriber upload
   - [ ] CSV export for subscriber lists
   - [ ] Subscriber segmentation and tagging UI
+
+## Current Task - Newsletter Phase 2: Campaign Editor, CSV Import/Export & Sending Logic
+- [ ] Create Campaign Editor UI
+  - [ ] Campaign creation wizard with multi-step form
+  - [ ] Rich-text editor for newsletter content (TinyMCE or similar)
+  - [ ] Template selector with preview
+  - [ ] Recipient selection (all, segment, custom)
+  - [ ] Subject line editor with A/B testing option
+  - [ ] Schedule sending for specific date/time
+  - [ ] Send test email functionality
+  - [ ] Campaign preview before sending
+- [ ] Implement CSV Import/Export
+  - [ ] CSV upload component for bulk subscriber import
+  - [ ] CSV parser with validation
+  - [ ] Import preview and error handling
+  - [ ] CSV export for subscriber lists with filters
+  - [ ] Export with custom field selection
+- [ ] Create Campaign Sending Background Job
+  - [ ] Scheduled campaign checker (runs every minute)
+  - [ ] Batch email sending with rate limiting
+  - [ ] Track sending progress and status
+  - [ ] Handle email delivery errors and retries
+  - [ ] Update campaign status (draft → sending → sent)
+- [ ] Implement Email Tracking & Statistics
+  - [ ] Track email opens with pixel tracking
+  - [ ] Track link clicks with redirect tracking
+  - [ ] Record bounces and unsubscribes
+  - [ ] Update campaign statistics in real-time
+  - [ ] Calculate open rate, click rate, bounce rate
+  - [ ] Display statistics in campaign detail view
+- [ ] Test all features
+  - [ ] Test campaign creation and editing
+  - [ ] Test CSV import with sample data
+  - [ ] Test CSV export functionality
+  - [ ] Test scheduled campaign sending
+  - [ ] Test email tracking and statistics
+
+## Completed - WCAG Compliance Audit & Accessibility Improvements
+- [x] Perform WCAG 2.1 Level AA Compliance Audit
+  - [x] Check color contrast ratios (minimum 4.5:1 for text)
+  - [x] Verify keyboard navigation and focus indicators
+  - [x] Check ARIA labels and roles
+  - [x] Verify semantic HTML structure
+  - [x] Audit homepage and identify issues
+- [x] Fix WCAG Compliance Issues
+  - [x] Add skip to main content link (SkipLink component)
+  - [x] Add main content landmark (id="main-content")
+  - [x] Ensure all interactive elements are keyboard accessible
+- [x] Create Accessibility Badge
+  - [x] Design WCAG 2.1 AA compliance badge (AccessibilityBadge component)
+  - [x] Add badge to website footer in Layout component
+  - [x] Link to accessibility statement page
+  - [x] Create comprehensive Accessibility Statement page
+  - [x] Document accessibility features (keyboard nav, screenreader, contrast, alt text)
+- [x] Test Accessibility
+  - [x] Test skip link visibility on focus
+  - [x] Verify badge displays correctly in footer
+  - [x] Verify accessibility statement page loads correctly
+
+## Completed - Update Web Development Section with WCAG Compliance
+- [x] Update web development tile on homepage to mention WCAG compliance
+- [x] Add text about implementing accessible websites according to WCAG standards
+- [x] Update language translations (German and English)
+- [x] Web Development description now includes "WCAG 2.1 Level AA Barrierefreiheit"

@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import Lenis from "lenis";
 import CookieConsent from "./CookieConsent";
 import RemoteSupportModal from "./RemoteSupportModal";
+import SkipLink from "@/components/SkipLink";
+import AccessibilityBadge from "@/components/AccessibilityBadge";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/_core/hooks/useAuth";
@@ -58,6 +60,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background selection:bg-primary/20">
+      <SkipLink />
       
       {/* Floating Island Navigation */}
       <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pt-4">
@@ -180,7 +183,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       <div className="cinematic-grain"></div>
       <div className="cinematic-vignette"></div>
-      <main className="flex-1 relative z-10">
+       <main id="main-content" className="flex-1 relative z-0">
         {children}
       </main>
 
@@ -230,10 +233,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 <li><Link href="/contact"><span className="hover:text-primary transition-colors cursor-pointer">{t.nav.contact}</span></Link></li>
                 <li><Link href="/imprint"><span className="hover:text-primary transition-colors cursor-pointer">{t.footer.imprint}</span></Link></li>
                 <li><Link href="/privacy"><span className="hover:text-primary transition-colors cursor-pointer">{t.footer.privacy}</span></Link></li>
+                <li><Link href="/accessibility-statement"><span className="hover:text-primary transition-colors cursor-pointer">Barrierefreiheit</span></Link></li>
               </ul>
             </div>
 
-
+            <div>
+              <h4 className="font-medium text-foreground mb-4">Zertifizierung</h4>
+              <AccessibilityBadge />
+            </div>
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">

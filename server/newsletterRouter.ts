@@ -733,6 +733,124 @@ export const newsletterRouter = router({
 
   // ============ DASHBOARD STATS ============
 
+  // ============ IMPORT/EXPORT ============
+
+  /**
+   * Import subscribers from CSV
+   */
+  importSubscribers: protectedProcedure
+    .input(
+      z.object({
+        subscribers: z.array(
+          z.object({
+            email: z.string().email(),
+            firstName: z.string().optional(),
+            lastName: z.string().optional(),
+            tags: z.array(z.string()).optional(),
+          })
+        ),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Access denied",
+        });
+      }
+
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database not available",
+        });
+      }
+
+      let successCount = 0;
+      let errorCount = 0;
+      const errors: string[] = [];
+
+      for (const subscriber of input.subscribers) {
+        try {
+          // Check if subscriber already exists
+          const [existing] = await db
+            .select()
+            .from(newsletterSubscribers)
+            .where(eq(newsletterSubscribers.email, subscriber.email))
+            .limit(1);
+
+          if (existing) {
+            errors.push(`${subscriber.email}: Already exists`);
+            errorCount++;
+            continue;
+          }
+
+          await db.insert(newsletterSubscribers).values({
+            email: subscriber.email,
+            firstName: subscriber.firstName || null,
+            lastName: subscriber.lastName || null,
+            tags: subscriber.tags ? JSON.stringify(subscriber.tags) : null,
+            source: "import",
+            status: "active",
+          });
+
+          successCount++;
+        } catch (error) {
+          errors.push(`${subscriber.email}: ${error}`);
+          errorCount++;
+        }
+      }
+
+      return {
+        success: true,
+        successCount,
+        errorCount,
+        errors,
+      };
+    }),
+
+  /**
+   * Export subscribers to CSV
+   */
+  exportSubscribers: protectedProcedure
+    .input(
+      z.object({
+        status: z.enum(["active", "unsubscribed", "bounced"]).optional(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Access denied",
+        });
+      }
+
+      const db = await getDb();
+      if (!db) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Database not available",
+        });
+      }
+
+      const conditions = [];
+      if (input.status) {
+        conditions.push(eq(newsletterSubscribers.status, input.status));
+      }
+
+      const subscribers = await db
+        .select()
+        .from(newsletterSubscribers)
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
+        .orderBy(desc(newsletterSubscribers.subscribedAt));
+
+      return subscribers;
+    }),
+
+  // ============ DASHBOARD STATS ============
+
   /**
    * Get dashboard overview statistics
    */

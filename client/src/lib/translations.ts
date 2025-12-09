@@ -25,7 +25,7 @@ export const translations = {
       subtitle: "Ein ganzheitliches Ökosystem für Ihre digitale Performance.",
       web: {
         title: "Web Development",
-        desc: "High-Performance Webseiten und Applikationen. Gebaut mit Next-Gen Technologien für maximale Geschwindigkeit und SEO-Ranking.",
+        desc: "High-Performance Webseiten und Applikationen. Gebaut mit Next-Gen Technologien für maximale Geschwindigkeit, SEO-Ranking und WCAG 2.1 Level AA Barrierefreiheit.",
       },
       support: {
         title: "IT Support",
@@ -74,7 +74,7 @@ export const translations = {
       subtitle: "A holistic ecosystem for your digital performance.",
       web: {
         title: "Web Development",
-        desc: "High-performance websites and applications. Built with next-gen technologies for maximum speed and SEO ranking.",
+        desc: "High-performance websites and applications. Built with next-gen technologies for maximum speed, SEO ranking, and WCAG 2.1 Level AA accessibility compliance.",
       },
       support: {
         title: "IT Support",
