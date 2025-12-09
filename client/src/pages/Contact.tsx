@@ -122,9 +122,11 @@ export default function Contact() {
                 <p className="text-muted-foreground mb-4">
                   Für dringende technische Notfälle nutzen Sie bitte unsere Support-Hotline.
                 </p>
-                <Button variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10">
-                  Support Center
-                </Button>
+                <Link href="/support-center">
+                  <Button variant="outline" className="w-full border-primary/50 text-primary hover:bg-primary/10">
+                    Support Center
+                  </Button>
+                </Link>
               </div>
             </motion.div>
 

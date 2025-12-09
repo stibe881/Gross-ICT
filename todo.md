@@ -473,3 +473,8 @@
 - [x] Added pulsing glow effect
 - [x] Added animated progress bar
 - [x] Added drop-shadow to logo for better visibility
+
+## Completed - Navigation Fix
+- [x] Fix Support Center link on Contact page - clicking does nothing
+- [x] Added Link wrapper to Support Center button
+- [x] Button now navigates to /support-center correctly
