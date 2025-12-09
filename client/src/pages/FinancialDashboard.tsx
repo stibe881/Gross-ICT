@@ -52,16 +52,7 @@ export default function FinancialDashboard() {
             <div>
               <p className="text-sm text-muted-foreground">Gesamtumsatz</p>
               <p className="text-2xl font-bold">{formatCurrency(summary?.totalRevenue || 0)}</p>
-              <div className="flex items-center gap-1 mt-1">
-                {(summary?.revenueChange || 0) >= 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                )}
-                <span className={`text-sm ${(summary?.revenueChange || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {formatPercentage(summary?.revenueChange || 0)}
-                </span>
-              </div>
+              <p className="text-sm text-muted-foreground mt-1">{summary?.totalInvoices || 0} Rechnungen</p>
             </div>
             <DollarSign className="h-8 w-8 text-muted-foreground" />
           </div>
@@ -70,9 +61,9 @@ export default function FinancialDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Offene Rechnungen</p>
-              <p className="text-2xl font-bold">{formatCurrency(summary?.outstandingAmount || 0)}</p>
-              <p className="text-sm text-muted-foreground mt-1">{summary?.outstandingCount || 0} Rechnungen</p>
+              <p className="text-sm text-muted-foreground">Überfällige Rechnungen</p>
+              <p className="text-2xl font-bold text-red-500">{formatCurrency(summary?.overdueAmount || 0)}</p>
+              <p className="text-sm text-muted-foreground mt-1">{summary?.overdueCount || 0} Rechnungen</p>
             </div>
             <AlertCircle className="h-8 w-8 text-orange-500" />
           </div>
@@ -82,17 +73,8 @@ export default function FinancialDashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-muted-foreground">Diesen Monat</p>
-              <p className="text-2xl font-bold">{formatCurrency(summary?.currentMonthRevenue || 0)}</p>
-              <div className="flex items-center gap-1 mt-1">
-                {(summary?.monthlyChange || 0) >= 0 ? (
-                  <TrendingUp className="h-4 w-4 text-green-500" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                )}
-                <span className={`text-sm ${(summary?.monthlyChange || 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                  {formatPercentage(summary?.monthlyChange || 0)}
-                </span>
-              </div>
+              <p className="text-2xl font-bold">{formatCurrency(summary?.thisMonthRevenue || 0)}</p>
+              <p className="text-sm text-muted-foreground mt-1">{summary?.thisMonthInvoices || 0} Rechnungen</p>
             </div>
             <Calendar className="h-8 w-8 text-muted-foreground" />
           </div>
@@ -101,9 +83,9 @@ export default function FinancialDashboard() {
         <Card className="p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-muted-foreground">Durchschn. Rechnung</p>
-              <p className="text-2xl font-bold">{formatCurrency(summary?.averageInvoiceAmount || 0)}</p>
-              <p className="text-sm text-muted-foreground mt-1">{summary?.totalInvoices || 0} Rechnungen</p>
+              <p className="text-sm text-muted-foreground">Wiederkehrende Rechnungen</p>
+              <p className="text-2xl font-bold">{summary?.activeRecurringInvoices || 0}</p>
+              <p className="text-sm text-muted-foreground mt-1">Aktive Abos</p>
             </div>
             <BarChart3 className="h-8 w-8 text-muted-foreground" />
           </div>
@@ -116,16 +98,27 @@ export default function FinancialDashboard() {
           <h2 className="text-xl font-bold">Cashflow (6 Monate)</h2>
         </div>
         <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={cashflow || []}>
+          <BarChart data={cashflow?.months || []}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(value as number)} />
             <Legend />
             <Bar dataKey="income" name="Einnahmen" fill="#10b981" />
-            <Bar dataKey="expenses" name="Ausgaben" fill="#ef4444" />
           </BarChart>
         </ResponsiveContainer>
+        {cashflow && (
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Gesamteinnahmen</p>
+              <p className="text-lg font-bold">{formatCurrency(cashflow.totalIncome)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Durchschn. pro Monat</p>
+              <p className="text-lg font-bold">{formatCurrency(cashflow.averageMonthlyIncome)}</p>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Revenue Forecast */}
@@ -134,31 +127,63 @@ export default function FinancialDashboard() {
           <h2 className="text-xl font-bold">Umsatzprognose (3 Monate)</h2>
         </div>
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={forecast || []}>
+          <LineChart data={forecast?.forecast || []}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="month" />
             <YAxis />
             <Tooltip formatter={(value) => formatCurrency(value as number)} />
             <Legend />
-            <Line type="monotone" dataKey="actual" name="Tatsächlich" stroke="#3b82f6" strokeWidth={2} />
-            <Line type="monotone" dataKey="forecast" name="Prognose" stroke="#8b5cf6" strokeWidth={2} strokeDasharray="5 5" />
+            <Line type="monotone" dataKey="projectedRevenue" name="Prognostizierter Umsatz" stroke="#8b5cf6" strokeWidth={2} />
           </LineChart>
         </ResponsiveContainer>
+        {forecast && (
+          <div className="mt-4 grid grid-cols-2 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Monatlich wiederkehrend</p>
+              <p className="text-lg font-bold">{formatCurrency(forecast.monthlyRecurringRevenue)}</p>
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Aktive Abos</p>
+              <p className="text-lg font-bold">{forecast.activeRecurringInvoices}</p>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Monthly Comparison */}
       <Card className="p-6 mb-8">
         <h2 className="text-xl font-bold mb-4">Monatsvergleich</h2>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={comparison || []}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis />
-            <Tooltip formatter={(value) => formatCurrency(value as number)} />
-            <Legend />
-            <Bar dataKey="revenue" name="Umsatz" fill="#3b82f6" />
-          </BarChart>
-        </ResponsiveContainer>
+        {comparison && (
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Aktueller Monat</h3>
+              <p className="text-2xl font-bold">{formatCurrency(comparison.currentMonth.revenue)}</p>
+              <p className="text-sm text-muted-foreground">{comparison.currentMonth.invoices} Rechnungen ({comparison.currentMonth.paidInvoices} bezahlt)</p>
+            </div>
+            <div>
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Letzter Monat</h3>
+              <p className="text-2xl font-bold">{formatCurrency(comparison.lastMonth.revenue)}</p>
+              <p className="text-sm text-muted-foreground">{comparison.lastMonth.invoices} Rechnungen ({comparison.lastMonth.paidInvoices} bezahlt)</p>
+            </div>
+            <div className="col-span-2 pt-4 border-t">
+              <h3 className="text-sm font-medium text-muted-foreground mb-2">Veränderungen</h3>
+              <div className="flex gap-6">
+                <div className="flex items-center gap-2">
+                  {comparison.changes.revenue >= 0 ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
+                  <span className={comparison.changes.revenue >= 0 ? 'text-green-500' : 'text-red-500'}>
+                    {formatPercentage(comparison.changes.revenue)} Umsatz
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {comparison.changes.invoiceCount >= 0 ? <TrendingUp className="h-4 w-4 text-green-500" /> : <TrendingDown className="h-4 w-4 text-red-500" />}
+                  <span className={comparison.changes.invoiceCount >= 0 ? 'text-green-500' : 'text-red-500'}>
+                    {formatPercentage(comparison.changes.invoiceCount)} Rechnungen
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Outstanding Invoices */}
@@ -166,24 +191,34 @@ export default function FinancialDashboard() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Offene Rechnungen</h2>
         </div>
-        <div className="space-y-4">
-          {outstanding && outstanding.length > 0 ? (
-            outstanding.map((invoice: any) => (
-              <div key={invoice.id} className="flex justify-between items-center border-b pb-2">
-                <div>
-                  <p className="font-medium">{invoice.invoiceNumber}</p>
-                  <p className="text-sm text-muted-foreground">{invoice.customerName}</p>
-                </div>
-                <div className="text-right">
-                  <p className="font-bold">{formatCurrency(invoice.totalAmount)}</p>
-                  <p className="text-sm text-muted-foreground">{invoice.dueDate}</p>
-                </div>
+        {outstanding && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="p-4 bg-muted/50">
+              <div className="flex items-center gap-2 mb-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <h3 className="font-medium">Total Ausstehend</h3>
               </div>
-            ))
-          ) : (
-            <p className="text-muted-foreground text-center py-4">Keine offenen Rechnungen</p>
-          )}
-        </div>
+              <p className="text-2xl font-bold">{formatCurrency(outstanding.totalOutstanding)}</p>
+              <p className="text-sm text-muted-foreground">{outstanding.totalCount} Rechnungen</p>
+            </Card>
+            <Card className="p-4 bg-red-500/10">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertCircle className="h-5 w-5 text-red-500" />
+                <h3 className="font-medium">Überfällig</h3>
+              </div>
+              <p className="text-2xl font-bold text-red-500">{formatCurrency(outstanding.overdue.amount)}</p>
+              <p className="text-sm text-muted-foreground">{outstanding.overdue.count} Rechnungen</p>
+            </Card>
+            <Card className="p-4 bg-yellow-500/10">
+              <div className="flex items-center gap-2 mb-2">
+                <Calendar className="h-5 w-5 text-yellow-600" />
+                <h3 className="font-medium">Fällig diesen Monat</h3>
+              </div>
+              <p className="text-2xl font-bold text-yellow-600">{formatCurrency(outstanding.dueThisMonth.amount)}</p>
+              <p className="text-sm text-muted-foreground">{outstanding.dueThisMonth.count} Rechnungen</p>
+            </Card>
+          </div>
+        )}
       </Card>
     </div>
   );
