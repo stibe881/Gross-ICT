@@ -2,11 +2,28 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 function QuickStats() {
   const { data: stats, isLoading, refetch } = trpc.dashboardStats.getQuickStats.useQuery();
@@ -131,39 +148,100 @@ function QuickStats() {
   );
 }
 
+interface DashboardTile {
+  id: string;
+  title: string;
+  description: string;
+  icon: any;
+  path: string;
+  color: string;
+  permission: string;
+}
+
+function SortableTile({ tile }: { tile: DashboardTile }) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: tile.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const [, setLocation] = useLocation();
+  const Icon = tile.icon;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card
+        className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+      >
+        <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+        <CardHeader>
+          <div className="flex items-start justify-between">
+            <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+              <Icon className="h-6 w-6" />
+            </div>
+            <div
+              {...attributes}
+              {...listeners}
+              className="cursor-grab active:cursor-grabbing p-2 hover:bg-muted rounded-md transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVertical className="h-5 w-5 text-muted-foreground" />
+            </div>
+          </div>
+          <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+            {tile.title}
+          </CardTitle>
+          <CardDescription className="text-sm">
+            {tile.description}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="ghost"
+            className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+            onClick={() => setLocation(tile.path)}
+          >
+            Öffnen →
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
 export default function AdminDashboardMain() {
   const { user, loading: authLoading, logout } = useAuth();
   const [, setLocation] = useLocation();
 
-  // Redirect if not admin
-  if (!authLoading && user?.role !== 'admin') {
-    setLocation('/');
-    return null;
-  }
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-muted-foreground">Laden...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success('Erfolgreich abgemeldet');
-      setLocation('/');
-    } catch (error) {
-      toast.error('Fehler beim Abmelden');
-    }
-  };
-
-  // Define dashboard tiles with permissions
-  const dashboardTiles = [
+  // Default tile order
+  const defaultTiles: DashboardTile[] = [
+    {
+      id: 'tickets',
+      title: 'Tickets',
+      description: 'Support-Tickets, Anfragen und Probleme verwalten',
+      icon: Ticket,
+      path: '/admin/tickets',
+      color: 'from-orange-500 to-red-600',
+      permission: 'user', // All users can access tickets
+    },
+    {
+      id: 'wissensdatenbank',
+      title: 'Wissensdatenbank',
+      description: 'Artikel, Dokumentation und FAQ verwalten',
+      icon: BookOpen,
+      path: '/admin/knowledge-base',
+      color: 'from-purple-500 to-pink-600',
+      permission: 'admin',
+    },
     {
       id: 'buchhaltung',
       title: 'Buchhaltung',
@@ -192,31 +270,13 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
-      id: 'wissensdatenbank',
-      title: 'Wissensdatenbank',
-      description: 'Artikel, Dokumentation und FAQ verwalten',
-      icon: BookOpen,
-      path: '/admin/knowledge-base',
-      color: 'from-purple-500 to-pink-600',
-      permission: 'admin',
-    },
-    {
-      id: 'verwaltung',
-      title: 'Verwaltung',
-      description: 'Benutzer, Einstellungen und Systemkonfiguration',
-      icon: Settings,
-      path: '/admin/users',
-      color: 'from-gray-500 to-slate-600',
-      permission: 'admin',
-    },
-    {
-      id: 'tickets',
-      title: 'Tickets',
-      description: 'Support-Tickets, Anfragen und Probleme verwalten',
-      icon: Ticket,
-      path: '/admin/tickets',
-      color: 'from-orange-500 to-red-600',
-      permission: 'user', // All users can access tickets
+      id: 'newsletter',
+      title: 'Newsletter',
+      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
+      icon: Mail,
+      path: '/newsletter',
+      color: 'from-pink-500 to-rose-600',
+      permission: 'marketing', // Admin and marketing roles can access
     },
     {
       id: 'statistiken',
@@ -228,18 +288,100 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
-      id: 'newsletter',
-      title: 'Newsletter',
-      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
-      icon: Mail,
-      path: '/newsletter',
-      color: 'from-pink-500 to-rose-600',
-      permission: 'marketing', // Admin and marketing roles can access
+      id: 'verwaltung',
+      title: 'Verwaltung',
+      description: 'Benutzer, Einstellungen und Systemkonfiguration',
+      icon: Settings,
+      path: '/admin/users',
+      color: 'from-gray-500 to-slate-600',
+      permission: 'admin',
     },
   ];
 
+  // Load saved tile order from localStorage
+  const [tiles, setTiles] = useState<DashboardTile[]>(() => {
+    const savedOrder = localStorage.getItem('dashboardTileOrder');
+    if (savedOrder) {
+      try {
+        const orderIds = JSON.parse(savedOrder) as string[];
+        // Reorder tiles based on saved order
+        const orderedTiles = orderIds
+          .map(id => defaultTiles.find(t => t.id === id))
+          .filter((t): t is DashboardTile => t !== undefined);
+        
+        // Add any new tiles that weren't in the saved order
+        const newTiles = defaultTiles.filter(
+          t => !orderIds.includes(t.id)
+        );
+        
+        return [...orderedTiles, ...newTiles];
+      } catch (e) {
+        console.error('Failed to parse saved tile order:', e);
+        return defaultTiles;
+      }
+    }
+    return defaultTiles;
+  });
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setTiles((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+        
+        // Save new order to localStorage
+        const orderIds = newOrder.map(t => t.id);
+        localStorage.setItem('dashboardTileOrder', JSON.stringify(orderIds));
+        
+        toast.success('Kachel-Reihenfolge gespeichert');
+        
+        return newOrder;
+      });
+    }
+  };
+
+  // Redirect if not admin
+  if (!authLoading && user?.role !== 'admin') {
+    setLocation('/');
+    return null;
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-muted-foreground">Laden...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Erfolgreich abgemeldet');
+      setLocation('/');
+    } catch (error) {
+      toast.error('Fehler beim Abmelden');
+    }
+  };
+
   // Filter tiles based on user permissions
-  const visibleTiles = dashboardTiles.filter(tile => {
+  const visibleTiles = tiles.filter(tile => {
     if (tile.permission === 'admin') {
       return user?.role === 'admin';
     }
@@ -270,46 +412,27 @@ export default function AdminDashboardMain() {
         <div className="mb-8">
           <h2 className="text-3xl font-bold mb-2">Wählen Sie einen Bereich</h2>
           <p className="text-muted-foreground">
-            Navigieren Sie zu den verschiedenen Verwaltungsbereichen
+            Navigieren Sie zu den verschiedenen Verwaltungsbereichen. Ziehen Sie die Kacheln, um sie neu anzuordnen.
           </p>
         </div>
 
-        {/* Dashboard Tiles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleTiles.map((tile) => {
-            const Icon = tile.icon;
-            return (
-              <Card
-                key={tile.id}
-                className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
-                onClick={() => setLocation(tile.path)}
-              >
-                <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                  <CardTitle className="mt-4 group-hover:text-primary transition-colors">
-                    {tile.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {tile.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="ghost"
-                    className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
-                  >
-                    Öffnen →
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        {/* Dashboard Tiles Grid with Drag and Drop */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={visibleTiles.map(t => t.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.map((tile) => (
+                <SortableTile key={tile.id} tile={tile} />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {/* Quick Stats */}
         <QuickStats />

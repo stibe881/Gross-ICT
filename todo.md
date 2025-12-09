@@ -795,3 +795,10 @@
 - [x] Link to /newsletter route
 - [x] Added permission filter for admin and marketing roles
 - [x] Newsletter tile visible in dashboard with pink/rose gradient
+
+## Dashboard Tile Reorganization
+- [x] Reorder admin dashboard tiles to: Tickets, Wissensdatenbank, Buchhaltung, CRM, Verträge, Newsletter, Statistiken, Verwaltung
+- [x] Implement drag-and-drop functionality for dashboard tiles using @dnd-kit/core
+- [x] Save tile order to localStorage for user-specific persistence
+- [x] Add visual drag handles to tiles
+- [x] Show drop zones during drag operations
