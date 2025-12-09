@@ -491,3 +491,8 @@
 - [x] Fix Umami analytics error - Unexpected token '<'
 - [x] Added conditional loading for Umami script (only loads if env vars are set)
 - [x] Verified cookie sameSite settings are correct (lax, secure for HTTPS)
+
+## Completed - Contact Page UX
+- [x] Make phone numbers clickable with tel: links
+- [x] Make email addresses clickable with mailto: links
+- [x] Added hover effects (underline) for better UX

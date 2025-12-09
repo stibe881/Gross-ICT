@@ -85,25 +85,25 @@ export default function Contact() {
                   <CardDescription>Wir sind für Sie da.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors">
+                  <a href="mailto:info@gross-ict.ch" className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors cursor-pointer">
                     <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                       <Mail className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Email</p>
-                      <p>info@gross-ict.ch</p>
+                      <p className="hover:underline">info@gross-ict.ch</p>
                     </div>
-                  </div>
+                  </a>
                   
-                  <div className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors">
+                  <a href="tel:+41794140616" className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors cursor-pointer">
                     <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
                       <Phone className="h-5 w-5" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">Telefon</p>
-                      <p>+41 79 414 06 16</p>
+                      <p className="hover:underline">+41 79 414 06 16</p>
                     </div>
-                  </div>
+                  </a>
                   
                   <div className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors">
                     <div className="h-10 w-10 rounded-full bg-white/5 flex items-center justify-center border border-white/10">
