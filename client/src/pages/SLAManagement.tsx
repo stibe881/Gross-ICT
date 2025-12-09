@@ -447,27 +447,30 @@ export default function SLAManagement() {
                   {selectedPolicies.length} Richtlinie(n) ausgewählt
                 </p>
                 <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleBulkActivate(true)}
-                  >
-                    Aktivieren
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleBulkActivate(false)}
-                  >
-                    Deaktivieren
-                  </Button>
-                  <Button
-                    variant="destructive"
-                    size="sm"
-                    onClick={handleBulkDelete}
-                  >
-                    Löschen
-                  </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleBulkActivate(true)}
+                aria-label="Ausgewählte Richtlinien aktivieren"
+              >
+                Aktivieren
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleBulkActivate(false)}
+                aria-label="Ausgewählte Richtlinien deaktivieren"
+              >
+                Deaktivieren
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleBulkDelete}
+                aria-label="Ausgewählte Richtlinien löschen"
+              >
+                Löschen
+              </Button>
                 </div>
               </div>
             </CardContent>
@@ -482,8 +485,13 @@ export default function SLAManagement() {
                 <CardTitle>SLA-Richtlinien</CardTitle>
                 <CardDescription>Verwalten Sie Ihre Service Level Agreements</CardDescription>
               </div>
-              <Button variant="outline" size="sm" onClick={exportToCSV}>
-                <Download className="h-4 w-4 mr-2" />
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={exportToCSV}
+                aria-label="SLA-Richtlinien als CSV exportieren"
+              >
+                <Download className="h-4 w-4 mr-2" aria-hidden="true" />
                 CSV Export
               </Button>
             </div>
@@ -496,6 +504,7 @@ export default function SLAManagement() {
                     <CheckboxUI
                       checked={selectedPolicies.length === policies?.length && policies?.length > 0}
                       onCheckedChange={toggleSelectAll}
+                      aria-label="Alle Richtlinien auswählen"
                     />
                   </TableHead>
                   <TableHead className="cursor-pointer" onClick={() => handleSort("name")}>
@@ -529,6 +538,7 @@ export default function SLAManagement() {
                         <CheckboxUI
                           checked={selectedPolicies.includes(policy.id)}
                           onCheckedChange={() => toggleSelectPolicy(policy.id)}
+                          aria-label={`${policy.name} auswählen`}
                         />
                       </TableCell>
                       <TableCell>
@@ -549,11 +559,21 @@ export default function SLAManagement() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="sm" onClick={() => handleEdit(policy)}>
-                            <Edit className="h-4 w-4" />
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleEdit(policy)}
+                            aria-label={`${policy.name} bearbeiten`}
+                          >
+                            <Edit className="h-4 w-4" aria-hidden="true" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleDelete(policy.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={() => handleDelete(policy.id)}
+                            aria-label={`${policy.name} löschen`}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" aria-hidden="true" />
                           </Button>
                         </div>
                       </TableCell>
