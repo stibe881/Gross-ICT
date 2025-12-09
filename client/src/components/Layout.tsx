@@ -189,7 +189,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <div className="container">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
             <div className="space-y-4">
-              <h3 className="text-lg font-bold text-foreground">Gross ICT</h3>
+              <img src="/logo.svg" alt="Gross ICT" className="h-8 w-auto" />
               <p className="text-muted-foreground text-sm leading-relaxed">
                 Next-Generation IT Solutions.<br/>
                 {t.hero.subtitle}
@@ -237,7 +237,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
           
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">
-            <p>© {new Date().getFullYear()} Gross ICT. {t.footer.rights}</p>
+            <div className="flex items-center gap-2">
+              <img src="/logo.svg" alt="Gross ICT" className="h-5 w-auto" />
+              <p>© {new Date().getFullYear()} {t.footer.rights}</p>
+            </div>
             <p>Designed with Next-Gen Tech.</p>
           </div>
         </div>

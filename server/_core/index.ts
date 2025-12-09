@@ -31,6 +31,10 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 async function startServer() {
   const app = express();
   const server = createServer(app);
+  
+  // Trust proxy - required when behind Apache/Nginx reverse proxy
+  // This allows Express to correctly identify client IPs from X-Forwarded-For header
+  app.set('trust proxy', true);
   // Configure body parser with larger size limit for file uploads
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));

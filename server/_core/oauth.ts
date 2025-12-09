@@ -10,6 +10,12 @@ function getQueryParam(req: Request, key: string): string | undefined {
 }
 
 export function registerOAuthRoutes(app: Express) {
+  // Skip OAuth routes if OAuth is disabled
+  if (!process.env.OAUTH_SERVER_URL || process.env.OAUTH_SERVER_URL === 'disabled') {
+    console.log('[OAuth] OAuth routes disabled');
+    return;
+  }
+  
   app.get("/api/oauth/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
     const state = getQueryParam(req, "state");
