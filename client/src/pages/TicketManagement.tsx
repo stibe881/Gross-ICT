@@ -1034,12 +1034,13 @@ export default function TicketManagement() {
               <div className="border-t border-white/10 pt-6" />
               {/* Search Bar */}
               <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary transition-colors" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary transition-colors" aria-hidden="true" />
                 <input
                   type="text"
                   placeholder="Suche nach Ticket-Nr, Betreff, Kunde, E-Mail..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="Ticket-Suche"
                   className="w-full pl-12 pr-12 py-4 bg-black/30 border-2 border-white/10 rounded-xl text-white placeholder:text-gray-400 focus:outline-none focus:border-primary focus:bg-black/40 transition-all duration-200 text-base"
                 />
                 {searchQuery && (
@@ -1251,6 +1252,7 @@ export default function TicketManagement() {
                     <input
                       type="checkbox"
                       checked={selectedTickets.includes(ticket.id)}
+                      aria-label={`Ticket #${ticket.id} auswählen`}
                       onChange={(e) => {
                         e.stopPropagation();
                         if (e.target.checked) {
