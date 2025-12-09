@@ -445,3 +445,6 @@
 - [x] Fix customer growth chart query to show actual customer data (MySQL DATE_FORMAT)
 - [x] Add contract navigation link to admin dashboard (Verträge tile added)
 - [x] Improve contract-customer assignment UX (customer dropdown in contract form)
+
+## FinancialDashboard React Hook Error
+- [x] Fix React Hook #310 error in FinancialDashboard component (removed non-existent export mutations)
