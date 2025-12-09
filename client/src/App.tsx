@@ -34,6 +34,7 @@ const Accounting = lazy(() => import("@/pages/Accounting"));
 const CRM = lazy(() => import("@/pages/CRM"));
 const Contracts = lazy(() => import("@/pages/Contracts"));
 const ContractDashboard = lazy(() => import("@/pages/ContractDashboard"));
+const SLAMonitoring = lazy(() => import("@/pages/SLAMonitoring"));
 const Products = lazy(() => import("@/pages/Products"));
 const RecurringInvoices = lazy(() => import("@/pages/RecurringInvoices"));
 const AccountingSettings = lazy(() => import("@/pages/AccountingSettings"));
@@ -81,6 +82,7 @@ function Router() {
         <Route path="/crm" component={CRM} />
         <Route path="/contracts" component={Contracts} />
         <Route path="/contract-dashboard" component={ContractDashboard} />
+        <Route path="/sla-monitoring" component={SLAMonitoring} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />

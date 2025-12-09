@@ -43,6 +43,12 @@ export const contracts = mysqlTable("contracts", {
   renewalNoticeDays: int("renewalNoticeDays").default(30).notNull(),
   /** Payment terms in days */
   paymentTermsDays: int("paymentTermsDays").default(30).notNull(),
+  /** Reference to SLA policy */
+  slaId: int("slaId"),
+  /** SLA response time in minutes (cached from SLA policy) */
+  slaResponseTime: int("slaResponseTime"),
+  /** SLA resolution time in hours (cached from SLA policy) */
+  slaResolutionTime: int("slaResolutionTime"),
   /** Internal notes */
   notes: text("notes"),
   /** Terms and conditions */

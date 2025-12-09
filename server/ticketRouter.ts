@@ -1,7 +1,9 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { publicProcedure, protectedProcedure, router } from './_core/trpc';
-import { createTicket, getTicketsByUserId, getAllTickets, getTicketById, updateTicket, getUserByEmail, createUser } from './db';
+import { createTicket, getTicketsByUserId, getAllTickets, getTicketById, updateTicket, getUserByEmail, createUser, getDb } from './db';
+import { customers, contracts } from '../drizzle/schema';
+import { eq, and, desc } from 'drizzle-orm';
 import bcrypt from 'bcrypt';
 
 // Admin or Support procedure
@@ -83,6 +85,51 @@ export const ticketRouter = router({
         }
       }
 
+      // Check if customer has an active contract with SLA
+      const db = await getDb();
+      let finalPriority = input.priority;
+      let slaResponseTime = null;
+      let slaResolutionTime = null;
+
+      if (db) {
+        // Find customer by email
+        const [customer] = await db
+          .select()
+          .from(customers)
+          .where(eq(customers.email, input.customerEmail))
+          .limit(1);
+
+        if (customer) {
+          // Find active contract with SLA for this customer
+          const [activeContract] = await db
+            .select()
+            .from(contracts)
+            .where(
+              and(
+                eq(contracts.customerId, customer.id),
+                eq(contracts.status, 'active')
+              )
+            )
+            .orderBy(desc(contracts.createdAt))
+            .limit(1);
+
+          if (activeContract && activeContract.slaId) {
+            // Use SLA from contract
+            slaResponseTime = activeContract.slaResponseTime;
+            slaResolutionTime = activeContract.slaResolutionTime;
+
+            // Auto-upgrade priority based on SLA response time
+            if (slaResponseTime && slaResponseTime <= 15) {
+              finalPriority = 'urgent';
+            } else if (slaResponseTime && slaResponseTime <= 60) {
+              finalPriority = 'high';
+            } else if (slaResponseTime && slaResponseTime <= 240) {
+              finalPriority = 'medium';
+            }
+          }
+        }
+      }
+
       // Calculate SLA due date based on priority
       const slaHours = {
         urgent: 4,    // 4 hours
@@ -91,7 +138,7 @@ export const ticketRouter = router({
         low: 168,     // 7 days
       };
       const slaDueDate = new Date();
-      slaDueDate.setHours(slaDueDate.getHours() + slaHours[input.priority]);
+      slaDueDate.setHours(slaDueDate.getHours() + slaHours[finalPriority]);
 
       const ticketId = await createTicket({
         userId,
@@ -100,7 +147,7 @@ export const ticketRouter = router({
         company: input.company || null,
         subject: input.subject,
         message: input.message,
-        priority: input.priority,
+        priority: finalPriority,
         category: input.category,
         status: 'open',
         slaDueDate,

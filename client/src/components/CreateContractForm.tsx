@@ -41,6 +41,7 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
   const [paymentTermsDays, setPaymentTermsDays] = useState("30");
   const [autoRenew, setAutoRenew] = useState(false);
   const [renewalNoticeDays, setRenewalNoticeDays] = useState("30");
+  const [selectedSlaId, setSelectedSlaId] = useState<string>("none");
   const [notes, setNotes] = useState("");
   const [terms, setTerms] = useState("");
   const [items, setItems] = useState<ContractItem[]>([
@@ -56,6 +57,7 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
 
   const { data: customers } = trpc.customers.all.useQuery({});
   const { data: templates } = trpc.contractTemplates.getAll.useQuery({ activeOnly: true });
+  const { data: slaPolicies } = trpc.sla.list.useQuery();
   const { data: templateData } = trpc.contractTemplates.getById.useQuery(
     { id: parseInt(selectedTemplateId) },
     { enabled: selectedTemplateId !== "none" }
@@ -187,6 +189,9 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
       paymentTermsDays: parseInt(paymentTermsDays),
       autoRenew: autoRenew ? 1 : 0,
       renewalNoticeDays: parseInt(renewalNoticeDays),
+      slaId: selectedSlaId !== "none" ? parseInt(selectedSlaId) : undefined,
+      slaResponseTime: selectedSlaId !== "none" && slaPolicies ? slaPolicies.find(s => s.id === parseInt(selectedSlaId))?.responseTimeMinutes : undefined,
+      slaResolutionTime: selectedSlaId !== "none" && slaPolicies ? Math.round((slaPolicies.find(s => s.id === parseInt(selectedSlaId))?.resolutionTimeMinutes || 0) / 60) : undefined,
       notes: notes || undefined,
       terms: terms || undefined,
       items,
@@ -350,6 +355,27 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
         <Label htmlFor="autoRenew" className="cursor-pointer">
           Automatische Verlängerung
         </Label>
+      </div>
+
+      {/* SLA Selection */}
+      <div>
+        <Label htmlFor="sla">SLA-Richtlinie (optional)</Label>
+        <Select value={selectedSlaId} onValueChange={setSelectedSlaId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Keine SLA" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Keine SLA</SelectItem>
+            {slaPolicies?.map((sla) => (
+              <SelectItem key={sla.id} value={sla.id.toString()}>
+                {sla.name} (Reaktion: {sla.responseTimeMinutes}min, Lösung: {Math.round(sla.resolutionTimeMinutes / 60)}h)
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground mt-1">
+          Die SLA-Richtlinie bestimmt die Priorität von Tickets für diesen Kunden.
+        </p>
       </div>
 
       {/* Items */}
