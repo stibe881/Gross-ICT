@@ -169,6 +169,13 @@
       "when": 1765266753918,
       "tag": "0023_acoustic_toad_men",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "5",
+      "when": 1765288834716,
+      "tag": "0024_nostalgic_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

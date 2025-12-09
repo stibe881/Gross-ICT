@@ -37,6 +37,8 @@ export const customers = mysqlTable("customers", {
   userId: int("userId"),
   /** Preferred language for invoices and communications */
   language: mysqlEnum("language", ["de", "en", "fr"]).default("de").notNull(),
+  /** Preferred currency for invoices */
+  currency: varchar("currency", { length: 3 }).default("CHF").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 }, (table) => ({

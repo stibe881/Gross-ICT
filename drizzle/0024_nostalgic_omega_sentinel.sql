@@ -1,0 +1,1 @@
+ALTER TABLE `customers` ADD `currency` varchar(3) DEFAULT 'CHF' NOT NULL;

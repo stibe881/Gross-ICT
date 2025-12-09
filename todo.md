@@ -205,12 +205,14 @@
 - [x] Add filtering by status and reminder type
 - [x] Add navigation from AccountingDashboard
 
-## In Progress - Multi-Currency Support
-- [ ] Add currency field to customers table
-- [ ] Update invoice schema to support multiple currencies
-- [ ] Add currency conversion API integration
-- [ ] Create currency settings in accounting settings
-- [ ] Update invoice calculations for multi-currency
+## Completed - Multi-Currency Support
+- [x] Add currency field to customers table
+- [x] Update invoice schema to support multiple currencies (already had currency field)
+- [x] Add currency dropdown to CRM forms (CHF, EUR, USD, GBP)
+- [x] Update API validation for currency field
+- [ ] Add currency conversion API integration (future enhancement)
+- [ ] Create currency settings in accounting settings (future enhancement)
+- [ ] Update invoice calculations for multi-currency (future enhancement)
 
 ## Completed - Multilingual Invoices
 - [x] Add language field to customers table

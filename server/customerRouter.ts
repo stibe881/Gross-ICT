@@ -82,6 +82,8 @@ export const customerRouter = router({
         defaultDiscount: z.string().default("0.00"),
         notes: z.string().optional(),
         userId: z.number().optional(),
+        language: z.enum(["de", "en", "fr"]).default("de"),
+        currency: z.string().length(3).default("CHF"),
       })
     )
     .mutation(async ({ input, ctx }: any) => {
@@ -136,6 +138,8 @@ export const customerRouter = router({
         defaultDiscount: z.string().optional(),
         notes: z.string().optional(),
         userId: z.number().optional(),
+        language: z.enum(["de", "en", "fr"]).optional(),
+        currency: z.string().length(3).optional(),
       })
     )
     .mutation(async ({ input, ctx }: any) => {
