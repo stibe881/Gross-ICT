@@ -31,6 +31,7 @@ interface ContractItem {
 
 export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateContractFormProps) {
   const [selectedCustomerId, setSelectedCustomerId] = useState<number | undefined>(customerId);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("none");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [contractType, setContractType] = useState("service");
@@ -54,6 +55,43 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
   ]);
 
   const { data: customers } = trpc.customers.all.useQuery({});
+  const { data: templates } = trpc.contractTemplates.getAll.useQuery({ activeOnly: true });
+  const { data: templateData } = trpc.contractTemplates.getById.useQuery(
+    { id: parseInt(selectedTemplateId) },
+    { enabled: selectedTemplateId !== "none" }
+  );
+
+  // Load template data when selected
+  useEffect(() => {
+    if (templateData) {
+      const { template, items: templateItems } = templateData;
+      setTitle(template.name);
+      setDescription(template.description || "");
+      setContractType(template.contractType);
+      setBillingInterval(template.defaultBillingInterval);
+      setPaymentTermsDays(template.defaultPaymentTermsDays.toString());
+      setAutoRenew(template.defaultAutoRenew === 1);
+      setRenewalNoticeDays(template.defaultRenewalNoticeDays.toString());
+      setTerms(template.defaultTerms || "");
+      
+      // Calculate dates based on duration
+      const start = new Date();
+      const end = new Date();
+      end.setMonth(end.getMonth() + template.defaultDurationMonths);
+      setStartDate(start.toISOString().split('T')[0]);
+      setEndDate(end.toISOString().split('T')[0]);
+      
+      // Load items
+      setItems(templateItems.map(item => ({
+        description: item.description,
+        quantity: item.defaultQuantity,
+        unit: item.defaultUnit,
+        unitPrice: item.defaultUnitPrice,
+        vatRate: item.defaultVatRate,
+        discount: item.defaultDiscount,
+      })));
+    }
+  }, [templateData]);
 
   const createContract = trpc.contracts.create.useMutation({
     onSuccess: () => {
@@ -180,6 +218,24 @@ export function CreateContractForm({ customerId, onSuccess, onCancel }: CreateCo
           </Select>
         </div>
       )}
+
+      {/* Template Selection */}
+      <div>
+        <Label htmlFor="template">Aus Vorlage erstellen (optional)</Label>
+        <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId}>
+          <SelectTrigger>
+            <SelectValue placeholder="Keine Vorlage" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">Keine Vorlage</SelectItem>
+            {templates?.map((template) => (
+              <SelectItem key={template.id} value={template.id.toString()}>
+                {template.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Basic Info */}
       <div className="grid grid-cols-2 gap-4">

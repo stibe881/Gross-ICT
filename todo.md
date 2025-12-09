@@ -414,3 +414,13 @@
 - [x] Implement contract-to-recurring-invoice conversion
 - [x] Add contract status management (draft, active, expired, cancelled)
 - [x] Add contract renewal notifications
+
+## Contract Templates & Dashboard
+- [x] Create contract templates database schema
+- [x] Create contract templates tRPC router
+- [x] Build contract template management UI
+- [x] Add "Create from template" feature to contract creation
+- [x] Create contract dashboard with expiring contracts overview
+- [x] Add revenue forecast calculations
+- [x] Add contract renewal rate analytics
+- [x] Add contract status distribution chart

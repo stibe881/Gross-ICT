@@ -353,3 +353,5 @@ export * from "./schema_accounting";
 export * from "./schema_reminder_log";
 // Export contracts module tables
 export * from "./schema_contracts";
+// Export contract templates module tables
+export * from "./schema_contract_templates";
