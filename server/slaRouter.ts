@@ -2,8 +2,9 @@ import { z } from 'zod';
 import { publicProcedure, router, protectedProcedure } from './_core/trpc';
 import { TRPCError } from '@trpc/server';
 import { getDb } from './db';
-import { slaPolicies, slaTracking, tickets } from '../drizzle/schema';
+import { slaPolicies, slaTracking, tickets, users } from '../drizzle/schema';
 import { eq, and, desc, lt, isNull } from 'drizzle-orm';
+import { sendSLAWarningEmail, sendSLABreachEmail } from './_core/emailService';
 
 export const slaRouter = router({
   // Get all SLA policies
@@ -280,8 +281,24 @@ export const slaRouter = router({
             if (!track.responseBreachSent) {
               // Send breach email
               try {
-                // TODO: Implement SLA breach email notification
-                console.log('SLA breach detected for ticket:', track.ticketId);
+                // Get assigned user email
+                if (ticket.assignedTo) {
+                  const [assignedUser] = await db.select().from(users).where(eq(users.id, ticket.assignedTo)).limit(1);
+                  if (assignedUser && assignedUser.email) {
+                    // Get all admin emails for CC
+                    const admins = await db.select().from(users).where(eq(users.role, 'admin'));
+                    const adminEmails = admins.map(a => a.email).filter(Boolean) as string[];
+                    
+                    await sendSLABreachEmail(
+                      track.ticketId,
+                      ticket.subject,
+                      assignedUser.email,
+                      adminEmails,
+                      responseDeadline,
+                      'response'
+                    );
+                  }
+                }
               } catch (error) {
                 console.error('Failed to send SLA breach email:', error);
               }
@@ -301,8 +318,19 @@ export const slaRouter = router({
             if (!track.responseWarningSent) {
               // Send warning email
               try {
-                // TODO: Implement SLA warning email notification
-                console.log('SLA warning for ticket:', track.ticketId);
+                // Get assigned user email
+                if (ticket.assignedTo) {
+                  const [assignedUser] = await db.select().from(users).where(eq(users.id, ticket.assignedTo)).limit(1);
+                  if (assignedUser && assignedUser.email) {
+                    await sendSLAWarningEmail(
+                      track.ticketId,
+                      ticket.subject,
+                      assignedUser.email,
+                      responseDeadline,
+                      'response'
+                    );
+                  }
+                }
               } catch (error) {
                 console.error('Failed to send SLA warning email:', error);
               }

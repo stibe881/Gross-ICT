@@ -46,6 +46,7 @@ const ReminderLog = lazy(() => import("@/pages/ReminderLog"));
 const InvoiceTemplateEditor = lazy(() => import("@/pages/InvoiceTemplateEditor"));
 const NotificationSettings = lazy(() => import("@/pages/NotificationSettings"));
 const AutomationRules = lazy(() => import("@/pages/AutomationRules"));
+const SLAManagement = lazy(() => import("@/pages/SLAManagement"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -82,7 +83,8 @@ function Router() {
         <Route path="/crm" component={CRM} />
         <Route path="/contracts" component={Contracts} />
         <Route path="/contract-dashboard" component={ContractDashboard} />
-        <Route path="/sla-monitoring" component={SLAMonitoring} />
+        <Route path="/fernwartung/sla-monitoring" component={SLAMonitoring} />
+        <Route path="/fernwartung/sla-management" component={SLAManagement} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />
