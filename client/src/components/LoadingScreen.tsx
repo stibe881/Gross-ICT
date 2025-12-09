@@ -1,90 +1,92 @@
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function LoadingScreen() {
   const [isVisible, setIsVisible] = useState(true);
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
 
   useEffect(() => {
-    // Mark animation as complete after 3s
-    const animationTimer = setTimeout(() => {
-      setIsAnimationComplete(true);
-    }, 3000);
-
-    // Hide loading screen after 3.5s total
+    // Hide loading screen after 3s
     const hideTimer = setTimeout(() => {
       setIsVisible(false);
-    }, 3500);
+    }, 3000);
 
     return () => {
-      clearTimeout(animationTimer);
       clearTimeout(hideTimer);
     };
   }, []);
 
-  if (!isVisible) return null;
-
   return (
-    <div 
-      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-background transition-opacity duration-700 ${
-        isAnimationComplete ? 'opacity-0' : 'opacity-100'
-      }`}
-    >
-      <div className="relative w-64 h-64 flex items-center justify-center">
-        {/* Glow effect background */}
-        <div className="absolute inset-0 flex items-center justify-center animate-glow-pulse">
-          <div className="w-40 h-40 rounded-full bg-primary/20 blur-3xl" />
-        </div>
-
-        {/* SVG Container for the logo elements */}
-        <svg
-          className="relative z-10"
-          width="160"
-          height="160"
-          viewBox="0 0 160 160"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-background"
         >
-          {/* Left Arc - slides in from left */}
-          <g className="animate-slide-in-left">
-            <path
-              d="M 40 30 Q 25 80 40 130"
-              stroke="hsl(var(--primary))"
-              strokeWidth="12"
-              strokeLinecap="round"
-              fill="none"
-              opacity="0.9"
-            />
-          </g>
+          <div className="relative flex flex-col items-center gap-8">
+            {/* Glow effect background */}
+            <motion.div
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.6, 0.3],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <div className="w-48 h-48 rounded-full bg-primary/20 blur-3xl" />
+            </motion.div>
 
-          {/* Right Arc - slides in from right */}
-          <g className="animate-slide-in-right">
-            <path
-              d="M 80 30 Q 95 80 80 130"
-              stroke="hsl(var(--primary))"
-              strokeWidth="12"
-              strokeLinecap="round"
-              fill="none"
-              opacity="0.9"
-            />
-          </g>
+            {/* Logo with scale animation */}
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                duration: 0.8,
+                ease: [0.34, 1.56, 0.64, 1] // Bounce effect
+              }}
+              className="relative z-10"
+            >
+              <img
+                src="/logo-new.png"
+                alt="Gross ICT Logo"
+                className="w-32 h-32 object-contain"
+                style={{ filter: 'drop-shadow(0 0 20px hsl(var(--primary) / 0.5))' }}
+              />
+            </motion.div>
 
-          {/* Dot - slides in from right with delay */}
-          <g className="animate-slide-in-dot">
-            <circle
-              cx="130"
-              cy="80"
-              r="10"
-              fill="hsl(var(--primary))"
-              opacity="0.9"
-            />
-          </g>
-        </svg>
+            {/* Loading text with fade-in */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.5 }}
+              className="text-muted-foreground text-base font-medium tracking-[0.3em] uppercase"
+            >
+              LOADING
+            </motion.div>
 
-        {/* Optional: Loading text with fade-in */}
-        <div className="absolute bottom-12 text-muted-foreground text-base font-medium animate-fade-in tracking-[0.3em] uppercase">
-          LOADING
-        </div>
-      </div>
-    </div>
+            {/* Progress bar */}
+            <motion.div
+              className="w-48 h-[2px] bg-border/30 rounded-full overflow-hidden"
+            >
+              <motion.div
+                initial={{ x: "-100%" }}
+                animate={{ x: "100%" }}
+                transition={{
+                  duration: 2,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+                className="h-full w-1/3 bg-primary rounded-full"
+              />
+            </motion.div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
