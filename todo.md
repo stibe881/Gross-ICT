@@ -837,3 +837,12 @@
 - [x] Fix 404 error on SLA Reports page
 - [x] Add routes to App.tsx (/smtp-settings → EmailTemplateEditor, /sla-reports → SLADashboard)
 - [x] Test both pages after fix (SMTP Settings shows Email Template Editor, SLA Reports shows SLA Dashboard)
+
+## Current Tasks
+- [x] Rename "SMTP Einstellungen" to "Email Templates" in Admin Dashboard
+- [x] Fix nested anchor error (<a> cannot contain nested <a>) - Used asChild prop on Button components
+- [x] Fix email notifications for ticket creators (ticket created, new reply, comment, status change)
+- [x] Implement notification bell in admin dashboard with real-time updates (shows @mentions, auto-refresh every 30s)
+- [ ] Test email delivery for all ticket events
+- [x] Fix "Unbekannt" in comments - show actual user/customer name who created the comment (added JOIN with users table)
+- [x] Add getUserById function to db.ts (TypeScript error fix)

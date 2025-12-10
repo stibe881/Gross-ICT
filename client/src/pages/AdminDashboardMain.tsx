@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
 import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, Server, AlertTriangle } from "lucide-react";
+import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
@@ -237,9 +238,9 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
-      id: 'smtp-settings',
-      title: 'SMTP Einstellungen',
-      description: 'E-Mail-Server-Konfiguration und Verbindungseinstellungen',
+      id: 'email-templates',
+      title: 'Email Templates',
+      description: 'E-Mail-Vorlagen erstellen und verwalten',
       icon: Server,
       path: '/smtp-settings',
       color: 'from-yellow-500 to-amber-600',
@@ -273,10 +274,13 @@ export default function AdminDashboardMain() {
             <h1 className="text-2xl font-bold">Admin Dashboard</h1>
             <p className="text-sm text-muted-foreground">Willkommen, {user?.name}</p>
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            Abmelden
-          </Button>
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <Button variant="outline" onClick={handleLogout}>
+              <LogOut className="h-4 w-4 mr-2" />
+              Abmelden
+            </Button>
+          </div>
         </div>
       </header>
 

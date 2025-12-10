@@ -107,6 +107,17 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+export async function getUserById(id: number) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get user: database not available");
+    return undefined;
+  }
+
+  const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
 export async function getUserByEmail(email: string) {
   const db = await getDb();
   if (!db) {
@@ -193,7 +204,22 @@ export async function getCommentsByTicketId(ticketId: number): Promise<TicketCom
     return [];
   }
 
-  return await db.select().from(ticketComments).where(eq(ticketComments.ticketId, ticketId));
+  const comments = await db
+    .select({
+      id: ticketComments.id,
+      ticketId: ticketComments.ticketId,
+      userId: ticketComments.userId,
+      message: ticketComments.message,
+      isInternal: ticketComments.isInternal,
+      createdAt: ticketComments.createdAt,
+      userName: users.name,
+    })
+    .from(ticketComments)
+    .leftJoin(users, eq(ticketComments.userId, users.id))
+    .where(eq(ticketComments.ticketId, ticketId))
+    .orderBy(ticketComments.createdAt);
+
+  return comments as any;
 }
 
 // Ticket attachment helpers

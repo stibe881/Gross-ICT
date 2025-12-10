@@ -125,6 +125,42 @@ export const commentRouter = router({
         }
       }
 
+      // Send email notification to ticket creator if comment is not internal
+      if (!isInternal && ctx.user!.id !== ticket.userId) {
+        try {
+          const { sendEmail } = await import('./_core/emailService.js');
+          const { getRenderedEmail, getTicketUrl } = await import('./_core/emailTemplateService.js');
+          const { getUserById } = await import('./db.js');
+          
+          const ticketCreator = await getUserById(ticket.userId);
+          if (ticketCreator && ticketCreator.email) {
+            const emailData = {
+              customerName: ticketCreator.name || 'Kunde',
+              ticketNumber: `#${ticket.id}`,
+              ticketSubject: ticket.subject || 'Ihr Ticket',
+              commentAuthor: ctx.user!.name || 'Support-Team',
+              commentMessage: input.message,
+              ticketUrl: getTicketUrl(ticket.id),
+            };
+
+            const { subject, body } = await getRenderedEmail('ticket_reply', emailData);
+            await sendEmail({
+              to: ticketCreator.email,
+              subject,
+              html: body,
+              templateName: 'ticket_reply',
+              recipientName: ticketCreator.name || undefined,
+              entityType: 'ticket',
+              entityId: ticket.id,
+              triggeredBy: ctx.user!.id,
+            });
+          }
+        } catch (emailError) {
+          console.error('Failed to send comment notification email:', emailError);
+          // Don't fail the comment creation if email fails
+        }
+      }
+
       return {
         success: true,
         commentId,

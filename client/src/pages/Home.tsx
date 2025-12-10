@@ -120,16 +120,16 @@ export default function Home() {
             
             <motion.div variants={fadeIn} className="flex flex-col items-center gap-8 pt-8">
               <div className="flex flex-col sm:flex-row justify-center gap-6">
-                <Link href="/contact">
-                  <Button size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
+                <Button asChild size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
+                  <Link href="/contact">
                     {t.hero.cta_primary} <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </Link>
-                <Link href="/services/web">
-                  <Button variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
+                  </Link>
+                </Button>
+                <Button asChild variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
+                  <Link href="/services/web">
                     {t.hero.cta_secondary}
-                  </Button>
-                </Link>
+                  </Link>
+                </Button>
               </div>
               
               <div className="flex gap-4 text-sm text-muted-foreground">
@@ -137,10 +137,8 @@ export default function Home() {
                   <MessageCircle className="h-4 w-4" /> {t.hero.whatsapp}
                 </a>
                 <span className="text-white/20">|</span>
-                <Link href="/contact">
-                  <span className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
-                    <Calendar className="h-4 w-4" /> {t.hero.schedule}
-                  </span>
+                <Link href="/contact" className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+                  <Calendar className="h-4 w-4" /> {t.hero.schedule}
                 </Link>
               </div>
             </motion.div>
