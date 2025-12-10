@@ -48,6 +48,7 @@ const NotificationSettings = lazy(() => import("@/pages/NotificationSettings"));
 const AutomationRules = lazy(() => import("@/pages/AutomationRules"));
 const SLAManagement = lazy(() => import("@/pages/SLAManagement"));
 const SLADashboard = lazy(() => import("@/pages/SLADashboard"));
+const SMTPSettings = lazy(() => import("@/pages/SMTPSettings"));
 const EmailTemplateEditor = lazy(() => import("@/pages/EmailTemplateEditor"));
 const EmailLogDashboard = lazy(() => import("@/pages/EmailLogDashboard"));
 const NewsletterDashboard = lazy(() => import("@/pages/NewsletterDashboard"));
@@ -96,7 +97,7 @@ function Router() {
               <Route path="/email-logs" component={EmailLogDashboard} />
               <Route path="/newsletter" component={NewsletterDashboard} />
               <Route path="/newsletter/campaigns/:id" component={CampaignEditor} />
-              <Route path="/smtp-settings" component={EmailTemplateEditor} />
+              <Route path="/smtp-settings" component={SMTPSettings} />
               <Route path="/sla-reports" component={SLADashboard} />
               <Route path="/accessibility-statement" component={AccessibilityStatement} />
         <Route path="/products" component={Products} />

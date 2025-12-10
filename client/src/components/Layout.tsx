@@ -101,17 +101,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
           {/* User Auth & CTA */}
           <div className="flex items-center gap-1">
-            {/* User/Login Button */}
-            {user ? (
+            {/* User Dashboard Button (only show icon) */}
+            {user && (
               <Link href={user.role === 'admin' ? '/admin' : '/dashboard'}>
                 <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 group">
                   <User className="h-4 w-4 text-primary" />
-                </button>
-              </Link>
-            ) : (
-              <Link href="/login">
-                <button className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-sm font-medium">
-                  {language === 'de' ? 'Anmelden' : 'Login'}
                 </button>
               </Link>
             )}
@@ -177,6 +171,19 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {language === 'de' ? 'Fernwartung' : 'Remote Support'}
               </span>
             </RemoteSupportModal>
+            
+            {/* Login Link in Mobile Menu */}
+            {!user && (
+              <Link href="/login">
+                <span 
+                  className="block p-4 rounded-2xl bg-white/5 border border-white/5 text-xl font-medium hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-3"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  <User className="w-5 h-5" />
+                  {language === 'de' ? 'Anmelden' : 'Login'}
+                </span>
+              </Link>
+            )}
           </nav>
         </div>
       )}

@@ -850,3 +850,14 @@
 ## Current Tasks
 - [x] Add status and priority editing dropdowns to ticket detail modal
 - [x] Fix email notifications for comments - ticket creators should receive emails when supporters add comments
+
+## New Features & Improvements
+- [x] Rename "E-Commerce-Shop" to "Webshop" in website creator wizard
+- [x] Add payment system option to webshop (yes/no)
+- [x] Add API integration count selector (1, 2, or 3 interfaces)
+- [ ] Send quote email to customer when "Offizielles Angebot anfordern" is clicked
+- [ ] Send quote email copy to verkauf@gross-ict.ch
+- [x] Move login button from header to menu (below Fernwartung)
+- [x] Fix WCAG emblem visibility on accessibility-statement page (menu overlap)
+- [x] Fix horizontal scroll on accessibility-statement mobile (title too long)
+- [x] Add SMTP settings page to admin Verwaltung menu

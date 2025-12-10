@@ -11,17 +11,17 @@ export default function AccessibilityStatement() {
         description="Informationen zur Barrierefreiheit der Gross ICT Website gemäß WCAG 2.1 Level AA"
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-20">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-20 pt-32">
         <div className="container mx-auto max-w-4xl px-4">
           {/* Header */}
           <div className="text-center mb-16">
             <div className="inline-flex items-center gap-3 px-6 py-3 bg-blue-600 text-white rounded-full mb-6">
               <Eye className="w-5 h-5" />
-              <span className="font-semibold">WCAG 2.1 Level AA</span>
+              <span className="font-semibold text-sm md:text-base">WCAG 2.1 Level AA</span>
               <Check className="w-5 h-5" />
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              Barrierefreiheitserklärung
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4 break-words">
+              Barrierefreiheits&shy;erklärung
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               Unser Engagement für digitale Barrierefreiheit

@@ -63,7 +63,7 @@ export default function Calculator() {
         },
         { 
           id: "ecommerce", 
-          label: { de: "E-Commerce Shop", en: "E-Commerce Shop" }, 
+          label: { de: "Webshop", en: "Webshop" }, 
           description: { 
             de: "Online-Shop mit Warenkorb, Zahlungsabwicklung und Produktverwaltung.", 
             en: "Online store with shopping cart, payment processing, and product management." 
@@ -190,13 +190,68 @@ export default function Calculator() {
           icon: <Mail className="w-6 h-6" />
         },
       ]
+    },
+    {
+      id: "webshop",
+      title: { 
+        de: "Webshop-Optionen", 
+        en: "Webshop Options" 
+      },
+      description: { 
+        de: "Zusätzliche Optionen für Ihren Online-Shop.", 
+        en: "Additional options for your online store." 
+      },
+      type: "multiple",
+      options: [
+        { 
+          id: "payment", 
+          label: { de: "Zahlungssystem", en: "Payment System" }, 
+          description: { 
+            de: "Integration von Stripe, PayPal oder anderen Zahlungsanbietern.", 
+            en: "Integration of Stripe, PayPal or other payment providers." 
+          },
+          price: 1500,
+          icon: <Server className="w-6 h-6" />
+        },
+        { 
+          id: "api1", 
+          label: { de: "1 API-Schnittstelle", en: "1 API Interface" }, 
+          description: { 
+            de: "Anbindung einer externen Schnittstelle (z.B. ERP, CRM, Warenwirtschaft).", 
+            en: "Connection to one external interface (e.g., ERP, CRM, inventory system)." 
+          },
+          price: 2000,
+          icon: <Zap className="w-6 h-6" />
+        },
+        { 
+          id: "api2", 
+          label: { de: "2 API-Schnittstellen", en: "2 API Interfaces" }, 
+          description: { 
+            de: "Anbindung von zwei externen Schnittstellen.", 
+            en: "Connection to two external interfaces." 
+          },
+          price: 3500,
+          icon: <Zap className="w-6 h-6" />
+        },
+        { 
+          id: "api3", 
+          label: { de: "3 API-Schnittstellen", en: "3 API Interfaces" }, 
+          description: { 
+            de: "Anbindung von drei externen Schnittstellen.", 
+            en: "Connection to three external interfaces." 
+          },
+          price: 5000,
+          icon: <Zap className="w-6 h-6" />
+        },
+      ]
     }
   ];
 
   const [selections, setSelections] = useState<Record<string, string | string[]>>({
     type: "landing",
     design: "template",
-    features: []
+    features: [],
+    webshop: []
   });
 
   const toggleSelection = (categoryId: string, optionId: string, type: "single" | "multiple") => {
@@ -231,7 +286,7 @@ export default function Calculator() {
   };
 
   const handleNext = () => {
-    if (currentStep < categories.length) {
+    if (currentStep < filteredCategories.length) {
       setCurrentStep(prev => prev + 1);
     } else {
       handleRequestQuote();
@@ -266,8 +321,17 @@ export default function Calculator() {
     setLocation("/contact");
   };
 
-  const currentCategory = categories[currentStep];
-  const isLastStep = currentStep === categories.length;
+  // Filter categories based on selections
+  const filteredCategories = categories.filter(cat => {
+    // Show webshop category only if ecommerce is selected
+    if (cat.id === 'webshop') {
+      return selections.type === 'ecommerce';
+    }
+    return true;
+  });
+
+  const currentCategory = filteredCategories[currentStep];
+  const isLastStep = currentStep === filteredCategories.length;
 
   return (
     <Layout>
@@ -290,14 +354,14 @@ export default function Calculator() {
             {/* Progress Bar */}
             <div className="max-w-md mx-auto mt-8">
               <div className="flex justify-between text-sm text-muted-foreground mb-2">
-                <span>{language === 'de' ? 'Schritt' : 'Step'} {Math.min(currentStep + 1, categories.length + 1)} {language === 'de' ? 'von' : 'of'} {categories.length + 1}</span>
-                <span>{Math.round((Math.min(currentStep + 1, categories.length + 1) / (categories.length + 1)) * 100)}%</span>
+                <span>{language === 'de' ? 'Schritt' : 'Step'} {Math.min(currentStep + 1, filteredCategories.length + 1)} {language === 'de' ? 'von' : 'of'} {filteredCategories.length + 1}</span>
+                <span>{Math.round((Math.min(currentStep + 1, filteredCategories.length + 1) / (filteredCategories.length + 1)) * 100)}%</span>
               </div>
               <div className="h-2 bg-secondary rounded-full overflow-hidden">
                 <motion.div 
                   className="h-full bg-primary"
                   initial={{ width: 0 }}
-                  animate={{ width: `${(Math.min(currentStep + 1, categories.length + 1) / (categories.length + 1)) * 100}%` }}
+                  animate={{ width: `${(Math.min(currentStep + 1, filteredCategories.length + 1) / (filteredCategories.length + 1)) * 100}%` }}
                   transition={{ duration: 0.3 }}
                 />
               </div>

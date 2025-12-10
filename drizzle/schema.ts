@@ -361,3 +361,22 @@ export * from "./schema_email_templates";
 export * from "./schema_email_logs";
 // Export newsletter module tables
 export * from "./schema_newsletter";
+
+/**
+ * SMTP settings table for email configuration
+ */
+export const smtpSettings = mysqlTable("smtpSettings", {
+  id: int("id").autoincrement().primaryKey(),
+  host: varchar("host", { length: 255 }).notNull(),
+  port: int("port").notNull(),
+  secure: int("secure").default(1).notNull(), // 1 = SSL/TLS, 0 = no encryption
+  user: varchar("user", { length: 320 }).notNull(),
+  password: varchar("password", { length: 500 }).notNull(),
+  fromEmail: varchar("fromEmail", { length: 320 }).notNull(),
+  fromName: varchar("fromName", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SmtpSettings = typeof smtpSettings.$inferSelect;
+export type InsertSmtpSettings = typeof smtpSettings.$inferInsert;
