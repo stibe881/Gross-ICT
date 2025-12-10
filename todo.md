@@ -846,3 +846,7 @@
 - [ ] Test email delivery for all ticket events
 - [x] Fix "Unbekannt" in comments - show actual user/customer name who created the comment (added JOIN with users table)
 - [x] Add getUserById function to db.ts (TypeScript error fix)
+
+## Current Tasks
+- [x] Add status and priority editing dropdowns to ticket detail modal
+- [x] Fix email notifications for comments - ticket creators should receive emails when supporters add comments

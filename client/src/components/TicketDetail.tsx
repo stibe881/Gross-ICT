@@ -68,6 +68,17 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
     },
   });
 
+  const updateTicketMutation = trpc.tickets.update.useMutation({
+    onSuccess: () => {
+      toast.success("Ticket aktualisiert");
+      utils.tickets.byId.invalidate({ id: ticketId });
+      utils.tickets.all.invalidate();
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Fehler beim Aktualisieren des Tickets");
+    },
+  });
+
   const createCommentMutation = trpc.comments.createComment.useMutation({
     onSuccess: () => {
       toast.success(isPrivateNote ? "Private Notiz hinzugefügt" : "Kommentar hinzugefügt");
@@ -261,23 +272,86 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                 </div>
 
                 <div className="space-y-4">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
-                      <Tag className="h-4 w-4" />
-                      Status & Priorität
-                    </h3>
-                    <div className="flex flex-wrap gap-2">
-                      <Badge className={getStatusColor(ticket.status)}>
-                        {ticket.status === "in_progress" ? "In Bearbeitung" : ticket.status === "open" ? "Offen" : ticket.status === "resolved" ? "Gelöst" : "Geschlossen"}
-                      </Badge>
-                      <Badge className={getPriorityColor(ticket.priority)}>
-                        {ticket.priority}
-                      </Badge>
-                      <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                        {getCategoryLabel(ticket.category)}
-                      </Badge>
+                  {isStaff ? (
+                    <>
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                          <Tag className="h-4 w-4" />
+                          Status
+                        </h3>
+                        <Select
+                          value={ticket.status}
+                          onValueChange={(value) => {
+                            updateTicketMutation.mutate({
+                              ticketId: ticket.id,
+                              status: value as any,
+                            });
+                          }}
+                          disabled={updateTicketMutation.isPending}
+                        >
+                          <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="open">Offen</SelectItem>
+                            <SelectItem value="in_progress">In Bearbeitung</SelectItem>
+                            <SelectItem value="resolved">Gelöst</SelectItem>
+                            <SelectItem value="closed">Geschlossen</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                          <AlertTriangle className="h-4 w-4" />
+                          Priorität
+                        </h3>
+                        <Select
+                          value={ticket.priority}
+                          onValueChange={(value) => {
+                            updateTicketMutation.mutate({
+                              ticketId: ticket.id,
+                              priority: value as any,
+                            });
+                          }}
+                          disabled={updateTicketMutation.isPending}
+                        >
+                          <SelectTrigger className="bg-white/5 border-white/10 text-white">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="low">Niedrig</SelectItem>
+                            <SelectItem value="medium">Mittel</SelectItem>
+                            <SelectItem value="high">Hoch</SelectItem>
+                            <SelectItem value="urgent">Dringend</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-medium text-gray-400 mb-2">Kategorie</h3>
+                        <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                          {getCategoryLabel(ticket.category)}
+                        </Badge>
+                      </div>
+                    </>
+                  ) : (
+                    <div>
+                      <h3 className="text-sm font-medium text-gray-400 mb-2 flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        Status & Priorität
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        <Badge className={getStatusColor(ticket.status)}>
+                          {ticket.status === "in_progress" ? "In Bearbeitung" : ticket.status === "open" ? "Offen" : ticket.status === "resolved" ? "Gelöst" : "Geschlossen"}
+                        </Badge>
+                        <Badge className={getPriorityColor(ticket.priority)}>
+                          {ticket.priority}
+                        </Badge>
+                        <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                          {getCategoryLabel(ticket.category)}
+                        </Badge>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {ticket.slaDueDate && ticket.status !== 'resolved' && ticket.status !== 'closed' && (
                     <div>
