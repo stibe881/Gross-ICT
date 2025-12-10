@@ -96,6 +96,8 @@ function Router() {
               <Route path="/email-logs" component={EmailLogDashboard} />
               <Route path="/newsletter" component={NewsletterDashboard} />
               <Route path="/newsletter/campaigns/:id" component={CampaignEditor} />
+              <Route path="/smtp-settings" component={EmailTemplateEditor} />
+              <Route path="/sla-reports" component={SLADashboard} />
               <Route path="/accessibility-statement" component={AccessibilityStatement} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />

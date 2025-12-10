@@ -822,3 +822,18 @@
 - [x] Make badge reusable for client projects
 - [x] Update AccessibilityBadge component
 - [x] Test badge display in footer
+
+## Bug - Customer Data Not Visible (Production 500 Error)
+- [x] Investigate why previously created customer is not showing in CRM
+- [x] Check database for customer records (data exists)
+- [ ] Fix 500 Internal Server Error on production (gross-ict.ch)
+- [ ] Error: Failed query on customers table - likely missing column or schema mismatch
+- [ ] Check production database schema vs local schema
+- [ ] Run database migration on production if needed
+- [ ] Test customer visibility after fix
+
+## Bug - Missing Routes (404 Errors)
+- [x] Fix 404 error on SMTP Settings page
+- [x] Fix 404 error on SLA Reports page
+- [x] Add routes to App.tsx (/smtp-settings → EmailTemplateEditor, /sla-reports → SLADashboard)
+- [x] Test both pages after fix (SMTP Settings shows Email Template Editor, SLA Reports shows SLA Dashboard)

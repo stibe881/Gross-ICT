@@ -1,0 +1,32 @@
+{
+  "query": "SELECT * FROM customers ORDER BY createdAt DESC LIMIT 10;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute SELECT * FROM customers ORDER BY createdAt DESC LIMIT 10;",
+  "rows": [
+    {
+      "id": "1",
+      "type": "company",
+      "name": "Ackert Garten GmbH",
+      "customerNumber": "K-0001",
+      "contactPerson": "Erdzan Kalac",
+      "email": "ackertgarten@hotmail.com",
+      "phone": "+41 76 831 32 42",
+      "address": "Schöneggstrasse 1a",
+      "postalCode": "5012",
+      "city": "Schönenwerd",
+      "country": "Schweiz",
+      "paymentTermsDays": "14",
+      "defaultVatRate": "8.10",
+      "defaultDiscount": "0.00",
+      "notes": "",
+      "userId": "NULL",
+      "createdAt": "2025-12-08 09:04:56",
+      "updatedAt": "2025-12-08 09:04:56",
+      "language": "de",
+      "currency": "CHF"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttype\tname\tcustomerNumber\tcontactPerson\temail\tphone\taddress\tpostalCode\tcity\tcountry\tpaymentTermsDays\tdefaultVatRate\tdefaultDiscount\tnotes\tuserId\tcreatedAt\tupdatedAt\tlanguage\tcurrency\n1\tcompany\tAckert Garten GmbH\tK-0001\tErdzan Kalac\tackertgarten@hotmail.com\t+41 76 831 32 42\tSchöneggstrasse 1a\t5012\tSchönenwerd\tSchweiz\t14\t8.10\t0.00\t\tNULL\t2025-12-08 09:04:56\t2025-12-08 09:04:56\tde\tCHF\n",
+  "stderr": "",
+  "execution_time_ms": 117
+}
