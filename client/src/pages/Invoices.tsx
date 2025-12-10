@@ -241,6 +241,74 @@ function CreateInvoiceDialog({ open, onOpenChange, customers, onSuccess }: any) 
   const [items, setItems] = useState([
     { description: "", quantity: "1", unit: "Stunden", unitPrice: "0", vatRate: "8.10", discount: "0" }
   ]);
+  const [showNewCustomerDialog, setShowNewCustomerDialog] = useState(false);
+  const [newCustomerData, setNewCustomerData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+    city: "",
+    zip: "",
+    country: "Schweiz",
+    type: "company" as "company" | "individual",
+  });
+  const [showNewProductDialog, setShowNewProductDialog] = useState(false);
+  const [newProductData, setNewProductData] = useState({
+    name: "",
+    description: "",
+    unit: "Stunden",
+    unitPrice: "",
+    vatRate: "8.10",
+    category: "",
+    isActive: true,
+  });
+  const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(null);
+
+  const createCustomer = trpc.customers.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Kunde erfolgreich erstellt");
+      setCustomerId(data.id);
+      setShowNewCustomerDialog(false);
+      setNewCustomerData({
+        name: "",
+        email: "",
+        phone: "",
+        address: "",
+        city: "",
+        zip: "",
+        country: "Schweiz",
+        type: "company",
+      });
+      onSuccess();
+    },
+    onError: (error: any) => {
+      toast.error(`Fehler: ${error.message}`);
+    },
+  });
+
+  const createProduct = trpc.products.create.useMutation({
+    onSuccess: (data) => {
+      toast.success("Produkt erfolgreich erstellt");
+      if (currentItemIndex !== null) {
+        selectProduct(currentItemIndex, data.id.toString());
+      }
+      setShowNewProductDialog(false);
+      setNewProductData({
+        name: "",
+        description: "",
+        unit: "Stunden",
+        unitPrice: "",
+        vatRate: "8.10",
+        category: "",
+        isActive: true,
+      });
+      setCurrentItemIndex(null);
+      onSuccess();
+    },
+    onError: (error: any) => {
+      toast.error(`Fehler: ${error.message}`);
+    },
+  });
 
   const createInvoice = trpc.invoices.create.useMutation({
     onSuccess: () => {
@@ -314,11 +382,20 @@ function CreateInvoiceDialog({ open, onOpenChange, customers, onSuccess }: any) 
         <div className="space-y-4 mt-4">
           <div>
             <label className="text-sm font-medium mb-2 block">Kunde *</label>
-            <Select value={customerId?.toString() || ""} onValueChange={(v) => setCustomerId(parseInt(v))}>
+            <Select value={customerId?.toString() || ""} onValueChange={(v) => {
+              if (v === "__new__") {
+                setShowNewCustomerDialog(true);
+              } else {
+                setCustomerId(parseInt(v));
+              }
+            }}>
               <SelectTrigger>
                 <SelectValue placeholder="Kunde auswählen" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="__new__" className="text-primary font-medium">
+                  + Neuen Kunden erstellen
+                </SelectItem>
                 {customers.map((customer: any) => (
                   <SelectItem key={customer.id} value={customer.id.toString()}>
                     {customer.name} ({customer.email})
@@ -327,6 +404,112 @@ function CreateInvoiceDialog({ open, onOpenChange, customers, onSuccess }: any) 
               </SelectContent>
             </Select>
           </div>
+
+          {/* New Customer Dialog */}
+          <Dialog open={showNewCustomerDialog} onOpenChange={setShowNewCustomerDialog}>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Neuen Kunden erstellen</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Name *</label>
+                    <Input
+                      value={newCustomerData.name}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, name: e.target.value })}
+                      placeholder="Firmenname oder Name"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Typ *</label>
+                    <Select
+                      value={newCustomerData.type}
+                      onValueChange={(v: "company" | "individual") => setNewCustomerData({ ...newCustomerData, type: v })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="company">Firma</SelectItem>
+                        <SelectItem value="individual">Privatperson</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">E-Mail *</label>
+                    <Input
+                      type="email"
+                      value={newCustomerData.email}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, email: e.target.value })}
+                      placeholder="kunde@example.com"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Telefon</label>
+                    <Input
+                      value={newCustomerData.phone}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, phone: e.target.value })}
+                      placeholder="+41 79 123 45 67"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Adresse</label>
+                  <Input
+                    value={newCustomerData.address}
+                    onChange={(e) => setNewCustomerData({ ...newCustomerData, address: e.target.value })}
+                    placeholder="Strasse und Hausnummer"
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">PLZ</label>
+                    <Input
+                      value={newCustomerData.zip}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, zip: e.target.value })}
+                      placeholder="6144"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Ort</label>
+                    <Input
+                      value={newCustomerData.city}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, city: e.target.value })}
+                      placeholder="Zell"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Land</label>
+                    <Input
+                      value={newCustomerData.country}
+                      onChange={(e) => setNewCustomerData({ ...newCustomerData, country: e.target.value })}
+                      placeholder="Schweiz"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 mt-6">
+                  <Button variant="outline" onClick={() => setShowNewCustomerDialog(false)}>
+                    Abbrechen
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      if (!newCustomerData.name || !newCustomerData.email) {
+                        toast.error("Bitte füllen Sie Name und E-Mail aus");
+                        return;
+                      }
+                      createCustomer.mutate(newCustomerData);
+                    }}
+                    disabled={createCustomer.isPending}
+                  >
+                    {createCustomer.isPending ? "Erstellt..." : "Kunde erstellen"}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <div>
             <label className="text-sm font-medium mb-2 block">Fälligkeitsdatum *</label>
@@ -361,11 +544,21 @@ function CreateInvoiceDialog({ open, onOpenChange, customers, onSuccess }: any) 
                 <Card key={index} className="p-4">
                   <div className="grid grid-cols-12 gap-2">
                     <div className="col-span-12 mb-2">
-                      <Select onValueChange={(v) => selectProduct(index, v)}>
+                      <Select onValueChange={(v) => {
+                        if (v === "__new__") {
+                          setCurrentItemIndex(index);
+                          setShowNewProductDialog(true);
+                        } else {
+                          selectProduct(index, v);
+                        }
+                      }}>
                         <SelectTrigger>
                           <SelectValue placeholder="Produkt aus Katalog wählen (optional)" />
                         </SelectTrigger>
                         <SelectContent>
+                          <SelectItem value="__new__" className="text-primary font-medium">
+                            + Neues Produkt erstellen
+                          </SelectItem>
                           {products?.map((product) => (
                             <SelectItem key={product.id} value={product.id.toString()}>
                               {product.name} - {parseFloat(product.unitPrice).toFixed(2)} CHF/{product.unit}
@@ -450,6 +643,107 @@ function CreateInvoiceDialog({ open, onOpenChange, customers, onSuccess }: any) 
           </div>
         </div>
       </DialogContent>
+
+      {/* New Product Dialog */}
+      <Dialog open={showNewProductDialog} onOpenChange={setShowNewProductDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Neues Produkt erstellen</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Produktname *</label>
+                <Input
+                  value={newProductData.name}
+                  onChange={(e) => setNewProductData({ ...newProductData, name: e.target.value })}
+                  placeholder="z.B. IT-Support"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Kategorie</label>
+                <Input
+                  value={newProductData.category}
+                  onChange={(e) => setNewProductData({ ...newProductData, category: e.target.value })}
+                  placeholder="z.B. Dienstleistung"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="text-sm font-medium mb-2 block">Beschreibung</label>
+              <Input
+                value={newProductData.description}
+                onChange={(e) => setNewProductData({ ...newProductData, description: e.target.value })}
+                placeholder="Kurze Produktbeschreibung"
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Einheit *</label>
+                <Select
+                  value={newProductData.unit}
+                  onValueChange={(v) => setNewProductData({ ...newProductData, unit: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Stunden">Stunden</SelectItem>
+                    <SelectItem value="Stück">Stück</SelectItem>
+                    <SelectItem value="Tage">Tage</SelectItem>
+                    <SelectItem value="Monate">Monate</SelectItem>
+                    <SelectItem value="Pauschal">Pauschal</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">Preis (CHF) *</label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  value={newProductData.unitPrice}
+                  onChange={(e) => setNewProductData({ ...newProductData, unitPrice: e.target.value })}
+                  placeholder="120.00"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-2 block">MwSt. (%) *</label>
+                <Select
+                  value={newProductData.vatRate}
+                  onValueChange={(v) => setNewProductData({ ...newProductData, vatRate: v })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="0.00">0.00%</SelectItem>
+                    <SelectItem value="2.60">2.60%</SelectItem>
+                    <SelectItem value="3.80">3.80%</SelectItem>
+                    <SelectItem value="8.10">8.10%</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <Button variant="outline" onClick={() => setShowNewProductDialog(false)}>
+                Abbrechen
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!newProductData.name || !newProductData.unitPrice) {
+                    toast.error("Bitte füllen Sie Name und Preis aus");
+                    return;
+                  }
+                  createProduct.mutate(newProductData);
+                }}
+                disabled={createProduct.isPending}
+              >
+                {createProduct.isPending ? "Erstellt..." : "Produkt erstellen"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Dialog>
   );
 }

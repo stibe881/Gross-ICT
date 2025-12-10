@@ -5,6 +5,11 @@ import { Check, Calculator as CalcIcon, ArrowRight, ArrowLeft, Server, Globe, Sh
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/contexts/LanguageContext";
 import Layout from "@/components/Layout";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { trpc } from "@/lib/trpc";
+import { toast } from "sonner";
 
 type Option = {
   id: string;
@@ -26,6 +31,25 @@ export default function Calculator() {
   const [, setLocation] = useLocation();
   const { t, language } = useLanguage();
   const [currentStep, setCurrentStep] = useState(0);
+  const [showQuoteDialog, setShowQuoteDialog] = useState(false);
+  const [contactData, setContactData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    message: "",
+  });
+
+  const sendQuoteRequest = trpc.quoteRequest.sendQuoteRequest.useMutation({
+    onSuccess: () => {
+      toast.success(language === 'de' ? "Angebotsanfrage erfolgreich versendet!" : "Quote request sent successfully!");
+      setShowQuoteDialog(false);
+      setContactData({ name: "", email: "", phone: "", message: "" });
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      toast.error(`${language === 'de' ? 'Fehler' : 'Error'}: ${error.message}`);
+    },
+  });
   
   // Define categories and pricing with localized content
   const categories: Category[] = [
@@ -317,8 +341,24 @@ export default function Calculator() {
       ? `Ich interessiere mich für ein Projekt mit folgender Konfiguration:\n\n${summary}\n\nGeschätztes Budget: CHF ${total.toLocaleString()}`
       : `I am interested in a project with the following configuration:\n\n${summary}\n\nEstimated Budget: CHF ${total.toLocaleString()}`;
     
-    localStorage.setItem("contact_message", message);
-    setLocation("/contact");
+    setContactData({ ...contactData, message });
+    setShowQuoteDialog(true);
+  };
+
+  const handleSendQuote = () => {
+    if (!contactData.name || !contactData.email) {
+      toast.error(language === 'de' ? "Bitte füllen Sie Name und E-Mail aus" : "Please fill in name and email");
+      return;
+    }
+
+    const total = calculateTotal();
+    sendQuoteRequest.mutate({
+      name: contactData.name,
+      email: contactData.email,
+      phone: contactData.phone,
+      message: contactData.message,
+      estimatedBudget: total,
+    });
   };
 
   // Filter categories based on selections
@@ -534,6 +574,84 @@ export default function Calculator() {
           </div>
         </div>
       </div>
+
+      {/* Quote Request Dialog */}
+      <Dialog open={showQuoteDialog} onOpenChange={setShowQuoteDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>
+              {language === 'de' ? 'Kontaktdaten für Offerte' : 'Contact Details for Quote'}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="name">
+                  {language === 'de' ? 'Name' : 'Name'} *
+                </Label>
+                <Input
+                  id="name"
+                  value={contactData.name}
+                  onChange={(e) => setContactData({ ...contactData, name: e.target.value })}
+                  placeholder={language === 'de' ? 'Ihr Name' : 'Your Name'}
+                />
+              </div>
+              <div>
+                <Label htmlFor="email">
+                  {language === 'de' ? 'E-Mail' : 'Email'} *
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={contactData.email}
+                  onChange={(e) => setContactData({ ...contactData, email: e.target.value })}
+                  placeholder="mail@example.com"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="phone">
+                {language === 'de' ? 'Telefon (optional)' : 'Phone (optional)'}
+              </Label>
+              <Input
+                id="phone"
+                value={contactData.phone}
+                onChange={(e) => setContactData({ ...contactData, phone: e.target.value })}
+                placeholder="+41 79 123 45 67"
+              />
+            </div>
+            <div>
+              <Label htmlFor="message">
+                {language === 'de' ? 'Nachricht' : 'Message'}
+              </Label>
+              <textarea
+                id="message"
+                className="w-full min-h-[120px] px-3 py-2 rounded-md border border-input bg-background"
+                value={contactData.message}
+                onChange={(e) => setContactData({ ...contactData, message: e.target.value })}
+                placeholder={language === 'de' ? 'Ihre Nachricht...' : 'Your message...'}
+              />
+            </div>
+            <div className="flex justify-end gap-2 mt-6">
+              <button
+                onClick={() => setShowQuoteDialog(false)}
+                className="px-4 py-2 rounded-md border border-input hover:bg-accent"
+              >
+                {language === 'de' ? 'Abbrechen' : 'Cancel'}
+              </button>
+              <button
+                onClick={handleSendQuote}
+                disabled={sendQuoteRequest.isPending}
+                className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              >
+                {sendQuoteRequest.isPending 
+                  ? (language === 'de' ? 'Wird gesendet...' : 'Sending...') 
+                  : (language === 'de' ? 'Offerte anfordern' : 'Request Quote')}
+              </button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 }

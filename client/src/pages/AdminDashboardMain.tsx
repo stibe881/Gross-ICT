@@ -238,6 +238,15 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
+      id: 'products',
+      title: 'Produkte',
+      description: 'Produktkatalog, Preise und Leistungen verwalten',
+      icon: Receipt,
+      path: '/products',
+      color: 'from-emerald-500 to-green-600',
+      permission: 'admin',
+    },
+    {
       id: 'email-templates',
       title: 'Email Templates',
       description: 'E-Mail-Vorlagen erstellen und verwalten',
