@@ -129,14 +129,23 @@ export default function UserManagement() {
             <div>
               <p className="text-sm md:text-base text-gray-400 mt-1 md:mt-2">Verwalten Sie Benutzer und deren Rollen</p>
             </div>
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-primary hover:bg-primary/80 w-full md:w-auto" size="sm">
-                  <UserPlus className="h-4 w-4 mr-2" />
-                  Neuer Benutzer
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setLocation('/smtp-settings')}
+                size="sm"
+              >
+                <Mail className="h-4 w-4 mr-2" />
+                SMTP Einstellungen
+              </Button>
+              <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-primary hover:bg-primary/80 w-full md:w-auto" size="sm">
+                    <UserPlus className="h-4 w-4 mr-2" />
+                    Neuer Benutzer
                 </Button>
               </DialogTrigger>
-              <DialogContent className="bg-black/95 border-white/20 text-white">
+                <DialogContent className="bg-black/95 border-white/20 text-white">
                 <DialogHeader>
                   <DialogTitle>Neuen Benutzer erstellen</DialogTitle>
                   <DialogDescription className="text-gray-400">
@@ -200,6 +209,7 @@ export default function UserManagement() {
                 </div>
               </DialogContent>
             </Dialog>
+            </div>
           </div>
         </div>
 

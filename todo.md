@@ -868,3 +868,4 @@
 
 ## Bug Fixes
 - [x] Fix quote request validation error - field names mismatch
+- [x] Add SMTP settings link to Verwaltung menu
