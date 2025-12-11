@@ -53,6 +53,14 @@ export default defineConfig({
       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
     },
   },
+  // Explicitly tell Vite to optimize these dependencies
+  optimizeDeps: {
+    include: [
+      'grapesjs',
+      'grapesjs-preset-newsletter',
+    ],
+    exclude: [],
+  },
   envDir: path.resolve(import.meta.dirname),
   root: path.resolve(import.meta.dirname, "client"),
   publicDir: path.resolve(import.meta.dirname, "client", "public"),
@@ -63,8 +71,8 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: (id) => {
-          // GrapeJS and its preset in separate chunk
-          if (id.includes('grapesjs')) {
+          // GrapeJS and its preset in separate chunk - handle both package names
+          if (id.includes('grapesjs') || id.includes('node_modules/grapesjs')) {
             return 'grapesjs';
           }
           // React core
@@ -103,6 +111,8 @@ export default defineConfig({
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
+    // Target modern browsers for better compatibility
+    target: 'es2020',
   },
   server: {
     host: true,

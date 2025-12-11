@@ -14,7 +14,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { ArrowLeft, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
-import EmailBuilder from "@/components/EmailBuilder";
+import EmailBuilderLazy from "@/components/EmailBuilderLazy";
 import {
   Dialog,
   DialogContent,
@@ -251,7 +251,7 @@ export default function VisualTemplateEditor() {
 
         {/* Visual Builder */}
         <Card className="p-0 bg-white dark:bg-gray-800 overflow-hidden">
-          <EmailBuilder
+          <EmailBuilderLazy
             initialContent={templateData.htmlContent}
             onChange={handleBuilderChange}
             onSave={handleSave}

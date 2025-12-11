@@ -943,3 +943,11 @@
 
 ## Current Issues
 - [x] Fix production build error with GrapeJS import resolution
+
+## URGENT - Production Build Error
+
+- [ ] Fix GrapeJS import resolution error on production server (Rollup cannot resolve import)
+- [ ] Analyze differences between local and production build environments
+- [ ] Check if grapesjs and grapesjs-preset-newsletter are properly installed on production
+- [ ] Implement multiple fallback strategies for GrapeJS bundling
+- [ ] Consider alternative approaches: lazy loading, dynamic imports, or conditional rendering
