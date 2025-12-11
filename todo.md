@@ -865,3 +865,6 @@
 - [x] Fix WCAG emblem visibility on accessibility-statement page (menu overlap)
 - [x] Fix horizontal scroll on accessibility-statement mobile (title too long)
 - [x] Add SMTP settings page to admin Verwaltung menu
+
+## Bug Fixes
+- [x] Fix quote request validation error - field names mismatch
