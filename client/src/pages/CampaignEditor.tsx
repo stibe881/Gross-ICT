@@ -60,6 +60,12 @@ export default function CampaignEditor() {
   // Fetch templates
   const { data: templates } = trpc.newsletter.templates.list.useQuery();
 
+  // Fetch segments
+  const { data: segmentsData } = trpc.newsletter.segments.list.useQuery({
+    page: 1,
+    pageSize: 100,
+  });
+
   // Fetch subscriber stats for recipient count
   const { data: subscriberStats } = trpc.newsletter.subscribers.stats.useQuery();
 
@@ -368,6 +374,39 @@ export default function CampaignEditor() {
                 </Select>
               </div>
 
+              {campaignData.recipientType === "segment" && (
+                <div>
+                  <Label>Segment auswählen</Label>
+                  <Select
+                    value={campaignData.segmentId?.toString() || ""}
+                    onValueChange={(value) =>
+                      setCampaignData({
+                        ...campaignData,
+                        segmentId: value ? Number(value) : undefined,
+                      })
+                    }
+                  >
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Segment wählen..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {segmentsData?.segments.map((segment) => (
+                        <SelectItem key={segment.id} value={segment.id.toString()}>
+                          {segment.name} ({segment.subscriberCount} Abonnenten)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="link"
+                    className="mt-2 p-0 h-auto"
+                    onClick={() => setLocation("/newsletter/segments")}
+                  >
+                    Neues Segment erstellen
+                  </Button>
+                </div>
+              )}
+
               <Card className="p-6 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800">
                 <div className="flex items-center gap-3">
                   <Users className="w-8 h-8 text-blue-600" />
@@ -402,7 +441,17 @@ export default function CampaignEditor() {
 
               {templates && templates.length > 0 && (
                 <div>
-                  <Label>Template auswählen (optional)</Label>
+                  <div className="flex items-center justify-between mb-2">
+                    <Label>Template auswählen (optional)</Label>
+                    <Button
+                      variant="link"
+                      className="p-0 h-auto text-sm"
+                      onClick={() => setLocation("/newsletter/templates")}
+                    >
+                      <FileText className="w-3 h-3 mr-1" />
+                      Template-Bibliothek
+                    </Button>
+                  </div>
                   <Select onValueChange={handleTemplateSelect}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Wählen Sie ein Template" />
@@ -411,6 +460,11 @@ export default function CampaignEditor() {
                       {templates.map((template) => (
                         <SelectItem key={template.id} value={String(template.id)}>
                           {template.name}
+                          {template.description && (
+                            <span className="text-xs text-gray-500 ml-2">
+                              - {template.description}
+                            </span>
+                          )}
                         </SelectItem>
                       ))}
                     </SelectContent>

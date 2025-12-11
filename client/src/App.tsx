@@ -54,6 +54,8 @@ const EmailLogDashboard = lazy(() => import("@/pages/EmailLogDashboard"));
 const NewsletterDashboard = lazy(() => import("@/pages/NewsletterDashboard"));
 const CampaignEditor = lazy(() => import("@/pages/CampaignEditor"));
 const CampaignStatisticsPage = lazy(() => import("@/pages/CampaignStatisticsPage"));
+const SegmentManagement = lazy(() => import("@/pages/SegmentManagement"));
+const TemplateLibrary = lazy(() => import("@/pages/TemplateLibrary"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
 
 function Router() {
@@ -99,6 +101,8 @@ function Router() {
               <Route path="/newsletter" component={NewsletterDashboard} />
               <Route path="/newsletter/campaigns/:id" component={CampaignEditor} />
               <Route path="/newsletter/campaigns/:id/stats" component={CampaignStatisticsPage} />
+              <Route path="/newsletter/segments" component={SegmentManagement} />
+              <Route path="/newsletter/templates" component={TemplateLibrary} />
               <Route path="/smtp-settings" component={SMTPSettings} />
               <Route path="/sla-reports" component={SLADashboard} />
               <Route path="/accessibility-statement" component={AccessibilityStatement} />

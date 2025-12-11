@@ -903,3 +903,18 @@
   - [x] Redirect-Tracking für Clicks
   - [x] Bounce-Tracking
   - [x] Statistik-Dashboard mit Charts
+
+
+## Newsletter Phase 3 - Completed
+- [x] Subscriber-Segmentierung
+  - [x] Segment-Verwaltung API (CRUD)
+  - [x] Kriterien-Builder für Filter (Tags, Status, Datum)
+  - [x] Automatische Subscriber-Count-Berechnung
+  - [x] Segment-Management UI mit Filter-Builder
+  - [x] Integration in Campaign-Erstellung
+- [x] Newsletter-Template-Bibliothek
+  - [x] Template-Verwaltung API (CRUD)
+  - [x] Template-Editor mit Live-Preview
+  - [x] Kategorie-System (Promotional, Newsletter, Announcement)
+  - [x] System-Templates und Custom-Templates
+  - [x] Template-Auswahl in Campaign-Editor

@@ -41,6 +41,7 @@ import {
   BarChart3,
   Upload,
   Download,
+  Filter,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -291,13 +292,22 @@ export default function NewsletterDashboard() {
                 Verwalten Sie Abonnenten, Kampagnen und Newsletter-Templates
               </p>
             </div>
-            <Button
-              onClick={() => setLocation("/newsletter/campaigns/new")}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Neue Kampagne
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setLocation("/newsletter/segments")}
+                variant="outline"
+              >
+                <Filter className="w-4 h-4 mr-2" />
+                Segmente
+              </Button>
+              <Button
+                onClick={() => setLocation("/newsletter/campaigns/new")}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Neue Kampagne
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -691,16 +701,26 @@ export default function NewsletterDashboard() {
                     Newsletter Templates
                   </h2>
                   <Button
-                    onClick={() => setLocation("/newsletter/templates/new")}
+                    onClick={() => setLocation("/newsletter/templates")}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Neues Template
+                    <FileText className="w-4 h-4 mr-2" />
+                    Template-Bibliothek öffnen
                   </Button>
                 </div>
-                <p className="text-center py-12 text-gray-500">
-                  Template-Verwaltung wird in Kürze verfügbar sein
-                </p>
+                <div className="text-center py-12">
+                  <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-4">
+                    Verwalten Sie wiederverwendbare E-Mail-Templates
+                  </p>
+                  <Button
+                    onClick={() => setLocation("/newsletter/templates")}
+                    variant="outline"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Zur Template-Bibliothek
+                  </Button>
+                </div>
               </div>
             </Card>
           </TabsContent>

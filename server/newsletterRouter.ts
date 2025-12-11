@@ -980,4 +980,354 @@ export const newsletterRouter = router({
       recentCampaigns,
     };
   }),
+
+  // ============ SEGMENTS ============
+
+  /**
+   * Segment Management
+   * Create and manage subscriber segments for targeted campaigns
+   */
+  segments: router({
+    /**
+     * List all segments
+     */
+    list: protectedProcedure
+      .input(
+        z.object({
+          page: z.number().min(1).default(1),
+          pageSize: z.number().min(1).max(100).default(20),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        const offset = (input.page - 1) * input.pageSize;
+
+        const [countResult] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(newsletterSegments);
+
+        const segments = await db
+          .select()
+          .from(newsletterSegments)
+          .orderBy(desc(newsletterSegments.createdAt))
+          .limit(input.pageSize)
+          .offset(offset);
+
+        return {
+          segments,
+          pagination: {
+            page: input.page,
+            pageSize: input.pageSize,
+            totalCount: Number(countResult?.count || 0),
+            totalPages: Math.ceil(Number(countResult?.count || 0) / input.pageSize),
+          },
+        };
+      }),
+
+    /**
+     * Get segment by ID
+     */
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        const [segment] = await db
+          .select()
+          .from(newsletterSegments)
+          .where(eq(newsletterSegments.id, input.id))
+          .limit(1);
+
+        if (!segment) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Segment not found",
+          });
+        }
+
+        return segment;
+      }),
+
+    /**
+     * Create new segment
+     */
+    create: protectedProcedure
+      .input(
+        z.object({
+          name: z.string().min(1),
+          description: z.string().optional(),
+          criteria: z.object({
+            status: z.array(z.enum(["active", "unsubscribed", "bounced"])).optional(),
+            tags: z.array(z.string()).optional(),
+            subscribedAfter: z.string().optional(),
+            subscribedBefore: z.string().optional(),
+          }),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        // Calculate subscriber count based on criteria
+        const conditions = [];
+
+        if (input.criteria.status && input.criteria.status.length > 0) {
+          conditions.push(inArray(newsletterSubscribers.status, input.criteria.status));
+        }
+
+        if (input.criteria.subscribedAfter) {
+          conditions.push(
+            sql`${newsletterSubscribers.subscribedAt} >= ${input.criteria.subscribedAfter}`
+          );
+        }
+
+        if (input.criteria.subscribedBefore) {
+          conditions.push(
+            sql`${newsletterSubscribers.subscribedAt} <= ${input.criteria.subscribedBefore}`
+          );
+        }
+
+        const [countResult] = await db
+          .select({ count: sql<number>`count(*)` })
+          .from(newsletterSubscribers)
+          .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+        const subscriberCount = Number(countResult?.count || 0);
+
+        const [result] = await db.insert(newsletterSegments).values({
+          name: input.name,
+          description: input.description || null,
+          criteria: JSON.stringify(input.criteria),
+          subscriberCount,
+          createdBy: ctx.user.id,
+        });
+
+        return { success: true, id: result.insertId, subscriberCount };
+      }),
+
+    /**
+     * Update segment
+     */
+    update: protectedProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          name: z.string().min(1).optional(),
+          description: z.string().optional(),
+          criteria: z.object({
+            status: z.array(z.enum(["active", "unsubscribed", "bounced"])).optional(),
+            tags: z.array(z.string()).optional(),
+            subscribedAfter: z.string().optional(),
+            subscribedBefore: z.string().optional(),
+          }).optional(),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        const updateData: any = {};
+
+        if (input.name) updateData.name = input.name;
+        if (input.description !== undefined) updateData.description = input.description;
+
+        if (input.criteria) {
+          updateData.criteria = JSON.stringify(input.criteria);
+
+          // Recalculate subscriber count
+          const conditions = [];
+
+          if (input.criteria.status && input.criteria.status.length > 0) {
+            conditions.push(inArray(newsletterSubscribers.status, input.criteria.status));
+          }
+
+          if (input.criteria.subscribedAfter) {
+            conditions.push(
+              sql`${newsletterSubscribers.subscribedAt} >= ${input.criteria.subscribedAfter}`
+            );
+          }
+
+          if (input.criteria.subscribedBefore) {
+            conditions.push(
+              sql`${newsletterSubscribers.subscribedAt} <= ${input.criteria.subscribedBefore}`
+            );
+          }
+
+          const [countResult] = await db
+            .select({ count: sql<number>`count(*)` })
+            .from(newsletterSubscribers)
+            .where(conditions.length > 0 ? and(...conditions) : undefined);
+
+          updateData.subscriberCount = Number(countResult?.count || 0);
+        }
+
+        await db
+          .update(newsletterSegments)
+          .set(updateData)
+          .where(eq(newsletterSegments.id, input.id));
+
+        return { success: true };
+      }),
+
+    /**
+     * Delete segment
+     */
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        await db
+          .delete(newsletterSegments)
+          .where(eq(newsletterSegments.id, input.id));
+
+        return { success: true };
+      }),
+
+    /**
+     * Get subscribers in a segment
+     */
+    getSubscribers: protectedProcedure
+      .input(
+        z.object({
+          segmentId: z.number(),
+          page: z.number().min(1).default(1),
+          pageSize: z.number().min(1).max(100).default(20),
+        })
+      )
+      .query(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        // Get segment
+        const [segment] = await db
+          .select()
+          .from(newsletterSegments)
+          .where(eq(newsletterSegments.id, input.segmentId))
+          .limit(1);
+
+        if (!segment) {
+          throw new TRPCError({
+            code: "NOT_FOUND",
+            message: "Segment not found",
+          });
+        }
+
+        // Parse criteria
+        const criteria = JSON.parse(segment.criteria);
+        const conditions = [];
+
+        if (criteria.status && criteria.status.length > 0) {
+          conditions.push(inArray(newsletterSubscribers.status, criteria.status));
+        }
+
+        if (criteria.subscribedAfter) {
+          conditions.push(
+            sql`${newsletterSubscribers.subscribedAt} >= ${criteria.subscribedAfter}`
+          );
+        }
+
+        if (criteria.subscribedBefore) {
+          conditions.push(
+            sql`${newsletterSubscribers.subscribedAt} <= ${criteria.subscribedBefore}`
+          );
+        }
+
+        const offset = (input.page - 1) * input.pageSize;
+
+        const subscribers = await db
+          .select()
+          .from(newsletterSubscribers)
+          .where(conditions.length > 0 ? and(...conditions) : undefined)
+          .orderBy(desc(newsletterSubscribers.subscribedAt))
+          .limit(input.pageSize)
+          .offset(offset);
+
+        return {
+          subscribers,
+          pagination: {
+            page: input.page,
+            pageSize: input.pageSize,
+            totalCount: segment.subscriberCount,
+            totalPages: Math.ceil(segment.subscriberCount / input.pageSize),
+          },
+        };
+      }),
+  }),
 });
