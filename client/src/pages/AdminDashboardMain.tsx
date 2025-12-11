@@ -1,4 +1,5 @@
 import { useAuth } from "@/_core/hooks/useAuth";
+import { SortableWidget } from "@/components/SortableWidget";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
@@ -7,7 +8,24 @@ import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
 import { useWebSocket } from "@/contexts/WebSocketContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
 function QuickStats() {
   const { data: stats, isLoading, refetch } = trpc.dashboardStats.getQuickStats.useQuery();
@@ -133,8 +151,32 @@ function QuickStats() {
 }
 
 export default function AdminDashboardMain() {
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [, setLocation] = useLocation();
+  const [widgetOrder, setWidgetOrder] = useState<string[]>([]);
+  const utils = trpc.useUtils();
+
+  // Fetch user's dashboard preferences
+  const { data: preferences } = trpc.dashboardPreferences.getPreferences.useQuery();
+
+  // Save preferences mutation
+  const savePreferences = trpc.dashboardPreferences.savePreferences.useMutation({
+    onSuccess: () => {
+      toast.success('Dashboard-Layout gespeichert');
+      utils.dashboardPreferences.getPreferences.invalidate();
+    },
+    onError: () => {
+      toast.error('Fehler beim Speichern des Layouts');
+    },
+  });
+
+  // Drag and drop sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );Location();
 
   // Redirect if not admin
   if (!authLoading && user?.role !== 'admin') {
@@ -274,6 +316,42 @@ export default function AdminDashboardMain() {
     return true; // 'user' permission tiles are visible to all
   });
 
+  // Initialize widget order from preferences or default
+  useEffect(() => {
+    if (preferences?.widgetOrder && preferences.widgetOrder.length > 0) {
+      setWidgetOrder(preferences.widgetOrder);
+    } else {
+      setWidgetOrder(visibleTiles.map(t => t.id));
+    }
+  }, [preferences]);
+
+  // Sort tiles based on saved order
+  const sortedTiles = [...visibleTiles].sort((a, b) => {
+    const indexA = widgetOrder.indexOf(a.id);
+    const indexB = widgetOrder.indexOf(b.id);
+    if (indexA === -1) return 1;
+    if (indexB === -1) return -1;
+    return indexA - indexB;
+  });
+
+  // Handle drag end
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setWidgetOrder((items) => {
+        const oldIndex = items.indexOf(active.id as string);
+        const newIndex = items.indexOf(over.id as string);
+        const newOrder = arrayMove(items, oldIndex, newIndex);
+        
+        // Save to backend
+        savePreferences.mutate({ widgetOrder: newOrder });
+        
+        return newOrder;
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
       {/* Header */}
@@ -302,42 +380,31 @@ export default function AdminDashboardMain() {
           </p>
         </div>
 
-        {/* Dashboard Tiles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleTiles.map((tile) => {
-            const Icon = tile.icon;
-            return (
-              <Card
-                key={tile.id}
-                className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
-                onClick={() => setLocation(tile.path)}
-              >
-                <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                  <CardTitle className="mt-4 group-hover:text-primary transition-colors">
-                    {tile.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {tile.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="ghost"
-                    className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
-                  >
-                    Öffnen →
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+        {/* Dashboard Tiles Grid with Drag and Drop */}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={sortedTiles.map(t => t.id)}
+            strategy={rectSortingStrategy}
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {sortedTiles.map((tile) => (
+                <SortableWidget
+                  key={tile.id}
+                  id={tile.id}
+                  title={tile.title}
+                  description={tile.description}
+                  icon={tile.icon}
+                  color={tile.color}
+                  onClick={() => setLocation(tile.path)}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
 
         {/* Quick Stats */}
         <QuickStats />
