@@ -197,6 +197,79 @@ export const newsletterRouter = router({
       }),
 
     /**
+     * Bulk import subscribers from CSV
+     */
+    bulkImport: protectedProcedure
+      .input(
+        z.object({
+          subscribers: z.array(
+            z.object({
+              email: z.string().email(),
+              firstName: z.string().optional(),
+              lastName: z.string().optional(),
+            })
+          ),
+        })
+      )
+      .mutation(async ({ input, ctx }) => {
+        if (ctx.user.role !== "admin" && ctx.user.role !== "marketing") {
+          throw new TRPCError({
+            code: "FORBIDDEN",
+            message: "Access denied",
+          });
+        }
+
+        const db = await getDb();
+        if (!db) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Database not available",
+          });
+        }
+
+        let imported = 0;
+        let skipped = 0;
+        const errors: string[] = [];
+
+        for (const subscriber of input.subscribers) {
+          try {
+            // Check if subscriber already exists
+            const [existing] = await db
+              .select()
+              .from(newsletterSubscribers)
+              .where(eq(newsletterSubscribers.email, subscriber.email))
+              .limit(1);
+
+            if (existing) {
+              skipped++;
+              continue;
+            }
+
+            // Insert new subscriber
+            await db.insert(newsletterSubscribers).values({
+              email: subscriber.email,
+              firstName: subscriber.firstName || null,
+              lastName: subscriber.lastName || null,
+              source: "csv_import",
+              status: "active",
+            });
+
+            imported++;
+          } catch (error: any) {
+            errors.push(`${subscriber.email}: ${error.message}`);
+          }
+        }
+
+        return {
+          success: true,
+          imported,
+          skipped,
+          errors,
+          total: input.subscribers.length,
+        };
+      }),
+
+    /**
      * Delete subscriber
      */
     delete: protectedProcedure

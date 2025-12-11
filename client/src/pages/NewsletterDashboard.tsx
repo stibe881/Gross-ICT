@@ -125,6 +125,22 @@ export default function NewsletterDashboard() {
     }
   };
 
+  // Bulk import mutation
+  const bulkImportMutation = trpc.newsletter.subscribers.bulkImport.useMutation({
+    onSuccess: (data) => {
+      toast.success(
+        `Import abgeschlossen: ${data.imported} importiert, ${data.skipped} übersprungen${data.errors.length > 0 ? `, ${data.errors.length} Fehler` : ''}`
+      );
+      if (data.errors.length > 0) {
+        console.error('Import errors:', data.errors);
+      }
+      refetchSubscribers();
+    },
+    onError: (error) => {
+      toast.error(`Import fehlgeschlagen: ${error.message}`);
+    },
+  });
+
   const handleCSVImport = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -134,24 +150,38 @@ export default function NewsletterDashboard() {
       try {
         const text = e.target?.result as string;
         const lines = text.split('\n');
-        const headers = lines[0].split(',').map(h => h.trim());
+        const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
         
-        const subscribers = lines.slice(1)
-          .filter(line => line.trim())
-          .map(line => {
-            const values = line.split(',').map(v => v.trim());
-            const subscriber: any = {};
-            headers.forEach((header, index) => {
-              subscriber[header] = values[index];
-            });
-            return subscriber;
-          });
+        const subscribers: { email: string; firstName?: string; lastName?: string }[] = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          
+          const values = line.split(',').map(v => v.trim());
+          const emailIndex = headers.indexOf('email');
+          const firstNameIndex = headers.indexOf('firstname') >= 0 ? headers.indexOf('firstname') : headers.indexOf('first_name');
+          const lastNameIndex = headers.indexOf('lastname') >= 0 ? headers.indexOf('lastname') : headers.indexOf('last_name');
 
-        // Import subscribers (you may need to add a bulk import mutation)
-        toast.success(`${subscribers.length} Abonnenten aus CSV importiert`);
-        refetchSubscribers();
+          if (emailIndex >= 0 && values[emailIndex]) {
+            subscribers.push({
+              email: values[emailIndex],
+              firstName: firstNameIndex >= 0 ? values[firstNameIndex] : undefined,
+              lastName: lastNameIndex >= 0 ? values[lastNameIndex] : undefined,
+            });
+          }
+        }
+
+        if (subscribers.length === 0) {
+          toast.error('Keine gültigen Abonnenten in der CSV-Datei gefunden');
+          return;
+        }
+
+        // Call bulk import API
+        bulkImportMutation.mutate({ subscribers });
       } catch (error) {
-        toast.error('Fehler beim Importieren der CSV-Datei');
+        toast.error('Fehler beim Lesen der CSV-Datei');
+        console.error(error);
       }
     };
     reader.readAsText(file);
@@ -626,6 +656,19 @@ export default function NewsletterDashboard() {
                           <div className="text-sm text-gray-500">
                             {campaign.recipientCount} Empfänger
                           </div>
+                          {campaign.status === 'sent' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setLocation(`/newsletter/campaigns/${campaign.id}/stats`);
+                              }}
+                            >
+                              <BarChart3 className="w-4 h-4 mr-2" />
+                              Statistiken
+                            </Button>
+                          )}
                         </div>
                       </div>
                     ))}

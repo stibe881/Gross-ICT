@@ -133,9 +133,8 @@ function QuickStats() {
 }
 
 export default function AdminDashboardMain() {
-  const { user, logout } = useAuth();
+  const { user, logout, loading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
-  const { authLoading } = useAuth();
 
   // Redirect if not admin
   if (!authLoading && user?.role !== 'admin') {

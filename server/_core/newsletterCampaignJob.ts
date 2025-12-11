@@ -65,8 +65,26 @@ eq(newsletterSubscribers.status, 'active')
             personalizedContent = personalizedContent.replace(/\{name\}/g, fullName);
             personalizedContent = personalizedContent.replace(/\{email\}/g, subscriber.email);
             
+            // Add tracking pixel for opens
+            const baseUrl = process.env.FRONTEND_URL || 'https://gross-ict.ch';
+            const trackingPixelUrl = `${baseUrl}/api/trpc/newsletterTracking.trackOpen?input=${encodeURIComponent(JSON.stringify({ campaignId: campaign.id, subscriberId: subscriber.id }))}`;
+            personalizedContent += `<img src="${trackingPixelUrl}" width="1" height="1" style="display:none" alt="" />`;
+            
+            // Replace links with tracking links
+            personalizedContent = personalizedContent.replace(
+              /<a([^>]*?)href="([^"]+)"([^>]*?)>/gi,
+              (match, before, url, after) => {
+                // Skip if it's already a tracking link or unsubscribe link
+                if (url.includes('/api/trpc/newsletterTracking') || url.includes('/newsletter/unsubscribe')) {
+                  return match;
+                }
+                const trackingUrl = `${baseUrl}/api/trpc/newsletterTracking.trackClick?input=${encodeURIComponent(JSON.stringify({ campaignId: campaign.id, subscriberId: subscriber.id, linkUrl: url }))}`;
+                return `<a${before}href="${trackingUrl}"${after}>`;
+              }
+            );
+            
             // Add unsubscribe link (using email as token for now)
-            const unsubscribeLink = `${process.env.FRONTEND_URL || 'https://gross-ict.ch'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+            const unsubscribeLink = `${baseUrl}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
             personalizedContent += `\n\n<hr><p style="font-size: 12px; color: #6b7280; text-align: center;">Sie erhalten diese E-Mail, weil Sie sich für unseren Newsletter angemeldet haben. <a href="${unsubscribeLink}">Abmelden</a></p>`;
 
             const success = await sendEmail({

@@ -887,3 +887,19 @@
 - [x] Integrate editor into CampaignEditor
 - [x] Add template selector with preview (already exists in CampaignEditor)
 - [x] Implement test email functionality (already exists in CampaignEditor)
+
+
+## Newsletter Phase 2 - Completed
+- [x] CSV Import/Export für Abonnenten
+  - [x] CSV Upload-Komponente mit Validierung
+  - [x] Fehlerbehandlung und Duplikatserkennung
+  - [x] Export-Funktion mit Filteroptionen
+- [x] Campaign Sending Logic
+  - [x] Background-Job für geplante Kampagnen
+  - [x] Batch-E-Mail-Versand mit Rate Limiting
+  - [x] Automatische Status-Updates (draft → sending → sent)
+- [x] E-Mail Tracking & Analytics
+  - [x] Pixel-Tracking für Opens
+  - [x] Redirect-Tracking für Clicks
+  - [x] Bounce-Tracking
+  - [x] Statistik-Dashboard mit Charts

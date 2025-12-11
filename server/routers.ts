@@ -33,6 +33,7 @@ import { contractSignatureRouter } from "./contractSignatureRouter";
 import { emailTemplateRouter } from "./emailTemplateRouter";
 import { emailLogRouter } from "./emailLogRouter";
 import { newsletterRouter } from "./newsletterRouter";
+import { newsletterTrackingRouter } from "./newsletterTrackingRouter";
 import { mentionRouter } from "./mentionRouter";
 import { smtpRouter } from "./smtpRouter";
 import { quoteRequestRouter } from "./quoteRequestRouter";
@@ -75,6 +76,7 @@ export const appRouter = router({
   emailTemplates: emailTemplateRouter,
   emailLogs: emailLogRouter,
   newsletter: newsletterRouter,
+  newsletterTracking: newsletterTrackingRouter,
   mention: mentionRouter,
   smtp: smtpRouter,
   quoteRequest: quoteRequestRouter,

@@ -283,7 +283,7 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                           value={ticket.status}
                           onValueChange={(value) => {
                             updateTicketMutation.mutate({
-                              ticketId: ticket.id,
+                              id: ticket.id,
                               status: value as any,
                             });
                           }}
@@ -309,7 +309,7 @@ export function TicketDetail({ ticketId, onClose }: TicketDetailProps) {
                           value={ticket.priority}
                           onValueChange={(value) => {
                             updateTicketMutation.mutate({
-                              ticketId: ticket.id,
+                              id: ticket.id,
                               priority: value as any,
                             });
                           }}
