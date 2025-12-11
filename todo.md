@@ -951,3 +951,9 @@
 - [ ] Check if grapesjs and grapesjs-preset-newsletter are properly installed on production
 - [ ] Implement multiple fallback strategies for GrapeJS bundling
 - [ ] Consider alternative approaches: lazy loading, dynamic imports, or conditional rendering
+
+## CRITICAL - Production Server Issues
+
+- [ ] Fix pnpm patch error: ERR_PNPM_PATCH_NOT_APPLIED for wouter@3.7.1
+- [ ] This prevents all dependencies from being installed on production server
+- [ ] Remove or update wouter patch in package.json patchedDependencies
