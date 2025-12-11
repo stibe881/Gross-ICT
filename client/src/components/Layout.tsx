@@ -198,7 +198,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <div className="cinematic-grain"></div>
       <div className="cinematic-vignette"></div>
        <main id="main-content" className="flex-1 relative z-0">
         {children}
