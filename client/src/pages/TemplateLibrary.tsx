@@ -300,25 +300,25 @@ export default function TemplateLibrary() {
                     {getCategoryBadge(template.category)}
                   </div>
                   <div className="flex gap-2 mt-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        setSelectedTemplate(template);
-                        setIsPreviewDialogOpen(true);
-                      }}
-                    >
-                      <Eye className="w-4 h-4 mr-2" />
-                      Vorschau
-                    </Button>
-                    <Button
-                      size="sm"
-                      onClick={() => handleUseDefaultTemplate(template)}
-                      className="bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      <Copy className="w-4 h-4 mr-2" />
-                      Verwenden
-                    </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedTemplate(template);
+                      setIsPreviewDialogOpen(true);
+                    }}
+                  >
+                    <Eye className="w-4 h-4 mr-2" />
+                    Vorschau
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleUseDefaultTemplate(template)}
+                    className="bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    <Copy className="w-4 h-4 mr-2" />
+                    Verwenden
+                  </Button>
                   </div>
                 </div>
               ))}
@@ -378,6 +378,15 @@ export default function TemplateLibrary() {
                         }}
                       >
                         <Eye className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() =>
+                          setLocation(`/newsletter/templates/${template.id}/edit`)
+                        }
+                      >
+                        <Edit className="w-4 h-4" />
                       </Button>
                       <Button
                         variant="ghost"

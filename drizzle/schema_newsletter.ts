@@ -115,3 +115,70 @@ export const newsletterActivity = mysqlTable("newsletterActivity", {
   linkUrl: varchar("linkUrl", { length: 500 }), // For click tracking
   createdAt: timestamp("createdAt").notNull().defaultNow(),
 });
+
+/**
+ * Newsletter Automations
+ * Automated email workflows triggered by events
+ */
+export const newsletterAutomations = mysqlTable("newsletterAutomations", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  triggerType: varchar("triggerType", { length: 50 }).notNull(), // welcome, birthday, re_engagement, custom
+  triggerConfig: text("triggerConfig"), // JSON with trigger-specific settings
+  status: varchar("status", { length: 20 }).notNull().default("draft"), // draft, active, paused
+  segmentId: int("segmentId"), // Optional: only trigger for specific segment
+  createdBy: int("createdBy"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow().onUpdateNow(),
+  lastTriggeredAt: timestamp("lastTriggeredAt"),
+});
+
+/**
+ * Newsletter Automation Steps
+ * Individual email steps in an automation workflow
+ */
+export const newsletterAutomationSteps = mysqlTable("newsletterAutomationSteps", {
+  id: int("id").primaryKey().autoincrement(),
+  automationId: int("automationId").notNull(),
+  stepOrder: int("stepOrder").notNull(), // Order in the sequence
+  delayValue: int("delayValue").notNull().default(0), // Delay before sending (in minutes)
+  delayUnit: varchar("delayUnit", { length: 20 }).notNull().default("minutes"), // minutes, hours, days
+  subject: varchar("subject", { length: 500 }).notNull(),
+  htmlContent: text("htmlContent").notNull(),
+  templateId: int("templateId"), // Optional: use template
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow().onUpdateNow(),
+});
+
+/**
+ * Newsletter Automation Executions
+ * Tracks automation execution for each subscriber
+ */
+export const newsletterAutomationExecutions = mysqlTable("newsletterAutomationExecutions", {
+  id: int("id").primaryKey().autoincrement(),
+  automationId: int("automationId").notNull(),
+  subscriberId: int("subscriberId").notNull(),
+  currentStepId: int("currentStepId"), // Current step being executed
+  status: varchar("status", { length: 20 }).notNull().default("pending"), // pending, in_progress, completed, failed
+  startedAt: timestamp("startedAt").notNull().defaultNow(),
+  completedAt: timestamp("completedAt"),
+  nextStepAt: timestamp("nextStepAt"), // When the next step should be executed
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+  updatedAt: timestamp("updatedAt").notNull().defaultNow().onUpdateNow(),
+});
+
+/**
+ * Newsletter Automation Step Logs
+ * Detailed logs for each step execution
+ */
+export const newsletterAutomationStepLogs = mysqlTable("newsletterAutomationStepLogs", {
+  id: int("id").primaryKey().autoincrement(),
+  executionId: int("executionId").notNull(),
+  stepId: int("stepId").notNull(),
+  status: varchar("status", { length: 20 }).notNull(), // sent, failed, skipped
+  emailId: int("emailId"), // Reference to sent email in emailLogs
+  errorMessage: text("errorMessage"),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").notNull().defaultNow(),
+});

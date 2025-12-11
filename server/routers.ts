@@ -34,6 +34,7 @@ import { emailTemplateRouter } from "./emailTemplateRouter";
 import { emailLogRouter } from "./emailLogRouter";
 import { newsletterRouter } from "./newsletterRouter";
 import { newsletterTrackingRouter } from "./newsletterTrackingRouter";
+import { newsletterAutomationRouter } from "./newsletterAutomationRouter";
 import { mentionRouter } from "./mentionRouter";
 import { smtpRouter } from "./smtpRouter";
 import { quoteRequestRouter } from "./quoteRequestRouter";
@@ -77,6 +78,7 @@ export const appRouter = router({
   emailLogs: emailLogRouter,
   newsletter: newsletterRouter,
   newsletterTracking: newsletterTrackingRouter,
+  newsletterAutomation: newsletterAutomationRouter,
   mention: mentionRouter,
   smtp: smtpRouter,
   quoteRequest: quoteRequestRouter,

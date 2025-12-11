@@ -211,6 +211,13 @@
       "when": 1765404234870,
       "tag": "0029_chubby_lyja",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "5",
+      "when": 1765481148121,
+      "tag": "0030_unique_gorilla_man",
+      "breakpoints": true
     }
   ]
 }
