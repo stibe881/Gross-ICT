@@ -1,0 +1,8 @@
+{
+  "query": "ALTER TABLE `newsletterSubscribers` \nADD COLUMN `dateOfBirth` timestamp NULL AFTER `customFields`,\nADD COLUMN `lastActivityAt` timestamp NULL AFTER `dateOfBirth`;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 39nB9MMxm8dKKgZ.5938c19794ae --database 25PzvHooiaerpkNJbES2PL --execute ALTER TABLE `newsletterSubscribers` \nADD COLUMN `dateOfBirth` timestamp NULL AFTER `customFields`,\nADD COLUMN `lastActivityAt` timestamp NULL AFTER `dateOfBirth`;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1054 (42S22) at line 1: Unknown column 'dateofbirth' in 'newsletterSubscribers'"
+  ]
+}

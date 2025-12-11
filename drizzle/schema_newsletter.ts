@@ -13,6 +13,8 @@ export const newsletterSubscribers = mysqlTable("newsletterSubscribers", {
   tags: text("tags"), // JSON array of tags
   source: varchar("source", { length: 100 }), // website, import, manual
   customFields: text("customFields"), // JSON object for additional data
+  dateOfBirth: timestamp("dateOfBirth"), // For birthday automations
+  lastActivityAt: timestamp("lastActivityAt"), // Last open/click activity
   subscribedAt: timestamp("subscribedAt").notNull().defaultNow(),
   unsubscribedAt: timestamp("unsubscribedAt"),
   lastEmailSent: timestamp("lastEmailSent"),

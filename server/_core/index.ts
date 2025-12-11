@@ -95,6 +95,13 @@ async function startServer() {
     }).catch((error) => {
       console.error('[Server] Failed to start newsletter campaign job:', error);
     });
+    
+    // Start newsletter automation job
+    import('./newsletterAutomationJob.js').then(({ startAutomationScheduler }) => {
+      startAutomationScheduler();
+    }).catch((error) => {
+      console.error('[Server] Failed to start newsletter automation job:', error);
+    });
   });
 }
 

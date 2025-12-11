@@ -920,22 +920,22 @@
   - [x] Template-Auswahl in Campaign-Editor
 
 
-## Newsletter Phase 4 - In Progress
+## Newsletter Phase 4 - Completed
 - [x] Drag-&-Drop E-Mail-Builder
   - [x] GrapeJS Integration in Template-Editor
   - [x] Vorgefertigte Blöcke (Header, Text, Button, Image, Footer)
   - [x] Responsive Design-Vorschau
   - [x] HTML-Export für Templates
-- [ ] Automatisierte Kampagnen
+- [x] Automatisierte Kampagnen
   - [x] Trigger-Definitionen (Welcome, Birthday, Re-Engagement)
   - [x] Automation-Datenbank-Tabellen (Workflows, Steps, Executions, Logs)
   - [x] Automation-Verwaltung API (CRUD)
-  - [ ] Workflow-Engine für zeitbasierte Sequenzen
-  - [ ] Background-Job für Automation-Ausführung
-  - [ ] Automation-Management UI
-  - [ ] Workflow-Builder-Interface
-- [ ] Erweiterte Segmentierung
-  - [ ] Engagement-basierte Filter (Öffnungen, Klicks, letzte Aktivität)
-  - [ ] Verhaltens-Tracking in Datenbank
-  - [ ] Dynamische Segment-Updates
-  - [ ] UI für erweiterte Filter-Optionen
+  - [x] Workflow-Engine für zeitbasierte Sequenzen
+  - [x] Background-Job für Automation-Ausführung (läuft alle 5 Minuten)
+  - [x] Automation-Management UI
+  - [x] Workflow-Steuerung (Start, Pause, Delete)
+- [x] Erweiterte Segmentierung
+  - [x] Engagement-basierte Filter (Öffnungen, Klicks, letzte Aktivität)
+  - [x] Verhaltens-Tracking in Datenbank (dateOfBirth, lastActivityAt)
+  - [x] Dynamische Segment-Updates mit Engagement-Kriterien
+  - [x] API-Unterstützung für erweiterte Filter-Optionen

@@ -1088,6 +1088,13 @@ export const newsletterRouter = router({
             tags: z.array(z.string()).optional(),
             subscribedAfter: z.string().optional(),
             subscribedBefore: z.string().optional(),
+            // Engagement-based filters
+            hasOpenedInDays: z.number().optional(), // Opened email in last N days
+            hasClickedInDays: z.number().optional(), // Clicked link in last N days
+            hasNotOpenedInDays: z.number().optional(), // No opens in last N days
+            hasNotClickedInDays: z.number().optional(), // No clicks in last N days
+            minOpens: z.number().optional(), // Minimum total opens
+            minClicks: z.number().optional(), // Minimum total clicks
           }),
         })
       )
@@ -1158,6 +1165,13 @@ export const newsletterRouter = router({
             tags: z.array(z.string()).optional(),
             subscribedAfter: z.string().optional(),
             subscribedBefore: z.string().optional(),
+            // Engagement-based filters
+            hasOpenedInDays: z.number().optional(),
+            hasClickedInDays: z.number().optional(),
+            hasNotOpenedInDays: z.number().optional(),
+            hasNotClickedInDays: z.number().optional(),
+            minOpens: z.number().optional(),
+            minClicks: z.number().optional(),
           }).optional(),
         })
       )

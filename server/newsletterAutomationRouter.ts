@@ -219,6 +219,26 @@ export const newsletterAutomationRouter = router({
       return { success: true };
     }),
 
+  // Toggle automation status
+  toggleStatus: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        status: z.enum(["draft", "active", "paused"]),
+      })
+    )
+    .mutation(async ({ input }: { input: { id: number; status: string } }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+
+      await db
+        .update(newsletterAutomations)
+        .set({ status: input.status })
+        .where(eq(newsletterAutomations.id, input.id));
+
+      return { success: true };
+    }),
+
   // Activate/Deactivate automation
   updateStatus: protectedProcedure
     .input(

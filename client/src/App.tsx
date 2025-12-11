@@ -56,7 +56,8 @@ const CampaignEditor = lazy(() => import("@/pages/CampaignEditor"));
 const CampaignStatisticsPage = lazy(() => import("@/pages/CampaignStatisticsPage"));
 const SegmentManagement = lazy(() => import("@/pages/SegmentManagement"));
 const TemplateLibrary = lazy(() => import("@/pages/TemplateLibrary"));
-const VisualTemplateEditor = lazy(() => import("@/pages/VisualTemplateEditor"));
+const VisualTemplateEditor = lazy(() => import("./pages/VisualTemplateEditor"));
+const AutomationManagement = lazy(() => import("./pages/AutomationManagement"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
 
 function Router() {
@@ -104,7 +105,8 @@ function Router() {
               <Route path="/newsletter/campaigns/:id/stats" component={CampaignStatisticsPage} />
               <Route path="/newsletter/segments" component={SegmentManagement} />
               <Route path="/newsletter/templates" component={TemplateLibrary} />
-              <Route path="/newsletter/templates/:id/edit" component={VisualTemplateEditor} />
+              <Route path="/admin/template/visual/:id?" component={VisualTemplateEditor} />
+              <Route path="/admin/automation" component={AutomationManagement} />
               <Route path="/smtp-settings" component={SMTPSettings} />
               <Route path="/sla-reports" component={SLADashboard} />
               <Route path="/accessibility-statement" component={AccessibilityStatement} />
