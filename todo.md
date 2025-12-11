@@ -939,3 +939,7 @@
   - [x] Verhaltens-Tracking in Datenbank (dateOfBirth, lastActivityAt)
   - [x] Dynamische Segment-Updates mit Engagement-Kriterien
   - [x] API-Unterstützung für erweiterte Filter-Optionen
+
+
+## Current Issues
+- [x] Fix production build error with GrapeJS import resolution

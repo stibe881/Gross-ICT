@@ -76,6 +76,7 @@ export default defineConfig({
           'charts': ['recharts'],
           'animation': ['framer-motion'],
           'utils': ['date-fns', 'clsx', 'tailwind-merge'],
+          'grapesjs': ['grapesjs', 'grapesjs-preset-newsletter'],
         },
       },
     },
