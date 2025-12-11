@@ -75,7 +75,7 @@ export async function getRenderedEmail(templateName: string, data: TemplateData)
  * Helper function to prepare ticket URL
  */
 export function getTicketUrl(ticketId: number): string {
-  const baseUrl = process.env.VITE_APP_URL || 'https://gross-ict.manus.space';
+  const baseUrl = process.env.VITE_APP_URL || 'https://gross-ict.ch';
   return `${baseUrl}/support-center?ticket=${ticketId}`;
 }
 

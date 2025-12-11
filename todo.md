@@ -876,3 +876,7 @@
 ## Current Tasks
 - [x] Remove particle effects from black background sections
 - [x] Fix email notification system to load SMTP settings from database
+
+## Current Tasks
+- [x] Fix ticket URL in email templates to use production domain (gross-ict.ch)
+- [x] Add SPF/DKIM recommendations to prevent emails going to spam
