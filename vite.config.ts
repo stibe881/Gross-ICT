@@ -58,6 +58,9 @@ export default defineConfig({
     include: [
       'grapesjs',
       'grapesjs-preset-newsletter',
+      'recharts',
+      'chart.js',
+      'react-chartjs-2',
     ],
     exclude: [],
   },
@@ -67,39 +70,11 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
-    // Bundle optimization
+    // Simplified bundle optimization - let Vite handle chunking automatically
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
-          // GrapeJS and its preset in separate chunk - handle both package names
-          if (id.includes('grapesjs') || id.includes('node_modules/grapesjs')) {
-            return 'grapesjs';
-          }
-          // React core
-          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
-            return 'react-vendor';
-          }
-          // Router
-          if (id.includes('wouter')) {
-            return 'router';
-          }
-          // Radix UI components
-          if (id.includes('@radix-ui')) {
-            return 'ui';
-          }
-          // Charts
-          if (id.includes('recharts')) {
-            return 'charts';
-          }
-          // Animation
-          if (id.includes('framer-motion')) {
-            return 'animation';
-          }
-          // Utilities
-          if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
-            return 'utils';
-          }
-        },
+        // Use Vite's default automatic chunking with size limits
+        manualChunks: undefined,
       },
     },
     // Increase chunk size warning limit
