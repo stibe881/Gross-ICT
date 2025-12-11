@@ -1,32 +1,84 @@
 import nodemailer from "nodemailer";
 import { getDb } from "../db";
-import { emailLogs } from "../../drizzle/schema";
+import { emailLogs, smtpSettings } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
 
-// Email configuration from environment variables
-const SMTP_HOST = process.env.SMTP_HOST || "smtp.gmail.com";
-const SMTP_PORT = parseInt(process.env.SMTP_PORT || "587");
-const SMTP_USER = process.env.SMTP_USER || "";
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD || "";
-const SMTP_FROM = process.env.SMTP_FROM || "noreply@gross-ict.ch";
-const SMTP_FROM_NAME = process.env.SMTP_FROM_NAME || "Gross ICT";
+// Cache for SMTP settings
+let cachedSmtpSettings: any = null;
+let lastFetchTime = 0;
+const CACHE_DURATION = 60000; // 1 minute
 
-// Create reusable transporter
-let transporter: nodemailer.Transporter | null = null;
+/**
+ * Load SMTP settings from database
+ */
+async function getSmtpSettings() {
+  const now = Date.now();
+  
+  // Return cached settings if still valid
+  if (cachedSmtpSettings && (now - lastFetchTime) < CACHE_DURATION) {
+    return cachedSmtpSettings;
+  }
 
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465, // true for 465, false for other ports
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.error("[Email] Database not available");
+      return null;
+    }
+
+    const [settings] = await db
+      .select()
+      .from(smtpSettings)
+      .limit(1);
+
+    if (settings) {
+      cachedSmtpSettings = settings;
+      lastFetchTime = now;
+      console.log("[Email] SMTP settings loaded from database:", {
+        host: settings.host,
+        port: settings.port,
+        user: settings.user,
+        fromEmail: settings.fromEmail
+      });
+      return settings;
+    } else {
+      console.warn("[Email] No SMTP settings found in database");
+      return null;
+    }
+  } catch (error) {
+    console.error("[Email] Failed to load SMTP settings:", error);
+    return null;
+  }
+}
+
+/**
+ * Create email transporter with current SMTP settings
+ */
+async function createTransporter() {
+  const settings = await getSmtpSettings();
+  
+  if (!settings) {
+    console.error("[Email] Cannot create transporter: No SMTP settings");
+    return null;
+  }
+
+  try {
+    const transporter = nodemailer.createTransport({
+      host: settings.host,
+      port: settings.port,
+      secure: settings.secure, // true for SSL, false for TLS/STARTTLS
       auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASSWORD,
+        user: settings.user,
+        pass: settings.password,
       },
     });
+
+    console.log("[Email] Transporter created successfully");
+    return transporter;
+  } catch (error) {
+    console.error("[Email] Failed to create transporter:", error);
+    return null;
   }
-  return transporter;
 }
 
 export interface EmailOptions {
@@ -57,6 +109,12 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
   const recipientEmail = Array.isArray(options.to) ? options.to[0] : options.to;
   let logId: number | null = null;
 
+  console.log("[Email] Attempting to send email:", {
+    to: recipientEmail,
+    subject: options.subject,
+    templateName: options.templateName
+  });
+
   try {
     // Log email attempt to database
     const db = await getDb();
@@ -75,31 +133,47 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
         retryCount: 0,
       });
       logId = result.insertId;
+      console.log("[Email] Email log created with ID:", logId);
     }
 
-    // Check if SMTP is configured
-    if (!SMTP_USER || !SMTP_PASSWORD) {
-      console.warn("SMTP not configured, email not sent:", options.subject);
+    // Get SMTP settings from database
+    const smtpConfig = await getSmtpSettings();
+    
+    if (!smtpConfig) {
+      const errorMsg = "SMTP not configured in database";
+      console.error("[Email]", errorMsg);
       
       // Update log as failed
       if (db && logId) {
         await db.update(emailLogs)
           .set({ 
             status: "failed",
-            errorMessage: "SMTP not configured"
+            errorMessage: errorMsg
           })
           .where(eq(emailLogs.id, logId));
       }
       return false;
     }
 
-    const transport = getTransporter();
+    // Create transporter
+    const transport = await createTransporter();
     if (!transport) {
-      throw new Error("Failed to create email transporter");
+      const errorMsg = "Failed to create email transporter";
+      console.error("[Email]", errorMsg);
+      
+      if (db && logId) {
+        await db.update(emailLogs)
+          .set({ 
+            status: "failed",
+            errorMessage: errorMsg
+          })
+          .where(eq(emailLogs.id, logId));
+      }
+      return false;
     }
 
     const mailOptions = {
-      from: `"${SMTP_FROM_NAME}" <${SMTP_FROM}>`,
+      from: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
       to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
       subject: options.subject,
       html: options.html,
@@ -109,8 +183,14 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       attachments: options.attachments,
     };
 
+    console.log("[Email] Sending email with options:", {
+      from: mailOptions.from,
+      to: mailOptions.to,
+      subject: mailOptions.subject
+    });
+
     const info = await transport.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
+    console.log("[Email] ✅ Email sent successfully! Message ID:", info.messageId);
     
     // Update log as sent
     if (db && logId) {
@@ -120,11 +200,12 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
           sentAt: new Date()
         })
         .where(eq(emailLogs.id, logId));
+      console.log("[Email] Email log updated as 'sent'");
     }
     
     return true;
   } catch (error) {
-    console.error("Failed to send email:", error);
+    console.error("[Email] ❌ Failed to send email:", error);
     
     // Update log as failed
     const db = await getDb();
@@ -135,6 +216,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
           errorMessage: error instanceof Error ? error.message : String(error)
         })
         .where(eq(emailLogs.id, logId));
+      console.log("[Email] Email log updated as 'failed'");
     }
     
     return false;

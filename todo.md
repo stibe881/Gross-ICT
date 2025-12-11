@@ -872,3 +872,7 @@
 - [x] Add login button back to desktop header (keep in mobile menu too)
 - [x] Implement drag-and-drop for admin dashboard widgets with per-user layout persistence
 - [x] Create smtpSettings table in database
+
+## Current Tasks
+- [x] Remove particle effects from black background sections
+- [x] Fix email notification system to load SMTP settings from database
