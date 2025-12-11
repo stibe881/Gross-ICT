@@ -880,3 +880,10 @@
 ## Current Tasks
 - [x] Fix ticket URL in email templates to use production domain (gross-ict.ch)
 - [x] Add SPF/DKIM recommendations to prevent emails going to spam
+
+## Current Tasks - Newsletter Rich-Text Editor
+- [x] Install TipTap rich-text editor library
+- [x] Create RichTextEditor component with formatting toolbar
+- [x] Integrate editor into CampaignEditor
+- [x] Add template selector with preview (already exists in CampaignEditor)
+- [x] Implement test email functionality (already exists in CampaignEditor)

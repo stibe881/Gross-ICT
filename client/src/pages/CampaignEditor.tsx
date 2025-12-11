@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import RichTextEditor from "@/components/RichTextEditor";
 import {
   Select,
   SelectContent,
@@ -424,20 +425,19 @@ export default function CampaignEditor() {
                 </TabsList>
 
                 <TabsContent value="editor" className="mt-4">
-                  <Label htmlFor="htmlContent">HTML-Inhalt *</Label>
-                  <Textarea
-                    id="htmlContent"
-                    placeholder="<html>...</html>"
-                    value={campaignData.htmlContent}
-                    onChange={(e) =>
-                      setCampaignData({
-                        ...campaignData,
-                        htmlContent: e.target.value,
-                      })
-                    }
-                    className="mt-2 font-mono text-sm"
-                    rows={20}
-                  />
+                  <Label htmlFor="htmlContent">Newsletter-Inhalt *</Label>
+                  <div className="mt-2">
+                    <RichTextEditor
+                      content={campaignData.htmlContent}
+                      onChange={(content) =>
+                        setCampaignData({
+                          ...campaignData,
+                          htmlContent: content,
+                        })
+                      }
+                      placeholder="Beginnen Sie hier mit dem Schreiben Ihres Newsletters..."
+                    />
+                  </div>
                 </TabsContent>
 
                 <TabsContent value="preview" className="mt-4">
