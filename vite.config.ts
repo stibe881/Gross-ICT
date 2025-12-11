@@ -62,21 +62,35 @@ export default defineConfig({
     // Bundle optimization
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunks for better caching
-          'react-vendor': ['react', 'react-dom', 'react/jsx-runtime'],
-          'router': ['wouter'],
-          'ui': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-tooltip',
-          ],
-          'charts': ['recharts'],
-          'animation': ['framer-motion'],
-          'utils': ['date-fns', 'clsx', 'tailwind-merge'],
-          'grapesjs': ['grapesjs', 'grapesjs-preset-newsletter'],
+        manualChunks: (id) => {
+          // GrapeJS and its preset in separate chunk
+          if (id.includes('grapesjs')) {
+            return 'grapesjs';
+          }
+          // React core
+          if (id.includes('node_modules/react') || id.includes('node_modules/react-dom')) {
+            return 'react-vendor';
+          }
+          // Router
+          if (id.includes('wouter')) {
+            return 'router';
+          }
+          // Radix UI components
+          if (id.includes('@radix-ui')) {
+            return 'ui';
+          }
+          // Charts
+          if (id.includes('recharts')) {
+            return 'charts';
+          }
+          // Animation
+          if (id.includes('framer-motion')) {
+            return 'animation';
+          }
+          // Utilities
+          if (id.includes('date-fns') || id.includes('clsx') || id.includes('tailwind-merge')) {
+            return 'utils';
+          }
         },
       },
     },
@@ -84,6 +98,11 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     // Minification (esbuild is default and faster)
     minify: 'esbuild',
+    // Ensure all dependencies are bundled
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
   },
   server: {
     host: true,
