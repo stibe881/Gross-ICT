@@ -14,14 +14,12 @@ import { useLocation } from "wouter";
 import { Loader2, Ticket, LogOut, BarChart3, Search, Filter, X, Users, FileText, AlertTriangle, ChevronDown, ChevronUp, Plus, Receipt, BookOpen, UserCircle, Package, Settings, TrendingUp, Menu, FileStack, Bell, Star, GripVertical, Layout, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useState, useEffect } from "react";
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, rectSortingStrategy } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
+
 import { TicketDetail } from "@/components/TicketDetail";
 import { DashboardStatistics } from "@/components/DashboardStatistics";
 import { CreateTicketDialog } from "@/components/CreateTicketDialog";
 import { DashboardCharts } from "@/components/DashboardCharts";
-import { SortableCard } from "@/components/SortableCard";
+
 import { useWebSocket } from "@/contexts/WebSocketContext";
 
 import { FilterPresets } from "@/components/FilterPresets";
@@ -226,26 +224,7 @@ export default function TicketManagement() {
     localStorage.setItem("dashboardCardOrder", JSON.stringify(cardOrder));
   }, [cardOrder]);
 
-  // Drag and drop sensors
-  const sensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, {
-      coordinateGetter: sortableKeyboardCoordinates,
-    })
-  );
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-
-    if (over && active.id !== over.id) {
-      setCardOrder((items) => {
-        const oldIndex = items.indexOf(active.id as string);
-        const newIndex = items.indexOf(over.id as string);
-        return arrayMove(items, oldIndex, newIndex);
-      });
-      toast.success("Karten-Reihenfolge gespeichert");
-    }
-  };
 
   const { data: supportStaff } = trpc.tickets.supportStaff.useQuery(undefined, {
     enabled: !!user && user.role === "admin",
@@ -829,12 +808,10 @@ export default function TicketManagement() {
           <div className="mb-8">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Schnellzugriff</h2>
-              <p className="text-sm text-gray-400">Ziehen Sie die Karten, um die Reihenfolge anzupassen</p>
+              <p className="text-sm text-gray-400">Schneller Zugriff auf wichtige Bereiche</p>
             </div>
-            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-              <SortableContext items={cardOrder} strategy={rectSortingStrategy}>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {cardOrder.map((cardId) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {cardOrder.map((cardId) => {
                     const cardConfig: Record<string, any> = {
                       accounting: {
                         icon: Receipt,
@@ -888,8 +865,7 @@ export default function TicketManagement() {
                     const Icon = config.icon;
 
                     return (
-                      <SortableCard key={cardId} id={cardId}>
-                        <Card 
+                      <Card key={cardId}
                           className={`bg-gradient-to-br ${config.gradient} cursor-pointer hover:scale-105 transition-transform relative group`}
                           onClick={() => {
                             if (cardId === "statistics") {
@@ -934,13 +910,10 @@ export default function TicketManagement() {
                               <p className="text-sm text-gray-400">{config.description}</p>
                             )}
                           </CardContent>
-                        </Card>
-                      </SortableCard>
+                      </Card>
                     );
                   })}
-                </div>
-              </SortableContext>
-            </DndContext>
+            </div>
           </div>
         )}
 
