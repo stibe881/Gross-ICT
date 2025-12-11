@@ -128,6 +128,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             <RemoteSupportModal />
 
+            {/* Login Button (Desktop only) */}
+            {!user && (
+              <Link href="/login">
+                <button className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-foreground hover:bg-white/10 transition-all border border-white/10">
+                  <User className="h-4 w-4" />
+                  <span>{language === 'de' ? 'Anmelden' : 'Login'}</span>
+                </button>
+              </Link>
+            )}
+
             <Link href="/contact">
               <button className="bg-white text-black px-3 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap">
                 <span className="hidden lg:inline">{t.nav.contact}</span>
