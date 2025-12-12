@@ -105,3 +105,9 @@ temp/
 *.db
 *.sqlite
 *.sqlite3
+
+# Sensitive OAuth configuration files
+init-microsoft-oauth.mjs
+*-credentials.json
+*-secrets.json
+oauth-config.json

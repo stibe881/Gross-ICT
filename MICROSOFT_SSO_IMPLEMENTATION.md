@@ -132,10 +132,10 @@ CREATE TABLE `oauthProviders` (
 
 **App Name:** SSO Gross ICT Webseiten Anmeldung
 
-**Credentials:**
-- **Application (client) ID:** `fd167257-55cc-4a95-accc-fabd1f111928`
-- **Directory (tenant) ID:** `158a61ec-c8ba-43e2-8e2f-37356aca89c7`
-- **Client Secret:** `U3h8Q~nQX.0Qwuv3hU6gvuYoPwp-Zt03WsN6QaSS`
+**Credentials:** (Stored securely in database, not in code)
+- **Application (client) ID:** `[Configured in Azure AD]`
+- **Directory (tenant) ID:** `[Configured in Azure AD]`
+- **Client Secret:** `[Stored securely in database]`
 
 **Redirect URI:** `https://gross-ict.ch/auth/microsoft/callback`
 

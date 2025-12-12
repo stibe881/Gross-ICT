@@ -1,10 +1,11 @@
 import { initializeMicrosoftOAuthSettings } from "./server/microsoftOAuthService.ts";
 
 // Microsoft OAuth credentials
-const MICROSOFT_CLIENT_ID = "fd167257-55cc-4a95-accc-fabd1f111928";
-const MICROSOFT_CLIENT_SECRET = "U3h8Q~nQX.0Qwuv3hU6gvuYoPwp-Zt03WsN6QaSS";
-const MICROSOFT_TENANT_ID = "158a61ec-c8ba-43e2-8e2f-37356aca89c7";
-const REDIRECT_URI = "https://gross-ict.ch/auth/microsoft/callback";
+// IMPORTANT: Replace these with your actual values from Azure AD App Registration
+const MICROSOFT_CLIENT_ID = process.env.MICROSOFT_CLIENT_ID || "YOUR_CLIENT_ID_HERE";
+const MICROSOFT_CLIENT_SECRET = process.env.MICROSOFT_CLIENT_SECRET || "YOUR_CLIENT_SECRET_HERE";
+const MICROSOFT_TENANT_ID = process.env.MICROSOFT_TENANT_ID || "YOUR_TENANT_ID_HERE";
+const REDIRECT_URI = process.env.MICROSOFT_REDIRECT_URI || "https://your-domain.com/auth/microsoft/callback";
 
 async function init() {
   try {
