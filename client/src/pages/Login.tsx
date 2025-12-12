@@ -7,6 +7,7 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { Loader2 } from "lucide-react";
+import { MicrosoftIcon } from "@/components/icons/MicrosoftIcon";
 
 export default function Login() {
   const [, setLocation] = useLocation();
@@ -80,6 +81,50 @@ export default function Login() {
 
   const isLoading = loginMutation.isPending || registerMutation.isPending;
 
+  // Microsoft SSO Login Component
+  const MicrosoftLoginButton = () => {
+    const [isMicrosoftLoading, setIsMicrosoftLoading] = useState(false);
+    const microsoftAuthMutation = trpc.microsoftOAuth.getAuthUrl.useMutation({
+      onSuccess: (data) => {
+        // Redirect to Microsoft login
+        window.location.href = data.authUrl;
+      },
+      onError: (error) => {
+        setIsMicrosoftLoading(false);
+        toast.error(error.message || "Microsoft-Login fehlgeschlagen");
+      },
+    });
+
+    const handleMicrosoftLogin = () => {
+      setIsMicrosoftLoading(true);
+      microsoftAuthMutation.mutate({
+        returnUrl: window.location.pathname,
+      });
+    };
+
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        className="w-full bg-white/5 border-white/10 hover:bg-white/10 text-white"
+        onClick={handleMicrosoftLogin}
+        disabled={isMicrosoftLoading}
+      >
+        {isMicrosoftLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Weiterleitung...
+          </>
+        ) : (
+          <>
+            <MicrosoftIcon className="mr-2 h-5 w-5" />
+            Mit Microsoft anmelden
+          </>
+        )}
+      </Button>
+    );
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-black px-4">
       <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-xl">
@@ -150,6 +195,21 @@ export default function Login() {
                 <>{isRegistering ? "Account erstellen" : "Anmelden"}</>
               )}
             </Button>
+
+            {!isRegistering && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-white/10" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-black px-2 text-gray-400">Oder</span>
+                  </div>
+                </div>
+
+                <MicrosoftLoginButton />
+              </>
+            )}
 
             <div className="text-center">
               <button

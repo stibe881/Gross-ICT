@@ -225,6 +225,13 @@
       "when": 1765482371101,
       "tag": "0031_slim_zarda",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "5",
+      "when": 1765547470662,
+      "tag": "0032_colorful_iron_lad",
+      "breakpoints": true
     }
   ]
 }

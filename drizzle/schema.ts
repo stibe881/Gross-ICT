@@ -380,3 +380,6 @@ export const smtpSettings = mysqlTable("smtpSettings", {
 
 export type SmtpSettings = typeof smtpSettings.$inferSelect;
 export type InsertSmtpSettings = typeof smtpSettings.$inferInsert;
+
+// Export OAuth module tables
+export * from "./schema_oauth";

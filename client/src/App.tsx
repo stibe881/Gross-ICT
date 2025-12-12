@@ -59,6 +59,7 @@ const TemplateLibrary = lazy(() => import("@/pages/TemplateLibrary"));
 const VisualTemplateEditor = lazy(() => import("./pages/VisualTemplateEditor"));
 const AutomationManagement = lazy(() => import("./pages/AutomationManagement"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
+const MicrosoftCallback = lazy(() => import("@/pages/MicrosoftCallback"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -83,7 +84,8 @@ function Router() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/news/:id" component={NewsDetail} />
         <Route path="/calculator" component={Calculator} />
-        <Route path="/login" component={Login} />
+        <Route path={"/login"} component={Login} />
+        <Route path={"/auth/microsoft/callback"} component={MicrosoftCallback} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/admin" component={AdminDashboardMain} />
         <Route path="/admin/tickets" component={TicketManagement} />

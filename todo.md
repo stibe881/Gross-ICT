@@ -965,10 +965,38 @@
 - [x] GrapeJS and preset installed and bundled successfully
 
 
-## CRITICAL - Production Website Down
+## CRITICAL - Production Website Down - RESOLVED ✅
 
-- [ ] Fix white screen error on production website
-- [ ] Check browser console for JavaScript errors
-- [ ] Verify server is running and serving files correctly
-- [ ] Check if build artifacts are corrupted
-- [ ] Investigate if recent changes broke the application
+- [x] Fix white screen error on production website
+- [x] Check browser console for JavaScript errors
+- [x] Verify server is running and serving files correctly
+- [x] Simplified Vite configuration to fix circular dependency issue
+- [x] Frontend loads correctly, static files served properly
+
+## Production Deployment - API Proxy Issue
+
+- [ ] Apache mod_proxy not available on Hetzner managed hosting
+- [ ] API requests (/api/*) cannot be proxied to Node.js server on port 3000
+- [ ] Implementing Option 2: Direct port 3000 access for API
+
+## Option 2 Implementation: Direct Port 3000 Access
+
+- [ ] Test if port 3000 is accessible from outside (curl from local machine)
+- [ ] Configure firewall to allow port 3000 if needed
+- [ ] Update Vite config to use https://gross-ict.ch:3000/api for API calls
+- [ ] Rebuild application with new API URL
+- [ ] Deploy to production
+- [ ] Test all API functionality
+- [ ] Verify Newsletter, Dashboard, and all features work correctly
+
+## Completed - Microsoft SSO Authentication
+- [x] Set up Microsoft Azure AD application registration
+- [x] Obtain OAuth credentials (Client ID, Client Secret, Tenant ID)
+- [x] Create backend OAuth flow with Microsoft authentication endpoints
+- [x] Implement callback handler for Microsoft OAuth
+- [x] Store Microsoft tokens securely in database
+- [x] Create frontend Microsoft login button component
+- [x] Integrate Microsoft SSO with existing authentication system
+- [x] Add user profile sync from Microsoft account
+- [x] Create comprehensive documentation
+- [x] Ready for testing (user needs to update Azure redirect URI)
