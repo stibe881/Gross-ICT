@@ -145,13 +145,33 @@ export function registerOAuthRoutes(app: Express) {
       }
 
       // Create session
+      console.log("[Microsoft OAuth] DEBUG: Creating session for user:", {
+        userId: user.id,
+        email: user.email,
+        name: user.name,
+      });
+
       const token = await signJWT({ userId: user.id });
+      console.log("[Microsoft OAuth] DEBUG: JWT token created, length:", token.length);
+
+      // Set cookie - always use secure for production domain
+      const isSecure = req.protocol === 'https' || req.headers['x-forwarded-proto'] === 'https';
+      console.log("[Microsoft OAuth] DEBUG: Cookie settings:", {
+        protocol: req.protocol,
+        xForwardedProto: req.headers['x-forwarded-proto'],
+        isSecure,
+        hostname: req.hostname,
+      });
+
       res.cookie("app_session_id", token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
+        secure: isSecure,
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+        path: "/",
       });
+
+      console.log("[Microsoft OAuth] DEBUG: Cookie set, redirecting to:", returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl);
 
       // Redirect to return URL (but not back to login page)
       const finalRedirect = returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl;
