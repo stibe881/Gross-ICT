@@ -146,8 +146,9 @@ export function registerOAuthRoutes(app: Express) {
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
       });
 
-      // Redirect to return URL
-      res.redirect(returnUrl);
+      // Redirect to return URL (but not back to login page)
+      const finalRedirect = returnUrl === '/login' || returnUrl === '' ? '/dashboard' : returnUrl;
+      res.redirect(finalRedirect);
     } catch (error) {
       console.error("[Microsoft OAuth] Error:", error);
       res.status(500).json({
