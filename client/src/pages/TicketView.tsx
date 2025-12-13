@@ -7,6 +7,16 @@ import { Loader2, CheckCircle, Clock, AlertCircle, ArrowLeft, Send, MessageSquar
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
 import { toast } from "sonner";
@@ -16,6 +26,7 @@ export default function TicketView() {
     const params = useParams<{ token: string }>();
     const token = params.token || "";
     const [newComment, setNewComment] = useState("");
+    const [showResolveDialog, setShowResolveDialog] = useState(false);
 
     const ticketQuery = trpc.tickets.publicByToken.useQuery(
         { token },
@@ -58,13 +69,12 @@ export default function TicketView() {
     };
 
     const handleResolve = () => {
-        if (window.confirm(
-            language === 'de'
-                ? 'Möchten Sie dieses Ticket wirklich als erledigt markieren?'
-                : 'Do you really want to mark this ticket as resolved?'
-        )) {
-            resolveMutation.mutate({ token });
-        }
+        setShowResolveDialog(true);
+    };
+
+    const confirmResolve = () => {
+        setShowResolveDialog(false);
+        resolveMutation.mutate({ token });
     };
 
     if (ticketQuery.isLoading) {
@@ -347,7 +357,35 @@ export default function TicketView() {
                     </motion.div>
                 </div>
             </div>
+
+            {/* Resolve Confirmation Dialog */}
+            <AlertDialog open={showResolveDialog} onOpenChange={setShowResolveDialog}>
+                <AlertDialogContent className="bg-background border border-white/10">
+                    <AlertDialogHeader>
+                        <AlertDialogTitle className="flex items-center gap-2">
+                            <CheckCircle className="w-5 h-5 text-green-400" />
+                            {language === 'de' ? 'Ticket als erledigt markieren?' : 'Mark ticket as resolved?'}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription className="text-muted-foreground">
+                            {language === 'de'
+                                ? 'Wenn Sie das Ticket als erledigt markieren, wird es geschlossen und Sie können keine weiteren Nachrichten mehr hinzufügen.'
+                                : 'If you mark this ticket as resolved, it will be closed and you will not be able to add more messages.'}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel className="border-white/10 hover:bg-white/5">
+                            {language === 'de' ? 'Abbrechen' : 'Cancel'}
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmResolve}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            {language === 'de' ? 'Ja, als erledigt markieren' : 'Yes, mark as resolved'}
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </Layout>
     );
 }
-
