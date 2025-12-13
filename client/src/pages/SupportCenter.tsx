@@ -35,15 +35,6 @@ export default function SupportCenter() {
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState("");
 
-  // Ticket lookup query
-  const ticketLookupQuery = trpc.tickets.publicLookup.useQuery(
-    { ticketId: parseInt(lookupTicketId) || 0, email: lookupEmail },
-    {
-      enabled: lookupSubmitted && !!lookupTicketId && !!lookupEmail,
-      retry: false,
-    }
-  );
-
   const createTicketMutation = trpc.tickets.create.useMutation({
     onSuccess: (data) => {
       if (data.accountCreated) {
