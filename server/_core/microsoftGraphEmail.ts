@@ -256,8 +256,12 @@ export async function sendEmailViaGraph(options: GraphEmailOptions): Promise<boo
  */
 export async function isGraphEmailAvailable(userId: number): Promise<boolean> {
     try {
+        console.log("[Graph Email] Checking availability for userId:", userId);
         const db = await getDb();
-        if (!db) return false;
+        if (!db) {
+            console.log("[Graph Email] Database not available");
+            return false;
+        }
 
         const [provider] = await db
             .select()
@@ -270,8 +274,15 @@ export async function isGraphEmailAvailable(userId: number): Promise<boolean> {
             )
             .limit(1);
 
+        console.log("[Graph Email] Provider found:", provider ? {
+            id: provider.id,
+            hasAccessToken: !!provider.accessToken,
+            hasRefreshToken: !!provider.refreshToken
+        } : "none");
+
         return !!(provider?.accessToken && provider?.refreshToken);
-    } catch {
+    } catch (error) {
+        console.error("[Graph Email] Error checking availability:", error);
         return false;
     }
 }
