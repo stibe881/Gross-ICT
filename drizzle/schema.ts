@@ -470,19 +470,16 @@ export const newsletterAutomationExecutions = mysqlTable("newsletterAutomationEx
   id: int("id").primaryKey().autoincrement(),
   automationId: int("automationId").notNull().references(() => newsletterAutomations.id, { onDelete: "cascade" }),
   subscriberId: int("subscriberId").notNull().references(() => newsletterSubscribers.id, { onDelete: "cascade" }),
-  currentStep: int("currentStep").default(0),
   currentStepId: int("currentStepId"), // Current step being executed
-  status: mysqlEnum("status", ["pending", "active", "in_progress", "completed", "cancelled", "failed"]).default("pending"),
-  nextExecutionAt: timestamp("nextExecutionAt"),
-  nextStepAt: timestamp("nextStepAt"), // When the next step should be executed
-  startedAt: timestamp("startedAt").defaultNow(),
+  status: mysqlEnum("status", ["pending", "active", "completed", "failed"]).default("pending"),
+  startedAt: timestamp("startedAt"),
   completedAt: timestamp("completedAt"),
+  nextStepAt: timestamp("nextStepAt"), // When the next step should be executed
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 }, (table) => ({
   automationIdIdx: index("automation_id_idx").on(table.automationId),
   subscriberIdIdx: index("subscriber_id_idx").on(table.subscriberId),
-  nextExecutionAtIdx: index("next_execution_at_idx").on(table.nextExecutionAt),
 }));
 
 // Newsletter Automation Step Logs table
