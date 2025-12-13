@@ -38,7 +38,7 @@ async function getSmtpSettings() {
       console.log("[Email] SMTP settings loaded from database:", {
         host: settings.host,
         port: settings.port,
-        username: settings.username,
+        user: settings.user,
         fromEmail: settings.fromEmail
       });
       return settings;
@@ -69,7 +69,7 @@ async function createTransporter() {
       port: settings.port,
       secure: settings.secure, // true for SSL, false for TLS/STARTTLS
       auth: {
-        user: settings.username,
+        user: settings.user,
         pass: settings.password,
       },
     });
@@ -140,7 +140,7 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     // Try SMTP first (Brevo/external SMTP has better deliverability)
     const smtpConfig = await getSmtpSettings();
 
-    if (smtpConfig && smtpConfig.isActive) {
+    if (smtpConfig) {
       console.log("[Email] SMTP configured, attempting to send via SMTP (Brevo)...");
 
       try {
