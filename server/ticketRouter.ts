@@ -221,7 +221,7 @@ export const ticketRouter = router({
       // Apply search filter
       if (input.search) {
         const searchLower = input.search.toLowerCase();
-        tickets = tickets.filter(t => 
+        tickets = tickets.filter(t =>
           t.subject.toLowerCase().includes(searchLower) ||
           t.message.toLowerCase().includes(searchLower) ||
           t.customerName?.toLowerCase().includes(searchLower) ||
@@ -312,7 +312,7 @@ export const ticketRouter = router({
               subject,
               html: body,
             });
-            
+
             console.log(`[Ticket] Status change notification email sent for ticket #${id}`);
           }
         } catch (error) {
@@ -413,10 +413,10 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { users } = await import('../drizzle/schema.js');
       const { eq, or } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) return [];
-      
+
       return await db.select().from(users).where(
         or(
           eq(users.role, 'admin'),
@@ -437,10 +437,10 @@ export const ticketRouter = router({
       const resolvedTickets = allTickets.filter(t => t.status === 'resolved' && t.resolvedAt);
       const avgResolutionTime = resolvedTickets.length > 0
         ? resolvedTickets.reduce((sum, t) => {
-            const created = new Date(t.createdAt).getTime();
-            const resolved = new Date(t.resolvedAt!).getTime();
-            return sum + (resolved - created);
-          }, 0) / resolvedTickets.length
+          const created = new Date(t.createdAt).getTime();
+          const resolved = new Date(t.resolvedAt!).getTime();
+          return sum + (resolved - created);
+        }, 0) / resolvedTickets.length
         : 0;
 
       // Tickets by category over last 30 days
@@ -482,10 +482,10 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { eq, and, or } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
-      
+
       const now = new Date();
       const openTickets = await db.select().from(tickets).where(
         or(
@@ -493,20 +493,20 @@ export const ticketRouter = router({
           eq(tickets.status, 'in_progress')
         )
       );
-      
+
       let breached = 0;
       let escalated = 0;
-      
+
       for (const ticket of openTickets) {
         if (!ticket.slaDueDate) continue;
-        
+
         const dueDate = new Date(ticket.slaDueDate);
         const hoursOverdue = (now.getTime() - dueDate.getTime()) / (1000 * 60 * 60);
-        
+
         if (hoursOverdue > 0) {
           // SLA breached
           let newEscalationLevel = ticket.escalationLevel || 0;
-          
+
           if (hoursOverdue > 48) {
             // Critical escalation after 48 hours overdue
             newEscalationLevel = 2;
@@ -516,18 +516,18 @@ export const ticketRouter = router({
             newEscalationLevel = Math.max(1, newEscalationLevel);
             escalated++;
           }
-          
+
           await db.update(tickets)
             .set({
               slaBreached: 1,
               escalationLevel: newEscalationLevel,
             })
             .where(eq(tickets.id, ticket.id));
-          
+
           breached++;
         }
       }
-      
+
       return {
         success: true,
         checked: openTickets.length,
@@ -542,17 +542,17 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { or, eq } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) return [];
-      
+
       const openTickets = await db.select().from(tickets).where(
         or(
           eq(tickets.status, 'open'),
           eq(tickets.status, 'in_progress')
         )
       );
-      
+
       const now = new Date();
       return openTickets.filter(ticket => {
         if (!ticket.slaDueDate) return false;
@@ -569,10 +569,10 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { inArray } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await db.delete(tickets).where(inArray(tickets.id, input.ticketIds));
       return { success: true, count: input.ticketIds.length };
     }),
@@ -587,10 +587,10 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { inArray } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await db.update(tickets)
         .set({ status: input.status })
         .where(inArray(tickets.id, input.ticketIds));
@@ -607,10 +607,10 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { inArray } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await db.update(tickets)
         .set({ assignedTo: input.assignedTo })
         .where(inArray(tickets.id, input.ticketIds));
@@ -627,13 +627,80 @@ export const ticketRouter = router({
       const { getDb } = await import('./db.js');
       const { tickets } = await import('../drizzle/schema.js');
       const { inArray } = await import('drizzle-orm');
-      
+
       const db = await getDb();
       if (!db) throw new Error('Database not available');
-      
+
       await db.update(tickets)
         .set({ priority: input.priority })
         .where(inArray(tickets.id, input.ticketIds));
       return { success: true, count: input.ticketIds.length };
+    }),
+
+  // Public ticket lookup (requires email verification)
+  publicLookup: publicProcedure
+    .input(z.object({
+      ticketId: z.number(),
+      email: z.string().email(),
+    }))
+    .query(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets, ticketComments, users } = await import('../drizzle/schema.js');
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+
+      // Find the ticket
+      const [ticket] = await db
+        .select()
+        .from(tickets)
+        .where(eq(tickets.id, input.ticketId))
+        .limit(1);
+
+      if (!ticket) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket nicht gefunden' });
+      }
+
+      // Verify email matches
+      if (ticket.customerEmail?.toLowerCase() !== input.email.toLowerCase()) {
+        throw new TRPCError({ code: 'FORBIDDEN', message: 'E-Mail-Adresse stimmt nicht überein' });
+      }
+
+      // Get comments for this ticket (public ones only or all if customer)
+      const comments = await db
+        .select({
+          id: ticketComments.id,
+          content: ticketComments.comment,
+          isInternal: ticketComments.isInternal,
+          createdAt: ticketComments.createdAt,
+          userName: users.name,
+        })
+        .from(ticketComments)
+        .leftJoin(users, eq(ticketComments.userId, users.id))
+        .where(
+          and(
+            eq(ticketComments.ticketId, input.ticketId),
+            eq(ticketComments.isInternal, false) // Only show non-internal comments
+          )
+        )
+        .orderBy(desc(ticketComments.createdAt));
+
+      return {
+        id: ticket.id,
+        ticketNumber: ticket.ticketNumber,
+        subject: ticket.subject,
+        description: ticket.description,
+        status: ticket.status,
+        priority: ticket.priority,
+        category: ticket.category,
+        createdAt: ticket.createdAt,
+        resolvedAt: ticket.resolvedAt,
+        comments: comments.map(c => ({
+          id: c.id,
+          content: c.content,
+          createdAt: c.createdAt,
+          author: c.userName || 'Support',
+        })),
+      };
     }),
 });

@@ -2,8 +2,8 @@ import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, LifeBuoy, Download, MessageSquare, FileText, ChevronRight, Monitor, Shield, Smartphone, Server, Mail, Phone, Loader2 } from "lucide-react";
-import { useState } from "react";
+import { Search, LifeBuoy, Download, MessageSquare, FileText, ChevronRight, Monitor, Shield, Smartphone, Server, Mail, Phone, Loader2, CheckCircle, Clock, AlertCircle } from "lucide-react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,14 +16,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Link } from "wouter";
+import { Link, useLocation, useSearch } from "wouter";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/contexts/LanguageContext";
 import RemoteSupportModal from "@/components/RemoteSupportModal";
 
 export default function SupportCenter() {
   const { language } = useLanguage();
-  const [, setLocation] = useState<any>();
+  const searchString = useSearch();
+
+  // Parse URL parameters
+  const urlParams = new URLSearchParams(searchString);
+  const ticketIdParam = urlParams.get('ticket');
+
+  // Ticket lookup state
+  const [showTicketLookup, setShowTicketLookup] = useState(!!ticketIdParam);
+  const [lookupTicketId, setLookupTicketId] = useState(ticketIdParam || "");
+  const [lookupEmail, setLookupEmail] = useState("");
+  const [lookupSubmitted, setLookupSubmitted] = useState(false);
 
   // Form state
   const [name, setName] = useState("");
@@ -35,6 +45,15 @@ export default function SupportCenter() {
   const [category, setCategory] = useState<"network" | "security" | "hardware" | "software" | "email" | "other">("other");
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState("");
+
+  // Ticket lookup query
+  const ticketLookupQuery = trpc.tickets.publicLookup.useQuery(
+    { ticketId: parseInt(lookupTicketId) || 0, email: lookupEmail },
+    {
+      enabled: lookupSubmitted && !!lookupTicketId && !!lookupEmail,
+      retry: false,
+    }
+  );
 
   const createTicketMutation = trpc.tickets.create.useMutation({
     onSuccess: (data) => {
@@ -151,11 +170,155 @@ export default function SupportCenter() {
 
   return (
     <Layout>
-      <SEO 
+      <SEO
         title={language === 'de' ? "Support Center" : "Support Center"}
         description={language === 'de' ? "Ihr zentraler Anlaufpunkt für Hilfe, Downloads und Support-Tickets." : "Your central hub for help, downloads, and support tickets."}
       />
-      
+
+      {/* Ticket Lookup Modal */}
+      {showTicketLookup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-background border border-white/10 rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+          >
+            {!ticketLookupQuery.data && !ticketLookupQuery.isLoading ? (
+              <>
+                <h2 className="text-2xl font-bold mb-4">
+                  {language === 'de' ? 'Ticket-Status abrufen' : 'Check Ticket Status'}
+                </h2>
+                <p className="text-muted-foreground mb-6">
+                  {language === 'de'
+                    ? 'Geben Sie Ihre E-Mail-Adresse ein, um den Status Ihres Tickets einzusehen.'
+                    : 'Enter your email address to view your ticket status.'}
+                </p>
+
+                <form onSubmit={(e) => { e.preventDefault(); setLookupSubmitted(true); }} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label>{language === 'de' ? 'Ticket-Nummer' : 'Ticket Number'}</Label>
+                    <Input
+                      value={lookupTicketId}
+                      onChange={(e) => setLookupTicketId(e.target.value)}
+                      placeholder="42"
+                      className="bg-black/20 border-white/10"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>{language === 'de' ? 'E-Mail-Adresse' : 'Email Address'}</Label>
+                    <Input
+                      type="email"
+                      value={lookupEmail}
+                      onChange={(e) => setLookupEmail(e.target.value)}
+                      placeholder="ihre@email.ch"
+                      className="bg-black/20 border-white/10"
+                      required
+                    />
+                  </div>
+
+                  {ticketLookupQuery.error && (
+                    <div className="p-4 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400">
+                      {ticketLookupQuery.error.message}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <Button type="submit" className="flex-1" disabled={ticketLookupQuery.isLoading}>
+                      {ticketLookupQuery.isLoading ? (
+                        <><Loader2 className="w-4 h-4 animate-spin mr-2" /> {language === 'de' ? 'Laden...' : 'Loading...'}</>
+                      ) : (
+                        language === 'de' ? 'Status abrufen' : 'Check Status'
+                      )}
+                    </Button>
+                    <Button type="button" variant="outline" onClick={() => setShowTicketLookup(false)}>
+                      {language === 'de' ? 'Schliessen' : 'Close'}
+                    </Button>
+                  </div>
+                </form>
+              </>
+            ) : ticketLookupQuery.data ? (
+              <>
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-2xl font-bold">
+                    Ticket #{ticketLookupQuery.data.ticketNumber || ticketLookupQuery.data.id}
+                  </h2>
+                  <Button variant="outline" size="sm" onClick={() => { setShowTicketLookup(false); setLookupSubmitted(false); }}>
+                    {language === 'de' ? 'Schliessen' : 'Close'}
+                  </Button>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Status Badge */}
+                  <div className="flex items-center gap-3">
+                    {ticketLookupQuery.data.status === 'resolved' || ticketLookupQuery.data.status === 'closed' ? (
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-400 border border-green-500/30">
+                        <CheckCircle className="w-4 h-4" />
+                        {ticketLookupQuery.data.status === 'resolved' ? (language === 'de' ? 'Gelöst' : 'Resolved') : (language === 'de' ? 'Geschlossen' : 'Closed')}
+                      </span>
+                    ) : ticketLookupQuery.data.status === 'in_progress' ? (
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30">
+                        <Clock className="w-4 h-4" />
+                        {language === 'de' ? 'In Bearbeitung' : 'In Progress'}
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-2 px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/30">
+                        <AlertCircle className="w-4 h-4" />
+                        {language === 'de' ? 'Offen' : 'Open'}
+                      </span>
+                    )}
+
+                    <span className={`px-3 py-1 rounded-full text-sm ${ticketLookupQuery.data.priority === 'urgent' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
+                        ticketLookupQuery.data.priority === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' :
+                          ticketLookupQuery.data.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30' :
+                            'bg-gray-500/10 text-gray-400 border border-gray-500/30'
+                      }`}>
+                      {ticketLookupQuery.data.priority === 'urgent' ? (language === 'de' ? 'Dringend' : 'Urgent') :
+                        ticketLookupQuery.data.priority === 'high' ? (language === 'de' ? 'Hoch' : 'High') :
+                          ticketLookupQuery.data.priority === 'medium' ? (language === 'de' ? 'Mittel' : 'Medium') :
+                            (language === 'de' ? 'Niedrig' : 'Low')}
+                    </span>
+                  </div>
+
+                  {/* Ticket Details */}
+                  <div className="p-4 rounded-xl bg-white/5 border border-white/10">
+                    <h3 className="font-bold text-lg mb-2">{ticketLookupQuery.data.subject}</h3>
+                    <p className="text-muted-foreground whitespace-pre-wrap">{ticketLookupQuery.data.description}</p>
+                    <p className="text-sm text-muted-foreground mt-4">
+                      {language === 'de' ? 'Erstellt am' : 'Created on'}: {new Date(ticketLookupQuery.data.createdAt).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+
+                  {/* Comments */}
+                  {ticketLookupQuery.data.comments && ticketLookupQuery.data.comments.length > 0 && (
+                    <div>
+                      <h4 className="font-bold mb-3">{language === 'de' ? 'Antworten' : 'Responses'}</h4>
+                      <div className="space-y-3">
+                        {ticketLookupQuery.data.comments.map((comment: any) => (
+                          <div key={comment.id} className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-medium text-primary">{comment.author}</span>
+                              <span className="text-sm text-muted-foreground">
+                                {new Date(comment.createdAt).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                            <p className="text-sm whitespace-pre-wrap">{comment.content}</p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+
       {/* Hero Section */}
       <div className="relative pt-32 pb-20 overflow-hidden">
         <div className="absolute inset-0 bg-primary/5 blur-[150px] pointer-events-none"></div>
@@ -172,14 +335,14 @@ export default function SupportCenter() {
               <h1 className="text-4xl md:text-6xl font-bold mb-6">
                 {language === 'de' ? "Wie können wir helfen?" : "How can we help?"}
               </h1>
-              
+
               {/* Search Bar */}
               <div className="relative max-w-xl mx-auto">
                 <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
                   <Search className="h-5 w-5 text-muted-foreground" />
                 </div>
-                <Input 
-                  type="text" 
+                <Input
+                  type="text"
                   placeholder={language === 'de' ? "Suchen Sie nach Lösungen, Fehlern oder Anleitungen..." : "Search for solutions, errors, or guides..."}
                   className="pl-12 h-14 rounded-full bg-white/5 border-white/10 focus:border-primary/50 text-lg shadow-xl backdrop-blur-sm"
                 />
@@ -308,18 +471,18 @@ export default function SupportCenter() {
 
           {/* Ticket System & Contact */}
           <div id="ticket-form" className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-            
+
             {/* Contact Info */}
             <div>
               <h2 className="text-2xl font-bold mb-6">
                 {language === 'de' ? "Noch Fragen?" : "Still have questions?"}
               </h2>
               <p className="text-muted-foreground mb-8">
-                {language === 'de' 
+                {language === 'de'
                   ? "Unser Support-Team ist für Sie da. Erstellen Sie ein Ticket oder rufen Sie uns direkt an."
                   : "Our support team is here for you. Create a ticket or call us directly."}
               </p>
-              
+
               <div className="space-y-6">
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
                   <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
@@ -330,7 +493,7 @@ export default function SupportCenter() {
                     <a href="tel:+41794140616" className="text-lg font-bold hover:text-primary transition-colors">+41 79 414 06 16</a>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/10">
                   <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
                     <Mail className="w-5 h-5 text-blue-500" />
@@ -370,7 +533,7 @@ export default function SupportCenter() {
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium">{language === 'de' ? "E-Mail" : "Email"} *</label>
                   <Input
