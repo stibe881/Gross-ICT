@@ -267,7 +267,7 @@ class SDKServer {
   async authenticateRequest(req: Request): Promise<User> {
     const cookies = this.parseCookies(req.headers.cookie);
     const sessionCookie = cookies.get(COOKIE_NAME);
-    
+
     // Try OAuth session first
     const session = await this.verifySession(sessionCookie);
 
@@ -307,19 +307,27 @@ class SDKServer {
       return user;
     }
 
-    // Try local JWT token (for local authentication)
+    // Try local JWT token (for local authentication / Microsoft OAuth)
     if (sessionCookie) {
       try {
         const secretKey = new TextEncoder().encode(process.env.JWT_SECRET || ENV.cookieSecret);
         const { payload } = await jwtVerify(sessionCookie, secretKey, {
           algorithms: ["HS256"],
         });
-        
-        const { openId, email, role } = payload as Record<string, unknown>;
-        
+
+        const { openId, userId } = payload as Record<string, unknown>;
+
+        // Try openId first (Manus OAuth)
         if (isNonEmptyString(openId)) {
-          // Local authentication - look up user by openId
           const user = await db.getUserByOpenId(openId);
+          if (user) {
+            return user;
+          }
+        }
+
+        // Try userId (Microsoft OAuth / local auth)
+        if (typeof userId === "number" || typeof userId === "string") {
+          const user = await db.getUserById(Number(userId));
           if (user) {
             return user;
           }
