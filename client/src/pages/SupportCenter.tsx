@@ -37,9 +37,13 @@ export default function SupportCenter() {
 
   // Debug log
   useEffect(() => {
-    console.log("[SupportCenter] URL search:", window.location.search);
+    const search = window.location.search;
+    console.log("[SupportCenter] URL search:", search);
     console.log("[SupportCenter] initialTicketId:", initialTicketId);
     console.log("[SupportCenter] showTicketLookup:", showTicketLookup);
+    if (search.includes('ticket')) {
+      alert("Ticket-Parameter erkannt: " + initialTicketId);
+    }
   }, []);
 
   // Form state
