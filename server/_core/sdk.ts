@@ -218,22 +218,33 @@ class SDKServer {
       const { payload } = await jwtVerify(cookieValue, secretKey, {
         algorithms: ["HS256"],
       });
-      const { openId, appId, name } = payload as Record<string, unknown>;
+      const { openId, appId, name, userId } = payload as Record<string, unknown>;
 
+      // Support SDK-based auth (Manus OAuth)
       if (
-        !isNonEmptyString(openId) ||
-        !isNonEmptyString(appId) ||
-        !isNonEmptyString(name)
+        isNonEmptyString(openId) &&
+        isNonEmptyString(appId) &&
+        isNonEmptyString(name)
       ) {
-        console.warn("[Auth] Session payload missing required fields");
-        return null;
+        return {
+          openId,
+          appId,
+          name,
+        };
       }
 
-      return {
-        openId,
-        appId,
-        name,
-      };
+      // Support userId-based auth (Microsoft OAuth / local auth)
+      if (typeof userId === "number" || typeof userId === "string") {
+        // Return a synthetic session for userId-based auth
+        return {
+          openId: `user-${userId}`,
+          appId: "local",
+          name: `User ${userId}`,
+        };
+      }
+
+      console.warn("[Auth] Session payload missing required fields");
+      return null;
     } catch (error) {
       console.warn("[Auth] Session verification failed", String(error));
       return null;
