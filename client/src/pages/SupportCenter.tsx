@@ -23,17 +23,32 @@ import RemoteSupportModal from "@/components/RemoteSupportModal";
 
 export default function SupportCenter() {
   const { language } = useLanguage();
-  const searchString = useSearch();
 
-  // Parse URL parameters
-  const urlParams = new URLSearchParams(searchString);
-  const ticketIdParam = urlParams.get('ticket');
+  // Parse URL parameters from window location (more reliable)
+  const getTicketIdFromUrl = () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('ticket');
+    }
+    return null;
+  };
+
+  const ticketIdParam = getTicketIdFromUrl();
 
   // Ticket lookup state
-  const [showTicketLookup, setShowTicketLookup] = useState(!!ticketIdParam);
-  const [lookupTicketId, setLookupTicketId] = useState(ticketIdParam || "");
+  const [showTicketLookup, setShowTicketLookup] = useState(false);
+  const [lookupTicketId, setLookupTicketId] = useState("");
   const [lookupEmail, setLookupEmail] = useState("");
   const [lookupSubmitted, setLookupSubmitted] = useState(false);
+
+  // Check for ticket param on mount
+  useEffect(() => {
+    const ticketId = getTicketIdFromUrl();
+    if (ticketId) {
+      setShowTicketLookup(true);
+      setLookupTicketId(ticketId);
+    }
+  }, []);
 
   // Form state
   const [name, setName] = useState("");
@@ -269,9 +284,9 @@ export default function SupportCenter() {
                     )}
 
                     <span className={`px-3 py-1 rounded-full text-sm ${ticketLookupQuery.data.priority === 'urgent' ? 'bg-red-500/10 text-red-400 border border-red-500/30' :
-                        ticketLookupQuery.data.priority === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' :
-                          ticketLookupQuery.data.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30' :
-                            'bg-gray-500/10 text-gray-400 border border-gray-500/30'
+                      ticketLookupQuery.data.priority === 'high' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30' :
+                        ticketLookupQuery.data.priority === 'medium' ? 'bg-yellow-500/10 text-yellow-400 border border-yellow-500/30' :
+                          'bg-gray-500/10 text-gray-400 border border-gray-500/30'
                       }`}>
                       {ticketLookupQuery.data.priority === 'urgent' ? (language === 'de' ? 'Dringend' : 'Urgent') :
                         ticketLookupQuery.data.priority === 'high' ? (language === 'de' ? 'Hoch' : 'High') :
