@@ -139,7 +139,7 @@ export function registerOAuthRoutes(app: Express) {
 
       // Create session
       const token = await signJWT({ userId: user.id });
-      res.cookie("session", token, {
+      res.cookie("app_session_id", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
@@ -203,7 +203,7 @@ async function handleOAuthCallback(req: Request, res: Response) {
     }
 
     const token = await signJWT({ userId: user.id });
-    res.cookie("session", token, {
+    res.cookie("app_session_id", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
