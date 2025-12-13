@@ -154,12 +154,14 @@ export function registerOAuthRoutes(app: Express) {
       const token = await signJWT({ userId: user.id });
       console.log("[Microsoft OAuth] DEBUG: JWT token created, length:", token.length);
 
-      // Set cookie - always use secure for production domain
-      const isSecure = req.protocol === 'https' || req.headers['x-forwarded-proto'] === 'https';
+      // Set cookie - force secure for production domain (Apache doesn't forward X-Forwarded-Proto)
+      const isProduction = req.hostname.includes('gross-ict.ch');
+      const isSecure = isProduction || req.protocol === 'https' || req.headers['x-forwarded-proto'] === 'https';
       console.log("[Microsoft OAuth] DEBUG: Cookie settings:", {
         protocol: req.protocol,
         xForwardedProto: req.headers['x-forwarded-proto'],
         isSecure,
+        isProduction,
         hostname: req.hostname,
       });
 
@@ -169,6 +171,7 @@ export function registerOAuthRoutes(app: Express) {
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         path: "/",
+        domain: isProduction ? ".gross-ict.ch" : undefined,
       });
 
       console.log("[Microsoft OAuth] DEBUG: Cookie set, redirecting to:", returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl);
