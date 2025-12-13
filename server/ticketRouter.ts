@@ -765,4 +765,39 @@ export const ticketRouter = router({
         })),
       };
     }),
+
+  // Public: Add comment to ticket via token (no auth required)
+  publicAddComment: publicProcedure
+    .input(z.object({
+      token: z.string().min(1),
+      message: z.string().min(1).max(5000),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets, ticketComments } = await import('../drizzle/schema.js');
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+
+      // Find the ticket by access token
+      const [ticket] = await db
+        .select()
+        .from(tickets)
+        .where(eq(tickets.accessToken, input.token))
+        .limit(1);
+
+      if (!ticket) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket nicht gefunden' });
+      }
+
+      // Add the comment (userId = 0 or null for customer, isInternal = false)
+      await db.insert(ticketComments).values({
+        ticketId: ticket.id,
+        userId: 0, // 0 = customer
+        message: input.message,
+        isInternal: 0 as any, // MySQL: 0 = false, not internal
+      });
+
+      return { success: true };
+    }),
 });

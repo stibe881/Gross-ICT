@@ -2,21 +2,46 @@ import Layout from "@/components/Layout";
 import SEO from "@/components/SEO";
 import { trpc } from "@/lib/trpc";
 import { useParams } from "wouter";
-import { Loader2, CheckCircle, Clock, AlertCircle, ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import { Loader2, CheckCircle, Clock, AlertCircle, ArrowLeft, Send, MessageSquare } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { toast } from "sonner";
 
 export default function TicketView() {
     const { language } = useLanguage();
     const params = useParams<{ token: string }>();
     const token = params.token || "";
+    const [newComment, setNewComment] = useState("");
 
     const ticketQuery = trpc.tickets.publicByToken.useQuery(
         { token },
         { enabled: !!token, retry: false }
     );
+
+    const addCommentMutation = trpc.tickets.publicAddComment.useMutation({
+        onSuccess: () => {
+            setNewComment("");
+            ticketQuery.refetch();
+            toast.success(
+                language === 'de'
+                    ? 'Ihre Nachricht wurde hinzugefügt'
+                    : 'Your message has been added'
+            );
+        },
+        onError: (error) => {
+            toast.error(error.message || (language === 'de' ? 'Fehler beim Senden' : 'Error sending message'));
+        },
+    });
+
+    const handleSubmitComment = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newComment.trim()) return;
+        addCommentMutation.mutate({ token, message: newComment.trim() });
+    };
 
     if (ticketQuery.isLoading) {
         return (
@@ -108,6 +133,7 @@ export default function TicketView() {
     const status = getStatusDisplay();
     const priority = getPriorityDisplay();
     const StatusIcon = status.icon;
+    const isClosedOrResolved = ticket.status === 'closed' || ticket.status === 'resolved';
 
     return (
         <Layout>
@@ -191,16 +217,29 @@ export default function TicketView() {
                         </div>
 
                         {/* Comments Section */}
-                        {ticket.comments && ticket.comments.length > 0 && (
-                            <div className="p-8 rounded-3xl bg-white/5 border border-white/10">
-                                <h2 className="text-xl font-bold mb-6">
-                                    {language === 'de' ? 'Antworten' : 'Responses'} ({ticket.comments.length})
-                                </h2>
-                                <div className="space-y-4">
+                        <div className="p-8 rounded-3xl bg-white/5 border border-white/10 mb-8">
+                            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                                <MessageSquare className="w-5 h-5 text-primary" />
+                                {language === 'de' ? 'Kommunikation' : 'Communication'}
+                                {ticket.comments && ticket.comments.length > 0 && ` (${ticket.comments.length})`}
+                            </h2>
+
+                            {/* Comments List */}
+                            {ticket.comments && ticket.comments.length > 0 ? (
+                                <div className="space-y-4 mb-8">
                                     {ticket.comments.map((comment: any) => (
-                                        <div key={comment.id} className="p-4 rounded-xl bg-primary/5 border border-primary/20">
+                                        <div
+                                            key={comment.id}
+                                            className={`p-4 rounded-xl border ${comment.author === 'Kunde' || !comment.author
+                                                    ? 'bg-blue-500/5 border-blue-500/20 ml-8'
+                                                    : 'bg-primary/5 border-primary/20 mr-8'
+                                                }`}
+                                        >
                                             <div className="flex items-center justify-between mb-2">
-                                                <span className="font-medium text-primary">{comment.author}</span>
+                                                <span className={`font-medium ${comment.author === 'Kunde' || !comment.author ? 'text-blue-400' : 'text-primary'
+                                                    }`}>
+                                                    {comment.author || (language === 'de' ? 'Kunde' : 'Customer')}
+                                                </span>
                                                 <span className="text-sm text-muted-foreground">
                                                     {new Date(comment.createdAt).toLocaleDateString('de-CH', {
                                                         day: '2-digit',
@@ -215,22 +254,60 @@ export default function TicketView() {
                                         </div>
                                     ))}
                                 </div>
-                            </div>
-                        )}
-
-                        {/* No Comments Yet */}
-                        {(!ticket.comments || ticket.comments.length === 0) && (
-                            <div className="p-8 rounded-3xl bg-white/5 border border-white/10 text-center">
-                                <p className="text-muted-foreground">
+                            ) : (
+                                <p className="text-muted-foreground text-center py-6 mb-6">
                                     {language === 'de'
-                                        ? 'Noch keine Antworten. Wir melden uns bald bei Ihnen.'
-                                        : 'No responses yet. We will get back to you soon.'}
+                                        ? 'Noch keine Nachrichten. Wir melden uns bald bei Ihnen.'
+                                        : 'No messages yet. We will get back to you soon.'}
                                 </p>
-                            </div>
-                        )}
+                            )}
+
+                            {/* Add Comment Form */}
+                            {!isClosedOrResolved ? (
+                                <form onSubmit={handleSubmitComment} className="border-t border-white/10 pt-6">
+                                    <h3 className="font-medium mb-3">
+                                        {language === 'de' ? 'Nachricht hinzufügen' : 'Add Message'}
+                                    </h3>
+                                    <Textarea
+                                        value={newComment}
+                                        onChange={(e) => setNewComment(e.target.value)}
+                                        placeholder={language === 'de'
+                                            ? 'Schreiben Sie Ihre Nachricht hier...'
+                                            : 'Write your message here...'}
+                                        className="min-h-[100px] bg-black/20 border-white/10 mb-4"
+                                    />
+                                    <Button
+                                        type="submit"
+                                        disabled={!newComment.trim() || addCommentMutation.isPending}
+                                        className="gap-2"
+                                    >
+                                        {addCommentMutation.isPending ? (
+                                            <>
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                                {language === 'de' ? 'Wird gesendet...' : 'Sending...'}
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Send className="w-4 h-4" />
+                                                {language === 'de' ? 'Nachricht senden' : 'Send Message'}
+                                            </>
+                                        )}
+                                    </Button>
+                                </form>
+                            ) : (
+                                <div className="border-t border-white/10 pt-6 text-center">
+                                    <p className="text-muted-foreground">
+                                        {language === 'de'
+                                            ? 'Dieses Ticket ist geschlossen. Für weitere Anfragen erstellen Sie bitte ein neues Ticket.'
+                                            : 'This ticket is closed. For further requests, please create a new ticket.'}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
                     </motion.div>
                 </div>
             </div>
         </Layout>
     );
 }
+
