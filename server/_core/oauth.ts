@@ -68,7 +68,14 @@ export function registerOAuthRoutes(app: Express) {
       });
 
       if (!tokenResponse.ok) {
-        throw new Error(`Token exchange failed: ${tokenResponse.statusText}`);
+        const errorBody = await tokenResponse.text();
+        console.error("[Microsoft OAuth] Token exchange failed:", {
+          status: tokenResponse.status,
+          statusText: tokenResponse.statusText,
+          body: errorBody,
+          redirectUri: settings.redirectUri,
+        });
+        throw new Error(`Token exchange failed: ${tokenResponse.statusText} - ${errorBody}`);
       }
 
       const tokens = await tokenResponse.json();
