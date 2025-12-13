@@ -37,10 +37,34 @@ export default function TicketView() {
         },
     });
 
+    const resolveMutation = trpc.tickets.publicResolve.useMutation({
+        onSuccess: () => {
+            ticketQuery.refetch();
+            toast.success(
+                language === 'de'
+                    ? 'Ticket wurde als erledigt markiert. Vielen Dank!'
+                    : 'Ticket has been marked as resolved. Thank you!'
+            );
+        },
+        onError: (error) => {
+            toast.error(error.message || (language === 'de' ? 'Fehler beim Schliessen' : 'Error closing ticket'));
+        },
+    });
+
     const handleSubmitComment = (e: React.FormEvent) => {
         e.preventDefault();
         if (!newComment.trim()) return;
         addCommentMutation.mutate({ token, message: newComment.trim() });
+    };
+
+    const handleResolve = () => {
+        if (window.confirm(
+            language === 'de'
+                ? 'Möchten Sie dieses Ticket wirklich als erledigt markieren?'
+                : 'Do you really want to mark this ticket as resolved?'
+        )) {
+            resolveMutation.mutate({ token });
+        }
     };
 
     if (ticketQuery.isLoading) {
@@ -165,7 +189,7 @@ export default function TicketView() {
                                     <p className="text-sm text-muted-foreground mb-1">Ticket #{ticket.ticketNumber}</p>
                                     <h1 className="text-2xl md:text-3xl font-bold">{ticket.subject}</h1>
                                 </div>
-                                <div className="flex flex-wrap gap-2">
+                                <div className="flex flex-wrap gap-2 items-center">
                                     <span className={`flex items-center gap-2 px-3 py-1 rounded-full ${status.bg} ${status.color} border ${status.border}`}>
                                         <StatusIcon className="w-4 h-4" />
                                         {status.label}
@@ -173,6 +197,22 @@ export default function TicketView() {
                                     <span className={`px-3 py-1 rounded-full text-sm border ${priority.color}`}>
                                         {priority.label}
                                     </span>
+                                    {!isClosedOrResolved && (
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            onClick={handleResolve}
+                                            disabled={resolveMutation.isPending}
+                                            className="ml-2 gap-1 border-green-500/30 text-green-400 hover:bg-green-500/10"
+                                        >
+                                            {resolveMutation.isPending ? (
+                                                <Loader2 className="w-4 h-4 animate-spin" />
+                                            ) : (
+                                                <CheckCircle className="w-4 h-4" />
+                                            )}
+                                            {language === 'de' ? 'Als erledigt markieren' : 'Mark as resolved'}
+                                        </Button>
+                                    )}
                                 </div>
                             </div>
 
@@ -231,8 +271,8 @@ export default function TicketView() {
                                         <div
                                             key={comment.id}
                                             className={`p-4 rounded-xl border ${comment.author === 'Kunde' || !comment.author
-                                                    ? 'bg-blue-500/5 border-blue-500/20 ml-8'
-                                                    : 'bg-primary/5 border-primary/20 mr-8'
+                                                ? 'bg-blue-500/5 border-blue-500/20 ml-8'
+                                                : 'bg-primary/5 border-primary/20 mr-8'
                                                 }`}
                                         >
                                             <div className="flex items-center justify-between mb-2">

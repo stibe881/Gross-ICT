@@ -800,4 +800,52 @@ export const ticketRouter = router({
 
       return { success: true };
     }),
+
+  // Public: Resolve ticket via token (customer can mark as resolved)
+  publicResolve: publicProcedure
+    .input(z.object({
+      token: z.string().min(1),
+    }))
+    .mutation(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets, ticketComments } = await import('../drizzle/schema.js');
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+
+      // Find the ticket by access token
+      const [ticket] = await db
+        .select()
+        .from(tickets)
+        .where(eq(tickets.accessToken, input.token))
+        .limit(1);
+
+      if (!ticket) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket nicht gefunden' });
+      }
+
+      // Only allow resolving open or in_progress tickets
+      if (ticket.status === 'resolved' || ticket.status === 'closed') {
+        throw new TRPCError({ code: 'BAD_REQUEST', message: 'Ticket ist bereits geschlossen' });
+      }
+
+      // Update ticket status to resolved
+      await db
+        .update(tickets)
+        .set({
+          status: 'resolved',
+          resolvedAt: new Date(),
+        })
+        .where(eq(tickets.id, ticket.id));
+
+      // Add automatic comment
+      await db.insert(ticketComments).values({
+        ticketId: ticket.id,
+        userId: 0,
+        message: 'Ticket wurde vom Kunden als erledigt markiert.',
+        isInternal: 0 as any,
+      });
+
+      return { success: true };
+    }),
 });
