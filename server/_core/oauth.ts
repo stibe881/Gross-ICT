@@ -154,7 +154,7 @@ export function registerOAuthRoutes(app: Express) {
       });
 
       // Redirect to return URL (but not back to login page)
-      const finalRedirect = returnUrl === '/login' || returnUrl === '' ? '/dashboard' : returnUrl;
+      const finalRedirect = returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl;
       res.redirect(finalRedirect);
     } catch (error) {
       console.error("[Microsoft OAuth] Error:", error);
