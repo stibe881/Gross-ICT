@@ -1,6 +1,19 @@
 import type { CookieOptions, Request } from "express";
+import { SignJWT } from "jose";
+import { ENV } from "./env";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
+
+/**
+ * Sign a JWT token for local authentication
+ */
+export async function signJWT(payload: { userId: number }): Promise<string> {
+  const secret = new TextEncoder().encode(ENV.cookieSecret);
+  return new SignJWT(payload as Record<string, unknown>)
+    .setProtectedHeader({ alg: "HS256", typ: "JWT" })
+    .setExpirationTime("30d")
+    .sign(secret);
+}
 
 function isIpAddress(host: string) {
   // Basic IPv4 check and IPv6 presence detection.

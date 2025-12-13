@@ -2,9 +2,9 @@ import type { Request, Response } from "express";
 import type { Express } from "express";
 import { sdk } from "./sdk";
 import { signJWT } from "./cookies";
-import { db } from "../db";
-import { users, oauthProviders } from "../../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { getDb } from "../db";
+import { users, oauthProviders, oauthSettings } from "../../drizzle/schema";
+import { eq, and } from "drizzle-orm";
 
 // Helper function to safely extract query parameters
 function getQueryParam(req: Request, key: string): string | undefined {
@@ -21,7 +21,7 @@ export function registerOAuthRoutes(app: Express) {
 
   // Manus OAuth Callback
   app.get("/api/oauth/callback", handleOAuthCallback);
-  
+
   // Microsoft OAuth Callback - INLINE DEFINITION
   app.get("/api/oauth/microsoft/callback", async (req: Request, res: Response) => {
     const code = getQueryParam(req, "code");
@@ -33,14 +33,21 @@ export function registerOAuthRoutes(app: Express) {
     }
 
     try {
+      const db = await getDb();
+      if (!db) {
+        throw new Error("Database not available");
+      }
+
       // Decode state to get returnUrl
       const stateData = JSON.parse(Buffer.from(state, "base64").toString());
       const returnUrl = stateData.returnUrl || "/";
 
       // Get OAuth settings from database
-      const settings = await db.query.oauthSettings.findFirst({
-        where: (settings, { eq }) => eq(settings.provider, "microsoft"),
-      });
+      const [settings] = await db
+        .select()
+        .from(oauthSettings)
+        .where(eq(oauthSettings.provider, "microsoft"))
+        .limit(1);
 
       if (!settings) {
         throw new Error("Microsoft OAuth not configured");
@@ -57,7 +64,7 @@ export function registerOAuthRoutes(app: Express) {
           code,
           redirect_uri: settings.redirectUri,
           grant_type: "authorization_code",
-        } ),
+        }),
       });
 
       if (!tokenResponse.ok) {
@@ -69,7 +76,7 @@ export function registerOAuthRoutes(app: Express) {
       // Get user profile from Microsoft Graph
       const profileResponse = await fetch("https://graph.microsoft.com/v1.0/me", {
         headers: { Authorization: `Bearer ${tokens.access_token}` },
-      } );
+      });
 
       if (!profileResponse.ok) {
         throw new Error(`Failed to fetch user profile: ${profileResponse.statusText}`);
@@ -78,28 +85,37 @@ export function registerOAuthRoutes(app: Express) {
       const profile = await profileResponse.json();
 
       // Find or create user
-      let user = await db.query.users.findFirst({
-        where: eq(users.email, profile.mail || profile.userPrincipalName),
-      });
+      const [existingUser] = await db
+        .select()
+        .from(users)
+        .where(eq(users.email, profile.mail || profile.userPrincipalName))
+        .limit(1);
+
+      let user = existingUser;
 
       if (!user) {
-        // Create new user
-        const [newUser] = await db.insert(users).values({
+        // Create new user - MySQL doesn't support returning(), use insertId
+        const result = await db.insert(users).values({
           email: profile.mail || profile.userPrincipalName,
           name: profile.displayName,
           role: "user",
-        }).returning();
+        });
+        const insertId = Number((result as any)[0]?.insertId);
+        const [newUser] = await db.select().from(users).where(eq(users.id, insertId)).limit(1);
         user = newUser;
       }
 
       // Store or update OAuth provider link
-      const existingLink = await db.query.oauthProviders.findFirst({
-        where: (providers, { and, eq }) =>
+      const [existingLink] = await db
+        .select()
+        .from(oauthProviders)
+        .where(
           and(
-            eq(providers.userId, user.id),
-            eq(providers.provider, "microsoft")
-          ),
-      });
+            eq(oauthProviders.userId, user.id),
+            eq(oauthProviders.provider, "microsoft")
+          )
+        )
+        .limit(1);
 
       if (existingLink) {
         await db.update(oauthProviders)
@@ -122,21 +138,21 @@ export function registerOAuthRoutes(app: Express) {
       }
 
       // Create session
-      const token = signJWT({ userId: user.id });
+      const token = await signJWT({ userId: user.id });
       res.cookie("session", token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-      } );
+      });
 
       // Redirect to return URL
       res.redirect(returnUrl);
     } catch (error) {
       console.error("[Microsoft OAuth] Error:", error);
-      res.status(500).json({ 
-        error: "Authentication failed", 
-        details: error instanceof Error ? error.message : "Unknown error" 
+      res.status(500).json({
+        error: "Authentication failed",
+        details: error instanceof Error ? error.message : "Unknown error"
       });
     }
   });
@@ -153,6 +169,11 @@ async function handleOAuthCallback(req: Request, res: Response) {
   }
 
   try {
+    const db = await getDb();
+    if (!db) {
+      throw new Error("Database not available");
+    }
+
     const tokenResponse = await sdk.exchangeCodeForToken(code, state);
     const userInfo = await sdk.getUserInfo(tokenResponse.accessToken);
 
@@ -160,27 +181,34 @@ async function handleOAuthCallback(req: Request, res: Response) {
       throw new Error("openId missing from user info");
     }
 
-    let user = await db.query.users.findFirst({
-      where: eq(users.openId, userInfo.openId),
-    });
+    const [existingUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.openId, userInfo.openId))
+      .limit(1);
+
+    let user = existingUser;
 
     if (!user) {
-      const [newUser] = await db.insert(users).values({
+      // Create new user - MySQL doesn't support returning(), use insertId
+      const result = await db.insert(users).values({
         openId: userInfo.openId,
         email: userInfo.email || "",
         name: userInfo.name || "",
         role: userInfo.openId === process.env.OWNER_OPEN_ID ? "admin" : "user",
-      }).returning();
+      });
+      const insertId = Number((result as any)[0]?.insertId);
+      const [newUser] = await db.select().from(users).where(eq(users.id, insertId)).limit(1);
       user = newUser;
     }
 
-    const token = signJWT({ userId: user.id });
+    const token = await signJWT({ userId: user.id });
     res.cookie("session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       maxAge: 30 * 24 * 60 * 60 * 1000,
-    } );
+    });
 
     const returnUrl = tokenResponse.returnUrl || "/";
     res.redirect(returnUrl);
@@ -189,4 +217,3 @@ async function handleOAuthCallback(req: Request, res: Response) {
     res.status(500).json({ error: "Authentication failed" });
   }
 }
-

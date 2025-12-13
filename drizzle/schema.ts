@@ -638,3 +638,84 @@ export const contractsRelations = relations(contracts, ({ one, many }) => ({
   }),
   lineItems: many(contractLineItems),
 }));
+
+// === Backward-compatible Alias ===
+export const kbArticles = knowledgeBaseArticles;
+
+// === Re-exports from split schema files ===
+export {
+  invoiceItems,
+  quoteItems,
+  accountingSettings,
+} from "./schema_accounting";
+
+export {
+  contractItems,
+  contractAttachments
+} from "./schema_contracts";
+
+export {
+  contractTemplateItems
+} from "./schema_contract_templates";
+
+// === Missing tables (defined inline to fix imports) ===
+
+// Favorites table
+export const favorites = mysqlTable("favorites", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  itemType: varchar("itemType", { length: 50 }).notNull(),
+  itemLabel: varchar("itemLabel", { length: 255 }).notNull(),
+  itemPath: varchar("itemPath", { length: 500 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  uniqueUserItem: unique("unique_user_item").on(table.userId, table.itemType),
+}));
+
+// Filter Presets table
+export const filterPresets = mysqlTable("filterPresets", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  name: varchar("name", { length: 255 }).notNull(),
+  filters: text("filters").notNull(),
+  module: varchar("module", { length: 100 }).notNull(),
+  isDefault: boolean("isDefault").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Activities table
+export const activities = mysqlTable("activities", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").references(() => users.id, { onDelete: "set null" }),
+  entityType: varchar("entityType", { length: 100 }).notNull(),
+  entityId: int("entityId"),
+  action: varchar("action", { length: 100 }).notNull(),
+  details: text("details"),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  entityTypeIdx: index("entity_type_idx").on(table.entityType),
+  userIdx: index("user_idx").on(table.userId),
+}));
+
+// SLA Tracking table
+export const slaTracking = mysqlTable("slaTracking", {
+  id: int("id").primaryKey().autoincrement(),
+  ticketId: int("ticketId").notNull().references(() => tickets.id, { onDelete: "cascade" }),
+  slaPolicyId: int("slaPolicyId").references(() => slaPolicies.id, { onDelete: "set null" }),
+  responseDeadline: timestamp("responseDeadline"),
+  resolutionDeadline: timestamp("resolutionDeadline"),
+  respondedAt: timestamp("respondedAt"),
+  resolvedAt: timestamp("resolvedAt"),
+  isBreached: boolean("isBreached").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  ticketIdx: index("ticket_idx").on(table.ticketId),
+}));
+
+// === Re-exports from schema_newsletter.ts ===
+export {
+  newsletterActivity,
+  newsletterStats,
+} from "./schema_newsletter";
