@@ -342,18 +342,24 @@ export const emailTemplates = mysqlTable("emailTemplates", {
 export const emailLogs = mysqlTable("emailLogs", {
   id: int("id").primaryKey().autoincrement(),
   templateId: int("templateId").references(() => emailTemplates.id, { onDelete: "set null" }),
-  recipient: varchar("recipient", { length: 255 }).notNull(),
+  templateName: varchar("templateName", { length: 100 }),
+  recipientEmail: varchar("recipientEmail", { length: 320 }).notNull(),
+  recipientName: varchar("recipientName", { length: 255 }),
   subject: varchar("subject", { length: 500 }).notNull(),
   body: text("body").notNull(),
   status: mysqlEnum("status", ["pending", "sent", "failed"]).default("pending"),
   errorMessage: text("errorMessage"),
+  entityType: varchar("entityType", { length: 50 }),
+  entityId: int("entityId"),
+  triggeredBy: int("triggeredBy"),
   retryCount: int("retryCount").default(0),
-  metadata: text("metadata"),
+  lastRetryAt: timestamp("lastRetryAt"),
   sentAt: timestamp("sentAt"),
   createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 }, (table) => ({
   statusIdx: index("status_idx").on(table.status),
-  recipientIdx: index("recipient_idx").on(table.recipient),
+  recipientIdx: index("recipient_idx").on(table.recipientEmail),
   sentAtIdx: index("sent_at_idx").on(table.sentAt),
 }));
 
