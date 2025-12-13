@@ -34,7 +34,7 @@ interface MicrosoftUserProfile {
 export async function getMicrosoftOAuthSettings() {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const settings = await db
     .select()
     .from(oauthSettings)
@@ -46,7 +46,7 @@ export async function getMicrosoftOAuthSettings() {
   }
 
   const config = settings[0];
-  
+
   if (!config.isActive) {
     throw new Error("Microsoft OAuth is not active");
   }
@@ -59,7 +59,7 @@ export async function getMicrosoftOAuthSettings() {
  */
 export async function getMicrosoftAuthUrl(state: string): Promise<string> {
   const settings = await getMicrosoftOAuthSettings();
-  
+
   const params = new URLSearchParams({
     client_id: settings.clientId,
     response_type: "code",
@@ -72,7 +72,7 @@ export async function getMicrosoftAuthUrl(state: string): Promise<string> {
 
   const tenantId = settings.tenantId || "common";
   const authUrl = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize?${params.toString()}`;
-  
+
   return authUrl;
 }
 
@@ -172,7 +172,7 @@ export async function findOrCreateUserFromMicrosoft(
   // Check if OAuth provider already exists
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const existingProvider = await db
     .select()
     .from(oauthProviders)
@@ -270,14 +270,14 @@ export async function initializeMicrosoftOAuthSettings(
 ) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  
+
   const existingSettings = await db
     .select()
     .from(oauthSettings)
     .where(eq(oauthSettings.provider, "microsoft"))
     .limit(1);
 
-  const scopes = "openid profile email User.Read";
+  const scopes = "openid profile email User.Read Mail.Send offline_access";
 
   if (existingSettings.length > 0) {
     // Update existing settings

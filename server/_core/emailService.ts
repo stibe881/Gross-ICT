@@ -1,7 +1,8 @@
 import nodemailer from "nodemailer";
 import { getDb } from "../db";
-import { emailLogs, smtpSettings } from "../../drizzle/schema";
+import { emailLogs, smtpSettings, users as usersTable } from "../../drizzle/schema";
 import { eq } from "drizzle-orm";
+import { sendEmailViaGraph, isGraphEmailAvailable } from "./microsoftGraphEmail";
 
 // Cache for SMTP settings
 let cachedSmtpSettings: any = null;
@@ -13,7 +14,7 @@ const CACHE_DURATION = 60000; // 1 minute
  */
 async function getSmtpSettings() {
   const now = Date.now();
-  
+
   // Return cached settings if still valid
   if (cachedSmtpSettings && (now - lastFetchTime) < CACHE_DURATION) {
     return cachedSmtpSettings;
@@ -56,7 +57,7 @@ async function getSmtpSettings() {
  */
 async function createTransporter() {
   const settings = await getSmtpSettings();
-  
+
   if (!settings) {
     console.error("[Email] Cannot create transporter: No SMTP settings");
     return null;
@@ -136,17 +137,56 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       console.log("[Email] Email log created with ID:", logId);
     }
 
-    // Get SMTP settings from database
+    // Try Microsoft Graph first (if available)
+    // Get the first admin user to send emails on their behalf
+    const adminUser = db ? await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.role, "admin"))
+      .limit(1) : [];
+
+    if (adminUser && adminUser.length > 0) {
+      const adminUserId = adminUser[0].id;
+      const graphAvailable = await isGraphEmailAvailable(adminUserId);
+
+      if (graphAvailable) {
+        console.log("[Email] Attempting to send via Microsoft Graph...");
+        const graphSuccess = await sendEmailViaGraph({
+          userId: adminUserId,
+          to: options.to,
+          subject: options.subject,
+          html: options.html,
+          cc: options.cc,
+          bcc: options.bcc,
+        });
+
+        if (graphSuccess) {
+          // Update log as sent
+          if (db && logId) {
+            await db.update(emailLogs)
+              .set({
+                status: "sent",
+                sentAt: new Date()
+              })
+              .where(eq(emailLogs.id, logId));
+          }
+          return true;
+        }
+        console.log("[Email] Microsoft Graph failed, falling back to SMTP...");
+      }
+    }
+
+    // Fallback: Get SMTP settings from database
     const smtpConfig = await getSmtpSettings();
-    
+
     if (!smtpConfig) {
-      const errorMsg = "SMTP not configured in database";
+      const errorMsg = "No email method available (Graph unavailable, SMTP not configured)";
       console.error("[Email]", errorMsg);
-      
+
       // Update log as failed
       if (db && logId) {
         await db.update(emailLogs)
-          .set({ 
+          .set({
             status: "failed",
             errorMessage: errorMsg
           })
@@ -160,10 +200,10 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     if (!transport) {
       const errorMsg = "Failed to create email transporter";
       console.error("[Email]", errorMsg);
-      
+
       if (db && logId) {
         await db.update(emailLogs)
-          .set({ 
+          .set({
             status: "failed",
             errorMessage: errorMsg
           })
@@ -191,34 +231,34 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
 
     const info = await transport.sendMail(mailOptions);
     console.log("[Email] ✅ Email sent successfully! Message ID:", info.messageId);
-    
+
     // Update log as sent
     if (db && logId) {
       await db.update(emailLogs)
-        .set({ 
+        .set({
           status: "sent",
           sentAt: new Date()
         })
         .where(eq(emailLogs.id, logId));
       console.log("[Email] Email log updated as 'sent'");
     }
-    
+
     return true;
   } catch (error) {
     console.error("[Email] ❌ Failed to send email:", error);
-    
+
     // Update log as failed
     const db = await getDb();
     if (db && logId) {
       await db.update(emailLogs)
-        .set({ 
+        .set({
           status: "failed",
           errorMessage: error instanceof Error ? error.message : String(error)
         })
         .where(eq(emailLogs.id, logId));
       console.log("[Email] Email log updated as 'failed'");
     }
-    
+
     return false;
   }
 }
