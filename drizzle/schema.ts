@@ -58,7 +58,7 @@ export const ticketComments = mysqlTable("ticketComments", {
   id: int("id").primaryKey().autoincrement(),
   ticketId: int("ticketId").notNull().references(() => tickets.id, { onDelete: "cascade" }),
   userId: int("userId").references(() => users.id, { onDelete: "set null" }),
-  comment: text("comment").notNull(),
+  message: text("message").notNull(), // Was named 'comment' in schema but 'message' in DB
   isInternal: boolean("isInternal").default(false),
   createdAt: timestamp("createdAt").defaultNow(),
 }, (table) => ({

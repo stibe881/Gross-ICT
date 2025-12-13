@@ -670,7 +670,7 @@ export const ticketRouter = router({
       const comments = await db
         .select({
           id: ticketComments.id,
-          content: ticketComments.comment,
+          content: ticketComments.message,
           isInternal: ticketComments.isInternal,
           createdAt: ticketComments.createdAt,
           userName: users.name,
@@ -731,7 +731,7 @@ export const ticketRouter = router({
       const comments = await db
         .select({
           id: ticketComments.id,
-          content: ticketComments.comment,
+          content: ticketComments.message,
           isInternal: ticketComments.isInternal,
           createdAt: ticketComments.createdAt,
           userName: users.name,
