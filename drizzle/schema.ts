@@ -184,18 +184,21 @@ export const recurringInvoices = mysqlTable("recurringInvoices", {
   id: int("id").primaryKey().autoincrement(),
   customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "restrict" }),
   templateName: varchar("templateName", { length: 255 }).notNull(),
-  frequency: mysqlEnum("frequency", ["weekly", "monthly", "quarterly", "yearly"]).notNull(),
-  startDate: date("startDate").notNull(),
-  endDate: date("endDate"),
-  nextRunDate: date("nextRunDate").notNull(),
-  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
-  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
-  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  interval: mysqlEnum("interval", ["monthly", "quarterly", "yearly"]).notNull(),
+  nextRunDate: timestamp("nextRunDate").notNull(),
+  lastRunDate: timestamp("lastRunDate"),
+  isActive: boolean("isActive").notNull().default(true),
   notes: text("notes"),
-  isActive: boolean("isActive").default(true),
+  items: text("items").notNull(),
+  discount: varchar("discount", { length: 20 }).default("0"),
+  taxRate: varchar("taxRate", { length: 10 }).default("8.1"),
   createdAt: timestamp("createdAt").defaultNow(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
-});
+}, (table) => ({
+  customerIdIdx: index("customerId_idx").on(table.customerId),
+  nextRunDateIdx: index("nextRunDate_idx").on(table.nextRunDate),
+  isActiveIdx: index("isActive_idx").on(table.isActive),
+}));
 
 // Recurring Invoice Line Items table
 export const recurringInvoiceLineItems = mysqlTable("recurringInvoiceLineItems", {
