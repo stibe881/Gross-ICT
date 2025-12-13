@@ -142,7 +142,7 @@ export const ticketRouter = router({
       const slaDueDate = new Date();
       slaDueDate.setHours(slaDueDate.getHours() + slaHours[finalPriority]);
 
-      const ticketId = await createTicket({
+      const ticketResult = await createTicket({
         userId,
         customerName: input.customerName,
         customerEmail: input.customerEmail,
@@ -161,11 +161,11 @@ export const ticketRouter = router({
       try {
         const emailData = {
           customerName: input.customerName,
-          ticketId: ticketId.toString(),
+          ticketId: ticketResult.id.toString(),
           ticketSubject: input.subject,
           ticketPriority: formatPriority(finalPriority),
           ticketStatus: formatStatus('open'),
-          ticketUrl: getTicketUrl(ticketId),
+          ticketUrl: getTicketUrl(ticketResult.accessToken), // Use token for URL
         };
 
         const { subject, body } = await getRenderedEmail('ticket_created', emailData);
@@ -181,7 +181,7 @@ export const ticketRouter = router({
 
       return {
         success: true,
-        ticketId,
+        ticketId: ticketResult.id,
         accountCreated: input.createAccount && input.password ? true : false,
       };
     }),
@@ -693,6 +693,68 @@ export const ticketRouter = router({
         status: ticket.status,
         priority: ticket.priority,
         category: ticket.category,
+        createdAt: ticket.createdAt,
+        resolvedAt: ticket.resolvedAt,
+        comments: comments.map(c => ({
+          id: c.id,
+          content: c.content,
+          createdAt: c.createdAt,
+          author: c.userName || 'Support',
+        })),
+      };
+    }),
+
+  // Public ticket lookup by token (no email required)
+  publicByToken: publicProcedure
+    .input(z.object({
+      token: z.string().min(1),
+    }))
+    .query(async ({ input }) => {
+      const { getDb } = await import('./db.js');
+      const { tickets, ticketComments, users } = await import('../drizzle/schema.js');
+
+      const db = await getDb();
+      if (!db) throw new TRPCError({ code: 'INTERNAL_SERVER_ERROR', message: 'Database not available' });
+
+      // Find the ticket by access token
+      const [ticket] = await db
+        .select()
+        .from(tickets)
+        .where(eq(tickets.accessToken, input.token))
+        .limit(1);
+
+      if (!ticket) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Ticket nicht gefunden' });
+      }
+
+      // Get non-internal comments for this ticket
+      const comments = await db
+        .select({
+          id: ticketComments.id,
+          content: ticketComments.comment,
+          isInternal: ticketComments.isInternal,
+          createdAt: ticketComments.createdAt,
+          userName: users.name,
+        })
+        .from(ticketComments)
+        .leftJoin(users, eq(ticketComments.userId, users.id))
+        .where(
+          and(
+            eq(ticketComments.ticketId, ticket.id),
+            eq(ticketComments.isInternal, false)
+          )
+        )
+        .orderBy(desc(ticketComments.createdAt));
+
+      return {
+        id: ticket.id,
+        ticketNumber: ticket.ticketNumber,
+        subject: ticket.subject,
+        description: ticket.description,
+        status: ticket.status,
+        priority: ticket.priority,
+        category: ticket.category,
+        customerName: ticket.customerName,
         createdAt: ticket.createdAt,
         resolvedAt: ticket.resolvedAt,
         comments: comments.map(c => ({

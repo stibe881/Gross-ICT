@@ -140,7 +140,7 @@ export async function createUser(user: InsertUser) {
 }
 
 // Ticket helpers
-export async function createTicket(ticket: InsertTicket & { message?: string }): Promise<number> {
+export async function createTicket(ticket: InsertTicket & { message?: string }): Promise<{ id: number; accessToken: string }> {
   const db = await getDb();
   if (!db) {
     throw new Error("Database not available");
@@ -156,10 +156,15 @@ export async function createTicket(ticket: InsertTicket & { message?: string }):
   const nextId = (lastTicket?.id || 0) + 1;
   const ticketNumber = `T-${nextId.toString().padStart(5, '0')}`;
 
+  // Generate secure access token (48 chars hex = 24 bytes of randomness)
+  const crypto = await import('crypto');
+  const accessToken = crypto.randomBytes(24).toString('hex');
+
   // Map message to description if provided
   const ticketData: any = {
     ...ticket,
     ticketNumber,
+    accessToken,
     description: ticket.description || (ticket as any).message || '',
   };
 
@@ -167,7 +172,7 @@ export async function createTicket(ticket: InsertTicket & { message?: string }):
   delete ticketData.message;
 
   const result = await db.insert(tickets).values(ticketData);
-  return Number(result[0].insertId);
+  return { id: Number(result[0].insertId), accessToken };
 }
 
 export async function getTicketsByUserId(userId: number): Promise<Ticket[]> {

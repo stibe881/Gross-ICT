@@ -60,6 +60,7 @@ const VisualTemplateEditor = lazy(() => import("./pages/VisualTemplateEditor"));
 const AutomationManagement = lazy(() => import("./pages/AutomationManagement"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
 const MicrosoftCallback = lazy(() => import("@/pages/MicrosoftCallback"));
+const TicketView = lazy(() => import("@/pages/TicketView"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -86,6 +87,7 @@ function Router() {
         <Route path="/calculator" component={Calculator} />
         <Route path={"/login"} component={Login} />
         <Route path={"/auth/microsoft/callback"} component={MicrosoftCallback} />
+        <Route path="/ticket/:token" component={TicketView} />
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/admin" component={AdminDashboardMain} />
         <Route path="/admin/tickets" component={TicketManagement} />
@@ -98,20 +100,20 @@ function Router() {
         <Route path="/contracts" component={Contracts} />
         <Route path="/contract-dashboard" component={ContractDashboard} />
         <Route path="/fernwartung/sla-monitoring" component={SLAMonitoring} />
-              <Route path="/fernwartung/sla-management" component={SLAManagement} />
-              <Route path="/fernwartung/sla-dashboard" component={SLADashboard} />
-              <Route path="/email-templates" component={EmailTemplateEditor} />
-              <Route path="/email-logs" component={EmailLogDashboard} />
-              <Route path="/newsletter" component={NewsletterDashboard} />
-              <Route path="/newsletter/campaigns/:id" component={CampaignEditor} />
-              <Route path="/newsletter/campaigns/:id/stats" component={CampaignStatisticsPage} />
-              <Route path="/newsletter/segments" component={SegmentManagement} />
-              <Route path="/newsletter/templates" component={TemplateLibrary} />
-              <Route path="/admin/template/visual/:id?" component={VisualTemplateEditor} />
-              <Route path="/admin/automation" component={AutomationManagement} />
-              <Route path="/smtp-settings" component={SMTPSettings} />
-              <Route path="/sla-reports" component={SLADashboard} />
-              <Route path="/accessibility-statement" component={AccessibilityStatement} />
+        <Route path="/fernwartung/sla-management" component={SLAManagement} />
+        <Route path="/fernwartung/sla-dashboard" component={SLADashboard} />
+        <Route path="/email-templates" component={EmailTemplateEditor} />
+        <Route path="/email-logs" component={EmailLogDashboard} />
+        <Route path="/newsletter" component={NewsletterDashboard} />
+        <Route path="/newsletter/campaigns/:id" component={CampaignEditor} />
+        <Route path="/newsletter/campaigns/:id/stats" component={CampaignStatisticsPage} />
+        <Route path="/newsletter/segments" component={SegmentManagement} />
+        <Route path="/newsletter/templates" component={TemplateLibrary} />
+        <Route path="/admin/template/visual/:id?" component={VisualTemplateEditor} />
+        <Route path="/admin/automation" component={AutomationManagement} />
+        <Route path="/smtp-settings" component={SMTPSettings} />
+        <Route path="/sla-reports" component={SLADashboard} />
+        <Route path="/accessibility-statement" component={AccessibilityStatement} />
         <Route path="/products" component={Products} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />

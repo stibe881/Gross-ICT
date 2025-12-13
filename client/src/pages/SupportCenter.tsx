@@ -24,28 +24,6 @@ import RemoteSupportModal from "@/components/RemoteSupportModal";
 export default function SupportCenter() {
   const { language } = useLanguage();
 
-  // Get ticket ID from URL on initial render
-  const initialTicketId = typeof window !== 'undefined'
-    ? new URLSearchParams(window.location.search).get('ticket')
-    : null;
-
-  // Ticket lookup state - initialize directly from URL
-  const [showTicketLookup, setShowTicketLookup] = useState(!!initialTicketId);
-  const [lookupTicketId, setLookupTicketId] = useState(initialTicketId || "");
-  const [lookupEmail, setLookupEmail] = useState("");
-  const [lookupSubmitted, setLookupSubmitted] = useState(false);
-
-  // Debug log
-  useEffect(() => {
-    const search = window.location.search;
-    console.log("[SupportCenter] URL search:", search);
-    console.log("[SupportCenter] initialTicketId:", initialTicketId);
-    console.log("[SupportCenter] showTicketLookup:", showTicketLookup);
-    if (search.includes('ticket')) {
-      alert("Ticket-Parameter erkannt: " + initialTicketId);
-    }
-  }, []);
-
   // Form state
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

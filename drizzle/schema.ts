@@ -29,6 +29,7 @@ export const users = mysqlTable("users", {
 export const tickets = mysqlTable("tickets", {
   id: int("id").primaryKey().autoincrement(),
   ticketNumber: varchar("ticketNumber", { length: 50 }).notNull().unique(),
+  accessToken: varchar("accessToken", { length: 64 }).notNull().unique(), // Secure token for public access
   subject: varchar("subject", { length: 255 }).notNull(),
   description: text("description").notNull(),
   status: mysqlEnum("status", ["open", "in_progress", "resolved", "closed"]).default("open"),
@@ -49,6 +50,7 @@ export const tickets = mysqlTable("tickets", {
   priorityIdx: index("priority_idx").on(table.priority),
   customerEmailIdx: index("customer_email_idx").on(table.customerEmail),
   assignedToIdx: index("assigned_to_idx").on(table.assignedTo),
+  accessTokenIdx: index("access_token_idx").on(table.accessToken),
 }));
 
 // Ticket Comments table

@@ -72,11 +72,11 @@ export async function getRenderedEmail(templateName: string, data: TemplateData)
 }
 
 /**
- * Helper function to prepare ticket URL
+ * Helper function to prepare ticket URL using access token
  */
-export function getTicketUrl(ticketId: number): string {
+export function getTicketUrl(accessToken: string): string {
   const baseUrl = process.env.VITE_APP_URL || 'https://gross-ict.ch';
-  return `${baseUrl}/support-center?ticket=${ticketId}`;
+  return `${baseUrl}/ticket/${accessToken}`;
 }
 
 /**
