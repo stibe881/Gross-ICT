@@ -38,8 +38,10 @@ export function registerOAuthRoutes(app: Express) {
         throw new Error("Database not available");
       }
 
-      // Decode state to get returnUrl
-      const stateData = JSON.parse(Buffer.from(state, "base64").toString());
+      // Decode state to get returnUrl (state is URL-encoded, then base64)
+      const decodedState = decodeURIComponent(state);
+      console.log("[Microsoft OAuth] DEBUG: Decoded state:", decodedState);
+      const stateData = JSON.parse(Buffer.from(decodedState, "base64").toString());
       const returnUrl = stateData.returnUrl || "/";
 
       // Get OAuth settings from database
