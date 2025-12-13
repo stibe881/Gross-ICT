@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import mysql from "mysql2";
 import { InsertUser, users, tickets, InsertTicket, Ticket, ticketComments, InsertTicketComment, TicketComment, ticketAttachments, InsertTicketAttachment, TicketAttachment } from "../drizzle/schema";
@@ -140,13 +140,33 @@ export async function createUser(user: InsertUser) {
 }
 
 // Ticket helpers
-export async function createTicket(ticket: InsertTicket): Promise<number> {
+export async function createTicket(ticket: InsertTicket & { message?: string }): Promise<number> {
   const db = await getDb();
   if (!db) {
     throw new Error("Database not available");
   }
 
-  const result = await db.insert(tickets).values(ticket);
+  // Generate ticket number
+  const [lastTicket] = await db
+    .select({ id: tickets.id })
+    .from(tickets)
+    .orderBy(desc(tickets.id))
+    .limit(1);
+
+  const nextId = (lastTicket?.id || 0) + 1;
+  const ticketNumber = `T-${nextId.toString().padStart(5, '0')}`;
+
+  // Map message to description if provided
+  const ticketData: any = {
+    ...ticket,
+    ticketNumber,
+    description: ticket.description || (ticket as any).message || '',
+  };
+
+  // Remove message field as it's not in the schema
+  delete ticketData.message;
+
+  const result = await db.insert(tickets).values(ticketData);
   return Number(result[0].insertId);
 }
 
