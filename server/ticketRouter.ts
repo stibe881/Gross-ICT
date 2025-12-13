@@ -680,7 +680,7 @@ export const ticketRouter = router({
         .where(
           and(
             eq(ticketComments.ticketId, input.ticketId),
-            eq(ticketComments.isInternal, false) // Only show non-internal comments
+            eq(ticketComments.isInternal, 0 as any) // MySQL boolean: 0 = false
           )
         )
         .orderBy(desc(ticketComments.createdAt));
@@ -741,7 +741,7 @@ export const ticketRouter = router({
         .where(
           and(
             eq(ticketComments.ticketId, ticket.id),
-            eq(ticketComments.isInternal, false)
+            eq(ticketComments.isInternal, 0 as any) // MySQL boolean: 0 = false
           )
         )
         .orderBy(desc(ticketComments.createdAt));
