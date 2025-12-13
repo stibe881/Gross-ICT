@@ -167,12 +167,13 @@ export function registerOAuthRoutes(app: Express) {
 
       res.cookie("app_session_id", token, {
         httpOnly: true,
-        secure: isSecure,
-        sameSite: "lax",
+        secure: true, // Always secure for production
+        sameSite: "none", // Required for cross-origin with secure
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         path: "/",
-        domain: isProduction ? ".gross-ict.ch" : undefined,
       });
+
+      console.log("[Microsoft OAuth] DEBUG: Cookie headers being set");
 
       console.log("[Microsoft OAuth] DEBUG: Cookie set, redirecting to:", returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl);
 
