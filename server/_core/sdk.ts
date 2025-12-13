@@ -283,7 +283,24 @@ class SDKServer {
     const session = await this.verifySession(sessionCookie);
 
     if (session) {
-      // OAuth authentication flow
+      // Check if this is a local/Microsoft OAuth session (userId-based)
+      if (session.appId === "local" && session.openId.startsWith("user-")) {
+        const userId = parseInt(session.openId.replace("user-", ""), 10);
+        if (!isNaN(userId)) {
+          const user = await db.getUserById(userId);
+          if (user) {
+            // Update last signed in
+            await db.upsertUser({
+              openId: user.openId || `local-${user.id}`,
+              lastSignedIn: new Date(),
+            });
+            return user;
+          }
+        }
+        throw ForbiddenError("User not found");
+      }
+
+      // Manus OAuth authentication flow (openId-based)
       const sessionUserId = session.openId;
       const signedInAt = new Date();
       let user = await db.getUserByOpenId(sessionUserId);
