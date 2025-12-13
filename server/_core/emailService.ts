@@ -38,7 +38,7 @@ async function getSmtpSettings() {
       console.log("[Email] SMTP settings loaded from database:", {
         host: settings.host,
         port: settings.port,
-        user: settings.user,
+        username: settings.username,
         fromEmail: settings.fromEmail
       });
       return settings;
@@ -69,7 +69,7 @@ async function createTransporter() {
       port: settings.port,
       secure: settings.secure, // true for SSL, false for TLS/STARTTLS
       auth: {
-        user: settings.user,
+        user: settings.username,
         pass: settings.password,
       },
     });
@@ -137,8 +137,56 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
       console.log("[Email] Email log created with ID:", logId);
     }
 
-    // Try Microsoft Graph first (if available)
-    // Find an admin user who has a Microsoft OAuth token
+    // Try SMTP first (Brevo/external SMTP has better deliverability)
+    const smtpConfig = await getSmtpSettings();
+
+    if (smtpConfig && smtpConfig.isActive) {
+      console.log("[Email] SMTP configured, attempting to send via SMTP (Brevo)...");
+
+      try {
+        const transport = await createTransporter();
+        if (transport) {
+          const mailOptions = {
+            from: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
+            to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
+            subject: options.subject,
+            html: options.html,
+            text: options.text,
+            cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(", ") : options.cc) : undefined,
+            bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(", ") : options.bcc) : undefined,
+            attachments: options.attachments,
+          };
+
+          console.log("[Email] Sending email with options:", {
+            from: mailOptions.from,
+            to: mailOptions.to,
+            subject: mailOptions.subject
+          });
+
+          const info = await transport.sendMail(mailOptions);
+          console.log("[Email] ✅ Email sent successfully via SMTP! Message ID:", info.messageId);
+
+          // Update log as sent
+          if (db && logId) {
+            await db.update(emailLogs)
+              .set({
+                status: "sent",
+                sentAt: new Date()
+              })
+              .where(eq(emailLogs.id, logId));
+            console.log("[Email] Email log updated as 'sent'");
+          }
+
+          return true;
+        }
+      } catch (smtpError) {
+        console.error("[Email] SMTP failed, trying Graph API as fallback:", smtpError);
+      }
+    } else {
+      console.log("[Email] No SMTP settings configured, trying Graph API...");
+    }
+
+    // Fallback: Try Microsoft Graph API
     const { oauthProviders } = await import("../../drizzle/schema");
 
     const adminWithToken = db ? await db
@@ -181,80 +229,26 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
           }
           return true;
         }
-        console.log("[Email] Microsoft Graph failed, falling back to SMTP...");
+        console.log("[Email] Microsoft Graph also failed");
       }
     } else {
       console.log("[Email] No admin with Microsoft token found");
     }
 
-    // Fallback: Get SMTP settings from database
-    const smtpConfig = await getSmtpSettings();
+    // No method available
+    const errorMsg = "No email method available (SMTP failed, Graph unavailable)";
+    console.error("[Email]", errorMsg);
 
-    if (!smtpConfig) {
-      const errorMsg = "No email method available (Graph unavailable, SMTP not configured)";
-      console.error("[Email]", errorMsg);
-
-      // Update log as failed
-      if (db && logId) {
-        await db.update(emailLogs)
-          .set({
-            status: "failed",
-            errorMessage: errorMsg
-          })
-          .where(eq(emailLogs.id, logId));
-      }
-      return false;
-    }
-
-    // Create transporter
-    const transport = await createTransporter();
-    if (!transport) {
-      const errorMsg = "Failed to create email transporter";
-      console.error("[Email]", errorMsg);
-
-      if (db && logId) {
-        await db.update(emailLogs)
-          .set({
-            status: "failed",
-            errorMessage: errorMsg
-          })
-          .where(eq(emailLogs.id, logId));
-      }
-      return false;
-    }
-
-    const mailOptions = {
-      from: `"${smtpConfig.fromName}" <${smtpConfig.fromEmail}>`,
-      to: Array.isArray(options.to) ? options.to.join(", ") : options.to,
-      subject: options.subject,
-      html: options.html,
-      text: options.text,
-      cc: options.cc ? (Array.isArray(options.cc) ? options.cc.join(", ") : options.cc) : undefined,
-      bcc: options.bcc ? (Array.isArray(options.bcc) ? options.bcc.join(", ") : options.bcc) : undefined,
-      attachments: options.attachments,
-    };
-
-    console.log("[Email] Sending email with options:", {
-      from: mailOptions.from,
-      to: mailOptions.to,
-      subject: mailOptions.subject
-    });
-
-    const info = await transport.sendMail(mailOptions);
-    console.log("[Email] ✅ Email sent successfully! Message ID:", info.messageId);
-
-    // Update log as sent
     if (db && logId) {
       await db.update(emailLogs)
         .set({
-          status: "sent",
-          sentAt: new Date()
+          status: "failed",
+          errorMessage: errorMsg
         })
         .where(eq(emailLogs.id, logId));
-      console.log("[Email] Email log updated as 'sent'");
     }
 
-    return true;
+    return false;
   } catch (error) {
     console.error("[Email] ❌ Failed to send email:", error);
 
