@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 import { getDb } from "../db";
 import { emailLogs, smtpSettings, users as usersTable } from "../../drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { sendEmailViaGraph, isGraphEmailAvailable } from "./microsoftGraphEmail";
 
 // Cache for SMTP settings
@@ -138,15 +138,24 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
     }
 
     // Try Microsoft Graph first (if available)
-    // Get the first admin user to send emails on their behalf
-    const adminUser = db ? await db
-      .select()
-      .from(usersTable)
-      .where(eq(usersTable.role, "admin"))
+    // Find an admin user who has a Microsoft OAuth token
+    const { oauthProviders } = await import("../../drizzle/schema");
+
+    const adminWithToken = db ? await db
+      .select({ userId: oauthProviders.userId })
+      .from(oauthProviders)
+      .innerJoin(usersTable, eq(oauthProviders.userId, usersTable.id))
+      .where(
+        and(
+          eq(usersTable.role, "admin"),
+          eq(oauthProviders.provider, "microsoft")
+        )
+      )
       .limit(1) : [];
 
-    if (adminUser && adminUser.length > 0) {
-      const adminUserId = adminUser[0].id;
+    if (adminWithToken && adminWithToken.length > 0) {
+      const adminUserId = adminWithToken[0].userId;
+      console.log("[Email] Found admin with Microsoft token, userId:", adminUserId);
       const graphAvailable = await isGraphEmailAvailable(adminUserId);
 
       if (graphAvailable) {
@@ -174,6 +183,8 @@ export async function sendEmail(options: EmailOptions): Promise<boolean> {
         }
         console.log("[Email] Microsoft Graph failed, falling back to SMTP...");
       }
+    } else {
+      console.log("[Email] No admin with Microsoft token found");
     }
 
     // Fallback: Get SMTP settings from database
