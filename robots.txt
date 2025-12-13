@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gross-ict.ch/sitemap.xml

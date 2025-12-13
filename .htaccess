@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  
+  # Statische Assets direkt ausliefern
+  RewriteCond %{REQUEST_FILENAME} -f
+  RewriteRule ^ - [L]
+  
+  # API-Requests zu Node.js weiterleiten (Port 3000)
+  RewriteCond %{REQUEST_URI} ^/api/
+  RewriteRule ^(.*)$ http://127.0.0.1:3002/$1 [P,QSA,L]
+  
+  # Alle anderen Requests zu index.html (SPA )
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ /index.html [L]
+</IfModule>

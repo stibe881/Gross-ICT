@@ -1,0 +1,1 @@
+const o={name:"Gross ICT",legalName:"Gross ICT",owner:"Silvan Gross",address:{street:"Neuhushof 3",zip:"6144",city:"Zell",canton:"LU",country:"Schweiz"},contact:{email:"info@gross-ict.ch",phone:"+41 79 414 06 16"}};export{o as c};

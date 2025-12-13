@@ -17,6 +17,7 @@ export const apiLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  validate: { trustProxy: false },
   // Skip rate limiting for localhost in development
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') {
@@ -37,6 +38,7 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true, // Don't count successful requests
+  validate: { trustProxy: false },
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') {
       return req.ip === '127.0.0.1' || req.ip === '::1';
@@ -55,6 +57,7 @@ export const emailLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') {
       return req.ip === '127.0.0.1' || req.ip === '::1';
@@ -73,6 +76,7 @@ export const pdfLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') {
       return req.ip === '127.0.0.1' || req.ip === '::1';
@@ -91,6 +95,7 @@ export const exportLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') {
       return req.ip === '127.0.0.1' || req.ip === '::1';

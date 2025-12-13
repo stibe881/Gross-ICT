@@ -1,385 +1,640 @@
-import { int, mysqlEnum, mysqlTable, text, timestamp, varchar, unique, tinyint } from "drizzle-orm/mysql-core";
+import {
+  mysqlTable,
+  varchar,
+  text,
+  int,
+  timestamp,
+  boolean,
+  decimal,
+  mysqlEnum,
+  index,
+  unique,
+  date,
+} from "drizzle-orm/mysql-core";
+import { relations } from "drizzle-orm";
 
-/**
- * Core user table backing auth flow.
- * Extend this file with additional tables as your product grows.
- * Columns use camelCase to match both database fields and generated types.
- */
+// Users table
 export const users = mysqlTable("users", {
-  /**
-   * Surrogate primary key. Auto-incremented numeric value managed by the database.
-   * Use this for relations between tables.
-   */
-  id: int("id").autoincrement().primaryKey(),
-  /** Manus OAuth identifier (openId) returned from the OAuth callback. Unique per user. */
-  openId: varchar("openId", { length: 64 }).notNull().unique(),
-  name: text("name"),
-  email: varchar("email", { length: 320 }),
-  password: varchar("password", { length: 255 }), // For local auth (hashed)
-  loginMethod: varchar("loginMethod", { length: 64 }),
-  role: mysqlEnum("role", ["user", "support", "accounting", "marketing", "admin"]).default("user").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
-});
-
-export type User = typeof users.$inferSelect;
-export type InsertUser = typeof users.$inferInsert;
-
-/**
- * Tickets table for support ticket system
- */
-export const tickets = mysqlTable("tickets", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Reference to the user who created the ticket */
-  userId: int("userId").notNull(),
-  /** Customer name (for non-registered users) */
-  customerName: varchar("customerName", { length: 255 }),
-  /** Customer email (for non-registered users) */
-  customerEmail: varchar("customerEmail", { length: 320 }),
-  /** Customer company (optional) */
-  company: varchar("company", { length: 255 }),
-  /** Ticket subject */
-  subject: varchar("subject", { length: 500 }).notNull(),
-  /** Ticket message/description */
-  message: text("message").notNull(),
-  /** Ticket status */
-  status: mysqlEnum("status", ["open", "in_progress", "resolved", "closed"]).default("open").notNull(),
-  /** Priority level */
-  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium").notNull(),
-  /** Ticket category */
-  category: mysqlEnum("category", ["network", "security", "hardware", "software", "email", "other"]).default("other").notNull(),
-  /** Admin notes (internal) */
-  adminNotes: text("adminNotes"),
-  /** Assigned admin user ID */
-  assignedTo: int("assignedTo"),
-  /** SLA due date (calculated based on priority) */
-  slaDueDate: timestamp("slaDueDate"),
-  /** Whether SLA was breached */
-  slaBreached: int("slaBreached").default(0).notNull(),
-  /** Escalation level (0 = none, 1 = first escalation, 2 = critical) */
-  escalationLevel: int("escalationLevel").default(0).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-  resolvedAt: timestamp("resolvedAt"),
-});
-
-export type Ticket = typeof tickets.$inferSelect;
-export type InsertTicket = typeof tickets.$inferInsert;
-/**
- * Ticket comments table for communication between admin and customers
- */
-export const ticketComments = mysqlTable("ticketComments", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Reference to the ticket */
-  ticketId: int("ticketId").notNull(),
-  /** Reference to the user who created the comment */
-  userId: int("userId").notNull(),
-  /** Comment text */
-  message: text("message").notNull(),
-  /** Whether this is an internal note (only visible to admins) */
-  isInternal: int("isInternal").default(0).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type TicketComment = typeof ticketComments.$inferSelect;
-export type InsertTicketComment = typeof ticketComments.$inferInsert;
-
-/**
- * Mentions table for tracking @mentions in comments
- */
-export const mentions = mysqlTable("mentions", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Reference to the comment containing the mention */
-  commentId: int("commentId").notNull(),
-  /** Reference to the ticket */
-  ticketId: int("ticketId").notNull(),
-  /** User who was mentioned */
-  mentionedUserId: int("mentionedUserId").notNull(),
-  /** User who created the mention */
-  mentionedByUserId: int("mentionedByUserId").notNull(),
-  /** Whether the mention has been read */
-  isRead: tinyint("isRead").default(0).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type Mention = typeof mentions.$inferSelect;
-export type InsertMention = typeof mentions.$inferInsert;
-
-/**
- * Automation rules table for automatic ticket actions
- */
-export const automationRules = mysqlTable("automationRules", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Rule name */
+  id: int("id").primaryKey().autoincrement(),
+  openId: varchar("openId", { length: 255 }).unique(),
+  email: varchar("email", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
-  /** Rule description */
-  description: text("description"),
-  /** Is rule enabled */
-  isEnabled: tinyint("isEnabled").default(1).notNull(),
-  /** Trigger type (ticket_created, ticket_updated, status_changed, etc.) */
-  triggerType: varchar("triggerType", { length: 50 }).notNull(),
-  /** Conditions (JSON) */
-  conditions: text("conditions").notNull(),
-  /** Actions (JSON) */
-  actions: text("actions").notNull(),
-  /** Created by user ID */
-  createdBy: int("createdBy").notNull(),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  /** Updated timestamp */
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  role: mysqlEnum("role", ["admin", "user", "support", "accounting"]).default("user"),
+  password: varchar("password", { length: 255 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
 
-export type AutomationRule = typeof automationRules.$inferSelect;
-export type InsertAutomationRule = typeof automationRules.$inferInsert;
-
-/**
- * Ticket attachments table for file uploads
- */
-export const ticketAttachments = mysqlTable("ticketAttachments", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Reference to the ticket */
-  ticketId: int("ticketId").notNull(),
-  /** Reference to the user who uploaded the file */
-  userId: int("userId").notNull(),
-  /** Original filename */
-  filename: varchar("filename", { length: 255 }).notNull(),
-  /** File URL (S3 storage) */
-  fileUrl: varchar("fileUrl", { length: 1000 }).notNull(),
-  /** File size in bytes */
-  fileSize: int("fileSize").notNull(),
-  /** MIME type */
-  mimeType: varchar("mimeType", { length: 100 }).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type TicketAttachment = typeof ticketAttachments.$inferSelect;
-export type InsertTicketAttachment = typeof ticketAttachments.$inferInsert;
-
-/**
- * Response templates table for quick replies
- */
-export const responseTemplates = mysqlTable("responseTemplates", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Template title/name */
-  title: varchar("title", { length: 255 }).notNull(),
-  /** Template content */
-  content: text("content").notNull(),
-  /** Category this template applies to */
-  category: mysqlEnum("category", ["network", "security", "hardware", "software", "email", "other", "general"]).default("general").notNull(),
-  /** Created by user ID */
-  createdBy: int("createdBy").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type ResponseTemplate = typeof responseTemplates.$inferSelect;
-export type InsertResponseTemplate = typeof responseTemplates.$inferInsert;
-
-/**
- * Knowledge Base articles table
- */
-export const kbArticles = mysqlTable("kbArticles", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Article title */
-  title: varchar("title", { length: 500 }).notNull(),
-  /** Article content (markdown supported) */
-  content: text("content").notNull(),
-  /** Article category */
-  category: varchar("category", { length: 100 }).notNull(),
-  /** Tags for better searchability (comma-separated) */
-  tags: text("tags"),
-  /** Visibility: internal (staff only) or public (customers can see) */
-  visibility: mysqlEnum("visibility", ["internal", "public"]).default("public").notNull(),
-  /** Optional reference to source ticket */
-  sourceTicketId: int("sourceTicketId"),
-  /** View count */
-  viewCount: int("viewCount").default(0).notNull(),
-  /** Helpful count (upvotes) */
-  helpfulCount: int("helpfulCount").default(0).notNull(),
-  /** Not helpful count (downvotes) */
-  notHelpfulCount: int("notHelpfulCount").default(0).notNull(),
-  /** Author user ID */
-  authorId: int("authorId").notNull(),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  /** Updated timestamp */
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type KbArticle = typeof kbArticles.$inferSelect;
-export type InsertKbArticle = typeof kbArticles.$inferInsert;
-
-/**
- * User favorites table for quick access to frequently used functions
- */
-export const favorites = mysqlTable("favorites", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: int("userId").notNull(),
-  itemType: varchar("itemType", { length: 50 }).notNull(),
-  itemLabel: varchar("itemLabel", { length: 255 }).notNull(),
-  itemPath: varchar("itemPath", { length: 500 }).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+// Tickets table
+export const tickets = mysqlTable("tickets", {
+  id: int("id").primaryKey().autoincrement(),
+  ticketNumber: varchar("ticketNumber", { length: 50 }).notNull().unique(),
+  subject: varchar("subject", { length: 255 }).notNull(),
+  description: text("description").notNull(),
+  status: mysqlEnum("status", ["open", "in_progress", "resolved", "closed"]).default("open"),
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).default("medium"),
+  category: mysqlEnum("category", ["network", "security", "hardware", "software", "email", "other"]).default("other"),
+  customerName: varchar("customerName", { length: 255 }).notNull(),
+  customerEmail: varchar("customerEmail", { length: 255 }).notNull(),
+  customerCompany: varchar("customerCompany", { length: 255 }),
+  userId: int("userId").references(() => users.id, { onDelete: "set null" }),
+  assignedTo: int("assignedTo").references(() => users.id, { onDelete: "set null" }),
+  slaDeadline: timestamp("slaDeadline"),
+  escalationLevel: int("escalationLevel").default(0),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+  resolvedAt: timestamp("resolvedAt"),
 }, (table) => ({
-  uniqueUserItem: unique("unique_user_item").on(table.userId, table.itemType),
+  statusIdx: index("status_idx").on(table.status),
+  priorityIdx: index("priority_idx").on(table.priority),
+  customerEmailIdx: index("customer_email_idx").on(table.customerEmail),
+  assignedToIdx: index("assigned_to_idx").on(table.assignedTo),
 }));
 
-export type Favorite = typeof favorites.$inferSelect;
-export type InsertFavorite = typeof favorites.$inferInsert;
+// Ticket Comments table
+export const ticketComments = mysqlTable("ticketComments", {
+  id: int("id").primaryKey().autoincrement(),
+  ticketId: int("ticketId").notNull().references(() => tickets.id, { onDelete: "cascade" }),
+  userId: int("userId").references(() => users.id, { onDelete: "set null" }),
+  comment: text("comment").notNull(),
+  isInternal: boolean("isInternal").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  ticketIdIdx: index("ticket_id_idx").on(table.ticketId),
+}));
 
-/**
- * Activity feed table for tracking all system activities
- */
-export const activities = mysqlTable("activities", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Type of activity (ticket_created, ticket_updated, invoice_created, etc.) */
-  activityType: varchar("activityType", { length: 50 }).notNull(),
-  /** User who performed the action */
-  userId: int("userId").notNull(),
-  /** User name (denormalized for performance) */
-  userName: varchar("userName", { length: 255 }),
-  /** Activity title/summary */
-  title: varchar("title", { length: 500 }).notNull(),
-  /** Activity description */
-  description: text("description"),
-  /** Related entity type (ticket, invoice, customer, etc.) */
-  entityType: varchar("entityType", { length: 50 }),
-  /** Related entity ID */
-  entityId: int("entityId"),
-  /** Activity metadata (JSON) */
-  metadata: text("metadata"),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
+// Ticket Attachments table
+export const ticketAttachments = mysqlTable("ticketAttachments", {
+  id: int("id").primaryKey().autoincrement(),
+  ticketId: int("ticketId").notNull().references(() => tickets.id, { onDelete: "cascade" }),
+  commentId: int("commentId").references(() => ticketComments.id, { onDelete: "cascade" }),
+  filename: varchar("filename", { length: 255 }).notNull(),
+  fileUrl: varchar("fileUrl", { length: 500 }).notNull(),
+  fileSize: int("fileSize"),
+  mimeType: varchar("mimeType", { length: 100 }),
+  uploadedBy: int("uploadedBy").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow(),
 });
 
-export type Activity = typeof activities.$inferSelect;
-export type InsertActivity = typeof activities.$inferInsert;
-
-/**
- * Saved filter presets for quick access to common searches
- */
-export const filterPresets = mysqlTable("filterPresets", {
-  id: int("id").autoincrement().primaryKey(),
-  /** User who owns this preset */
-  userId: int("userId").notNull(),
-  /** Preset name */
+// Customers table
+export const customers = mysqlTable("customers", {
+  id: int("id").primaryKey().autoincrement(),
+  customerNumber: varchar("customerNumber", { length: 50 }).notNull().unique(),
   name: varchar("name", { length: 255 }).notNull(),
-  /** Filter type (tickets, invoices, customers, etc.) */
-  filterType: varchar("filterType", { length: 50 }).notNull(),
-  /** Filter configuration (JSON) */
-  filters: text("filters").notNull(),
-  /** Is this a default/favorite preset */
-  isDefault: tinyint("isDefault").default(0).notNull(),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  /** Updated timestamp */
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }),
+  company: varchar("company", { length: 255 }),
+  address: text("address"),
+  type: mysqlEnum("type", ["individual", "company"]).default("individual"),
+  language: mysqlEnum("language", ["de", "en", "fr"]).default("de"),
+  currency: mysqlEnum("currency", ["CHF", "EUR", "USD", "GBP"]).default("CHF"),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  emailIdx: index("email_idx").on(table.email),
+  companyIdx: index("company_idx").on(table.company),
+}));
+
+// Invoices table
+export const invoices = mysqlTable("invoices", {
+  id: int("id").primaryKey().autoincrement(),
+  invoiceNumber: varchar("invoiceNumber", { length: 50 }).notNull().unique(),
+  customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "restrict" }),
+  status: mysqlEnum("status", ["draft", "sent", "paid", "overdue", "cancelled"]).default("draft"),
+  issueDate: date("issueDate").notNull(),
+  dueDate: date("dueDate").notNull(),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  customerIdIdx: index("customer_id_idx").on(table.customerId),
+  statusIdx: index("status_idx").on(table.status),
+  dueDateIdx: index("due_date_idx").on(table.dueDate),
+}));
+
+// Invoice Line Items table
+export const invoiceLineItems = mysqlTable("invoiceLineItems", {
+  id: int("id").primaryKey().autoincrement(),
+  invoiceId: int("invoiceId").notNull().references(() => invoices.id, { onDelete: "cascade" }),
+  description: varchar("description", { length: 500 }).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }).default("Stk."),
+  vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("0.00"),
 });
 
-export type FilterPreset = typeof filterPresets.$inferSelect;
-export type InsertFilterPreset = typeof filterPresets.$inferInsert;
+// Quotes table
+export const quotes = mysqlTable("quotes", {
+  id: int("id").primaryKey().autoincrement(),
+  quoteNumber: varchar("quoteNumber", { length: 50 }).notNull().unique(),
+  customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "restrict" }),
+  status: mysqlEnum("status", ["draft", "sent", "accepted", "rejected", "expired"]).default("draft"),
+  issueDate: date("issueDate").notNull(),
+  validUntil: date("validUntil").notNull(),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  customerIdIdx: index("customer_id_idx").on(table.customerId),
+  statusIdx: index("status_idx").on(table.status),
+}));
 
-/**
- * SLA Policies - Define service level agreements
- */
+// Quote Line Items table
+export const quoteLineItems = mysqlTable("quoteLineItems", {
+  id: int("id").primaryKey().autoincrement(),
+  quoteId: int("quoteId").notNull().references(() => quotes.id, { onDelete: "cascade" }),
+  description: varchar("description", { length: 500 }).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }).default("Stk."),
+  vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("0.00"),
+});
+
+// Products table
+export const products = mysqlTable("products", {
+  id: int("id").primaryKey().autoincrement(),
+  sku: varchar("sku", { length: 100 }).notNull().unique(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  category: varchar("category", { length: 100 }),
+  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }).default("Stk."),
+  vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("8.10"),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  skuIdx: index("sku_idx").on(table.sku),
+  categoryIdx: index("category_idx").on(table.category),
+}));
+
+// Recurring Invoices table
+export const recurringInvoices = mysqlTable("recurringInvoices", {
+  id: int("id").primaryKey().autoincrement(),
+  customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "restrict" }),
+  templateName: varchar("templateName", { length: 255 }).notNull(),
+  frequency: mysqlEnum("frequency", ["weekly", "monthly", "quarterly", "yearly"]).notNull(),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate"),
+  nextRunDate: date("nextRunDate").notNull(),
+  subtotal: decimal("subtotal", { precision: 10, scale: 2 }).notNull(),
+  tax: decimal("tax", { precision: 10, scale: 2 }).default("0.00"),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  notes: text("notes"),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Recurring Invoice Line Items table
+export const recurringInvoiceLineItems = mysqlTable("recurringInvoiceLineItems", {
+  id: int("id").primaryKey().autoincrement(),
+  recurringInvoiceId: int("recurringInvoiceId").notNull().references(() => recurringInvoices.id, { onDelete: "cascade" }),
+  description: varchar("description", { length: 500 }).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }).default("Stk."),
+  vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("0.00"),
+});
+
+// Payment Reminder Log table
+export const paymentReminderLog = mysqlTable("paymentReminderLog", {
+  id: int("id").primaryKey().autoincrement(),
+  invoiceId: int("invoiceId").notNull().references(() => invoices.id, { onDelete: "cascade" }),
+  customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "cascade" }),
+  reminderType: mysqlEnum("reminderType", ["first", "second", "final"]).notNull(),
+  status: mysqlEnum("status", ["sent", "failed", "bounced"]).default("sent"),
+  sentAt: timestamp("sentAt").defaultNow(),
+  emailMessageId: varchar("emailMessageId", { length: 255 }),
+  errorMessage: text("errorMessage"),
+  daysOverdue: int("daysOverdue").notNull(),
+}, (table) => ({
+  invoiceIdIdx: index("invoice_id_idx").on(table.invoiceId),
+  statusIdx: index("status_idx").on(table.status),
+  sentAtIdx: index("sent_at_idx").on(table.sentAt),
+}));
+
+// Knowledge Base Articles table
+export const knowledgeBaseArticles = mysqlTable("knowledgeBaseArticles", {
+  id: int("id").primaryKey().autoincrement(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  category: varchar("category", { length: 100 }),
+  tags: text("tags"),
+  visibility: mysqlEnum("visibility", ["public", "internal"]).default("public"),
+  views: int("views").default(0),
+  helpful: int("helpful").default(0),
+  notHelpful: int("notHelpful").default(0),
+  createdBy: int("createdBy").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  categoryIdx: index("category_idx").on(table.category),
+  visibilityIdx: index("visibility_idx").on(table.visibility),
+}));
+
+// Response Templates table
+export const responseTemplates = mysqlTable("responseTemplates", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  category: varchar("category", { length: 100 }),
+  content: text("content").notNull(),
+  isActive: boolean("isActive").default(true),
+  createdBy: int("createdBy").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// SLA Policies table
 export const slaPolicies = mysqlTable("slaPolicies", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Policy name */
+  id: int("id").primaryKey().autoincrement(),
   name: varchar("name", { length: 255 }).notNull(),
-  /** Policy description */
-  description: text("description"),
-  /** Priority this policy applies to (urgent, high, normal, low, or null for all) */
-  priority: varchar("priority", { length: 50 }),
-  /** Response time in minutes (time to first response) */
+  priority: mysqlEnum("priority", ["low", "medium", "high", "urgent"]).notNull(),
   responseTimeMinutes: int("responseTimeMinutes").notNull(),
-  /** Resolution time in minutes (time to resolve) */
   resolutionTimeMinutes: int("resolutionTimeMinutes").notNull(),
-  /** Warning threshold percentage (e.g., 80 = warn at 80% of time) */
-  warningThreshold: int("warningThreshold").default(80).notNull(),
-  /** Is policy active */
-  isActive: tinyint("isActive").default(1).notNull(),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  /** Updated timestamp */
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  priorityIdx: index("priority_idx").on(table.priority),
+}));
+
+// Mentions table
+export const mentions = mysqlTable("mentions", {
+  id: int("id").primaryKey().autoincrement(),
+  ticketId: int("ticketId").notNull().references(() => tickets.id, { onDelete: "cascade" }),
+  commentId: int("commentId").notNull().references(() => ticketComments.id, { onDelete: "cascade" }),
+  mentionedUserId: int("mentionedUserId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  mentionedBy: int("mentionedBy").notNull().references(() => users.id, { onDelete: "cascade" }),
+  isRead: boolean("isRead").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  mentionedUserIdx: index("mentioned_user_idx").on(table.mentionedUserId),
+  isReadIdx: index("is_read_idx").on(table.isRead),
+}));
+
+// Automation Rules table
+export const automationRules = mysqlTable("automationRules", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  trigger: mysqlEnum("trigger", ["ticket_created", "ticket_updated", "status_changed", "priority_changed"]).notNull(),
+  conditions: text("conditions").notNull(),
+  actions: text("actions").notNull(),
+  isActive: boolean("isActive").default(true),
+  createdBy: int("createdBy").references(() => users.id, { onDelete: "set null" }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
 
-export type SlaPolicy = typeof slaPolicies.$inferSelect;
-export type InsertSlaPolicy = typeof slaPolicies.$inferInsert;
+// Automation Execution Log table
+export const automationExecutionLog = mysqlTable("automationExecutionLog", {
+  id: int("id").primaryKey().autoincrement(),
+  ruleId: int("ruleId").notNull().references(() => automationRules.id, { onDelete: "cascade" }),
+  ticketId: int("ticketId").references(() => tickets.id, { onDelete: "cascade" }),
+  status: mysqlEnum("status", ["success", "failed"]).notNull(),
+  errorMessage: text("errorMessage"),
+  executedAt: timestamp("executedAt").defaultNow(),
+}, (table) => ({
+  ruleIdIdx: index("rule_id_idx").on(table.ruleId),
+  executedAtIdx: index("executed_at_idx").on(table.executedAt),
+}));
 
-/**
- * SLA Tracking - Track SLA compliance for tickets
- */
-export const slaTracking = mysqlTable("slaTracking", {
-  id: int("id").autoincrement().primaryKey(),
-  /** Ticket ID */
-  ticketId: int("ticketId").notNull(),
-  /** SLA Policy ID */
-  policyId: int("policyId").notNull(),
-  /** Response deadline */
-  responseDeadline: timestamp("responseDeadline").notNull(),
-  /** Resolution deadline */
-  resolutionDeadline: timestamp("resolutionDeadline").notNull(),
-  /** First response timestamp */
-  firstResponseAt: timestamp("firstResponseAt"),
-  /** Resolution timestamp */
-  resolvedAt: timestamp("resolvedAt"),
-  /** Response SLA status (met, warning, breached) */
-  responseStatus: varchar("responseStatus", { length: 50 }).default("pending").notNull(),
-  /** Resolution SLA status (met, warning, breached) */
-  resolutionStatus: varchar("resolutionStatus", { length: 50 }).default("pending").notNull(),
-  /** Warning email sent for response */
-  responseWarningSent: tinyint("responseWarningSent").default(0).notNull(),
-  /** Breach email sent for response */
-  responseBreachSent: tinyint("responseBreachSent").default(0).notNull(),
-  /** Warning email sent for resolution */
-  resolutionWarningSent: tinyint("resolutionWarningSent").default(0).notNull(),
-  /** Breach email sent for resolution */
-  resolutionBreachSent: tinyint("resolutionBreachSent").default(0).notNull(),
-  /** Created timestamp */
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  /** Updated timestamp */
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
-});
-
-export type SlaTracking = typeof slaTracking.$inferSelect;
-export type InsertSlaTracking = typeof slaTracking.$inferInsert;
-
-// Export accounting module tables
-export * from "./schema_accounting";
-// Export reminder log tables
-export * from "./schema_reminder_log";
-// Export contracts module tables
-export * from "./schema_contracts";
-// Export contract templates module tables
-export * from "./schema_contract_templates";
-// Export email templates module tables
-export * from "./schema_email_templates";
-// Export email logs module tables
-export * from "./schema_email_logs";
-// Export newsletter module tables
-export * from "./schema_newsletter";
-
-/**
- * SMTP settings table for email configuration
- */
+// SMTP Settings table
 export const smtpSettings = mysqlTable("smtpSettings", {
-  id: int("id").autoincrement().primaryKey(),
+  id: int("id").primaryKey().autoincrement(),
   host: varchar("host", { length: 255 }).notNull(),
   port: int("port").notNull(),
-  secure: int("secure").default(1).notNull(), // 1 = SSL/TLS, 0 = no encryption
-  user: varchar("user", { length: 320 }).notNull(),
-  password: varchar("password", { length: 500 }).notNull(),
-  fromEmail: varchar("fromEmail", { length: 320 }).notNull(),
+  secure: boolean("secure").default(false),
+  username: varchar("username", { length: 255 }).notNull(),
+  password: varchar("password", { length: 255 }).notNull(),
+  fromEmail: varchar("fromEmail", { length: 255 }).notNull(),
   fromName: varchar("fromName", { length: 255 }).notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
 });
 
-export type SmtpSettings = typeof smtpSettings.$inferSelect;
-export type InsertSmtpSettings = typeof smtpSettings.$inferInsert;
+// Email Templates table
+export const emailTemplates = mysqlTable("emailTemplates", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  body: text("body").notNull(),
+  category: varchar("category", { length: 100 }),
+  placeholders: text("placeholders"),
+  isActive: boolean("isActive").default(true),
+  isSystem: boolean("isSystem").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
 
-// Export OAuth module tables
-export * from "./schema_oauth";
+// Email Logs table
+export const emailLogs = mysqlTable("emailLogs", {
+  id: int("id").primaryKey().autoincrement(),
+  templateId: int("templateId").references(() => emailTemplates.id, { onDelete: "set null" }),
+  recipient: varchar("recipient", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  body: text("body").notNull(),
+  status: mysqlEnum("status", ["pending", "sent", "failed"]).default("pending"),
+  errorMessage: text("errorMessage"),
+  retryCount: int("retryCount").default(0),
+  metadata: text("metadata"),
+  sentAt: timestamp("sentAt"),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  statusIdx: index("status_idx").on(table.status),
+  recipientIdx: index("recipient_idx").on(table.recipient),
+  sentAtIdx: index("sent_at_idx").on(table.sentAt),
+}));
+
+// Newsletter Subscribers table
+export const newsletterSubscribers = mysqlTable("newsletterSubscribers", {
+  id: int("id").primaryKey().autoincrement(),
+  email: varchar("email", { length: 255 }).notNull().unique(),
+  firstName: varchar("firstName", { length: 100 }),
+  lastName: varchar("lastName", { length: 100 }),
+  status: mysqlEnum("status", ["active", "unsubscribed", "bounced"]).default("active"),
+  dateOfBirth: date("dateOfBirth"),
+  lastActivityAt: timestamp("lastActivityAt"),
+  subscribedAt: timestamp("subscribedAt").defaultNow(),
+  unsubscribedAt: timestamp("unsubscribedAt"),
+}, (table) => ({
+  emailIdx: index("email_idx").on(table.email),
+  statusIdx: index("status_idx").on(table.status),
+}));
+
+// Newsletter Segments table (MOVED BEFORE newsletterCampaigns)
+export const newsletterSegments = mysqlTable("newsletterSegments", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  criteria: text("criteria").notNull(),
+  subscriberCount: int("subscriberCount").default(0),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Newsletter Campaigns table
+export const newsletterCampaigns = mysqlTable("newsletterCampaigns", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  content: text("content").notNull(),
+  segmentId: int("segmentId").references(() => newsletterSegments.id, { onDelete: "set null" }),
+  status: mysqlEnum("status", ["draft", "scheduled", "sending", "sent", "failed"]).default("draft"),
+  scheduledAt: timestamp("scheduledAt"),
+  sentAt: timestamp("sentAt"),
+  sentCount: int("sentCount").default(0),
+  failedCount: int("failedCount").default(0),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  statusIdx: index("status_idx").on(table.status),
+  scheduledAtIdx: index("scheduled_at_idx").on(table.scheduledAt),
+}));
+
+// Newsletter Templates table
+export const newsletterTemplates = mysqlTable("newsletterTemplates", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  htmlContent: text("htmlContent").notNull(),
+  category: varchar("category", { length: 100 }),
+  isDefault: boolean("isDefault").default(false),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Newsletter Statistics table
+export const newsletterStatistics = mysqlTable("newsletterStatistics", {
+  id: int("id").primaryKey().autoincrement(),
+  campaignId: int("campaignId").notNull().references(() => newsletterCampaigns.id, { onDelete: "cascade" }),
+  subscriberId: int("subscriberId").notNull().references(() => newsletterSubscribers.id, { onDelete: "cascade" }),
+  sent: boolean("sent").default(false),
+  delivered: boolean("delivered").default(false),
+  opened: boolean("opened").default(false),
+  clicked: boolean("clicked").default(false),
+  bounced: boolean("bounced").default(false),
+  unsubscribed: boolean("unsubscribed").default(false),
+  openedAt: timestamp("openedAt"),
+  clickedAt: timestamp("clickedAt"),
+  bouncedAt: timestamp("bouncedAt"),
+  unsubscribedAt: timestamp("unsubscribedAt"),
+  createdAt: timestamp("createdAt").defaultNow(),
+}, (table) => ({
+  campaignIdIdx: index("campaign_id_idx").on(table.campaignId),
+  subscriberIdIdx: index("subscriber_id_idx").on(table.subscriberId),
+}));
+
+// Newsletter Automations table
+export const newsletterAutomations = mysqlTable("newsletterAutomations", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  trigger: mysqlEnum("trigger", ["welcome", "birthday", "re_engagement", "custom"]).notNull(),
+  segmentId: int("segmentId").references(() => newsletterSegments.id, { onDelete: "set null" }),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Newsletter Automation Steps table
+export const newsletterAutomationSteps = mysqlTable("newsletterAutomationSteps", {
+  id: int("id").primaryKey().autoincrement(),
+  automationId: int("automationId").notNull().references(() => newsletterAutomations.id, { onDelete: "cascade" }),
+  stepOrder: int("stepOrder").notNull(),
+  delayValue: int("delayValue").notNull(),
+  delayUnit: mysqlEnum("delayUnit", ["minutes", "hours", "days"]).notNull(),
+  subject: varchar("subject", { length: 500 }).notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+});
+
+// Newsletter Automation Executions table
+export const newsletterAutomationExecutions = mysqlTable("newsletterAutomationExecutions", {
+  id: int("id").primaryKey().autoincrement(),
+  automationId: int("automationId").notNull().references(() => newsletterAutomations.id, { onDelete: "cascade" }),
+  subscriberId: int("subscriberId").notNull().references(() => newsletterSubscribers.id, { onDelete: "cascade" }),
+  currentStep: int("currentStep").default(0),
+  status: mysqlEnum("status", ["active", "completed", "cancelled"]).default("active"),
+  nextExecutionAt: timestamp("nextExecutionAt"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  automationIdIdx: index("automation_id_idx").on(table.automationId),
+  subscriberIdIdx: index("subscriber_id_idx").on(table.subscriberId),
+  nextExecutionAtIdx: index("next_execution_at_idx").on(table.nextExecutionAt),
+}));
+
+// Newsletter Automation Step Logs table
+export const newsletterAutomationStepLogs = mysqlTable("newsletterAutomationStepLogs", {
+  id: int("id").primaryKey().autoincrement(),
+  executionId: int("executionId").notNull().references(() => newsletterAutomationExecutions.id, { onDelete: "cascade" }),
+  stepId: int("stepId").notNull().references(() => newsletterAutomationSteps.id, { onDelete: "cascade" }),
+  status: mysqlEnum("status", ["sent", "failed"]).notNull(),
+  errorMessage: text("errorMessage"),
+  executedAt: timestamp("executedAt").defaultNow(),
+});
+
+// Contracts table
+export const contracts = mysqlTable("contracts", {
+  id: int("id").primaryKey().autoincrement(),
+  contractNumber: varchar("contractNumber", { length: 50 }).notNull().unique(),
+  customerId: int("customerId").notNull().references(() => customers.id, { onDelete: "restrict" }),
+  title: varchar("title", { length: 255 }).notNull(),
+  description: text("description"),
+  status: mysqlEnum("status", ["draft", "active", "expired", "terminated"]).default("draft"),
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate"),
+  renewalType: mysqlEnum("renewalType", ["none", "auto", "manual"]).default("none"),
+  billingCycle: mysqlEnum("billingCycle", ["monthly", "quarterly", "yearly"]).default("monthly"),
+  value: decimal("value", { precision: 10, scale: 2 }).notNull(),
+  slaResponseMinutes: int("slaResponseMinutes"),
+  slaResolutionMinutes: int("slaResolutionMinutes"),
+  terms: text("terms"),
+  notes: text("notes"),
+  signedByCustomer: boolean("signedByCustomer").default(false),
+  signedByCompany: boolean("signedByCompany").default(false),
+  customerSignatureUrl: varchar("customerSignatureUrl", { length: 500 }),
+  companySignatureUrl: varchar("companySignatureUrl", { length: 500 }),
+  customerSignedAt: timestamp("customerSignedAt"),
+  companySignedAt: timestamp("companySignedAt"),
+  pdfUrl: varchar("pdfUrl", { length: 500 }),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+}, (table) => ({
+  customerIdIdx: index("customer_id_idx").on(table.customerId),
+  statusIdx: index("status_idx").on(table.status),
+  endDateIdx: index("end_date_idx").on(table.endDate),
+}));
+
+// Contract Line Items table
+export const contractLineItems = mysqlTable("contractLineItems", {
+  id: int("id").primaryKey().autoincrement(),
+  contractId: int("contractId").notNull().references(() => contracts.id, { onDelete: "cascade" }),
+  description: varchar("description", { length: 500 }).notNull(),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
+  total: decimal("total", { precision: 10, scale: 2 }).notNull(),
+  unit: varchar("unit", { length: 50 }).default("Stk."),
+});
+
+// Contract Templates table
+export const contractTemplates = mysqlTable("contractTemplates", {
+  id: int("id").primaryKey().autoincrement(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  terms: text("terms").notNull(),
+  defaultDurationMonths: int("defaultDurationMonths"),
+  defaultBillingCycle: mysqlEnum("defaultBillingCycle", ["monthly", "quarterly", "yearly"]).default("monthly"),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Dashboard Preferences table
+export const dashboardPreferences = mysqlTable("dashboardPreferences", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }).unique(),
+  layout: text("layout").notNull(),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// OAuth Settings Table
+export const oauthSettings = mysqlTable("oauthSettings", {
+  id: int("id").primaryKey().autoincrement(),
+  provider: varchar("provider", { length: 50 }).notNull(),
+  clientId: varchar("clientId", { length: 255 }).notNull(),
+  clientSecret: varchar("clientSecret", { length: 255 }).notNull(),
+  tenantId: varchar("tenantId", { length: 255 }),
+  redirectUri: varchar("redirectUri", { length: 500 }).notNull(),
+  scopes: text("scopes"),
+  isActive: boolean("isActive").default(true),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// OAuth Providers Table (user-provider links)
+export const oauthProviders = mysqlTable("oauthProviders", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("userId").notNull().references(() => users.id, { onDelete: "cascade" }),
+  provider: varchar("provider", { length: 50 }).notNull(),
+  providerUserId: varchar("providerUserId", { length: 255 }).notNull(),
+  accessToken: text("accessToken"),
+  refreshToken: text("refreshToken"),
+  expiresAt: timestamp("expiresAt"),
+  createdAt: timestamp("createdAt").defaultNow(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow(),
+});
+
+// Relations
+export const usersRelations = relations(users, ({ many }) => ({
+  tickets: many(tickets),
+  comments: many(ticketComments),
+  mentions: many(mentions),
+}));
+
+export const ticketsRelations = relations(tickets, ({ one, many }) => ({
+  user: one(users, {
+    fields: [tickets.userId],
+    references: [users.id],
+  }),
+  assignedUser: one(users, {
+    fields: [tickets.assignedTo],
+    references: [users.id],
+  }),
+  comments: many(ticketComments),
+  attachments: many(ticketAttachments),
+}));
+
+export const ticketCommentsRelations = relations(ticketComments, ({ one, many }) => ({
+  ticket: one(tickets, {
+    fields: [ticketComments.ticketId],
+    references: [tickets.id],
+  }),
+  user: one(users, {
+    fields: [ticketComments.userId],
+    references: [users.id],
+  }),
+  attachments: many(ticketAttachments),
+}));
+
+export const customersRelations = relations(customers, ({ many }) => ({
+  invoices: many(invoices),
+  quotes: many(quotes),
+  recurringInvoices: many(recurringInvoices),
+  contracts: many(contracts),
+}));
+
+export const invoicesRelations = relations(invoices, ({ one, many }) => ({
+  customer: one(customers, {
+    fields: [invoices.customerId],
+    references: [customers.id],
+  }),
+  lineItems: many(invoiceLineItems),
+}));
+
+export const quotesRelations = relations(quotes, ({ one, many }) => ({
+  customer: one(customers, {
+    fields: [quotes.customerId],
+    references: [customers.id],
+  }),
+  lineItems: many(quoteLineItems),
+}));
+
+export const contractsRelations = relations(contracts, ({ one, many }) => ({
+  customer: one(customers, {
+    fields: [contracts.customerId],
+    references: [customers.id],
+  }),
+  lineItems: many(contractLineItems),
+}));
