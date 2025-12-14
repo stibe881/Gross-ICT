@@ -167,21 +167,22 @@ export function registerOAuthRoutes(app: Express) {
         hostname: req.hostname,
       });
 
-      res.cookie("app_session_id", token, {
-        httpOnly: true,
-        secure: true, // Always secure for production
-        sameSite: "lax", // Lax for same-site redirects (OAuth)
-        maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-        path: "/",
-      });
+      // Set cookie using explicit header (ensures it works with Apache proxy)
+      const maxAge = 30 * 24 * 60 * 60; // 30 days in seconds
+      const expires = new Date(Date.now() + maxAge * 1000).toUTCString();
+      const cookieValue = `app_session_id=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${maxAge}; Expires=${expires}`;
+      res.setHeader("Set-Cookie", cookieValue);
+      console.log("[Microsoft OAuth] DEBUG: Set-Cookie header:", cookieValue.substring(0, 50) + "...");
 
       console.log("[Microsoft OAuth] DEBUG: Cookie headers being set");
 
-      console.log("[Microsoft OAuth] DEBUG: Cookie set, redirecting to:", returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl);
-
       // Redirect to return URL (but not back to login page)
       const finalRedirect = returnUrl === '/login' || returnUrl === '' ? '/admin' : returnUrl;
-      res.redirect(finalRedirect);
+      console.log("[Microsoft OAuth] DEBUG: Redirecting to:", finalRedirect);
+
+      // Use explicit redirect to ensure headers are sent
+      res.setHeader("Location", finalRedirect);
+      res.status(302).end();
     } catch (error) {
       console.error("[Microsoft OAuth] Error:", error);
       res.status(500).json({
