@@ -289,11 +289,8 @@ class SDKServer {
         if (!isNaN(userId)) {
           const user = await db.getUserById(userId);
           if (user) {
-            // Update last signed in
-            await db.upsertUser({
-              openId: user.openId || `local-${user.id}`,
-              lastSignedIn: new Date(),
-            });
+            // User already exists and was retrieved by ID - no need to upsert
+            // Just return the user (last signed in is tracked elsewhere if needed)
             return user;
           }
         }
