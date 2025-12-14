@@ -8,13 +8,25 @@ import { vitePluginManusRuntime } from "vite-plugin-manus-runtime";
 import { VitePWA } from "vite-plugin-pwa";
 
 const plugins = [
-  react(), 
-  tailwindcss(), 
-  jsxLocPlugin(), 
+  react(),
+  tailwindcss(),
+  jsxLocPlugin(),
   vitePluginManusRuntime(),
   VitePWA({
     registerType: 'autoUpdate',
     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
+    workbox: {
+      // CRITICAL: Exclude /api/ routes from navigation fallback
+      // This prevents the service worker from intercepting OAuth callbacks
+      navigateFallbackDenylist: [/^\/api\//],
+      // Don't cache API routes
+      runtimeCaching: [
+        {
+          urlPattern: /^\/api\//,
+          handler: 'NetworkOnly',
+        },
+      ],
+    },
     manifest: {
       name: 'Gross ICT',
       short_name: 'Gross ICT',
