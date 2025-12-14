@@ -170,7 +170,7 @@ export function registerOAuthRoutes(app: Express) {
       res.cookie("app_session_id", token, {
         httpOnly: true,
         secure: true, // Always secure for production
-        sameSite: "none", // Required for cross-origin with secure
+        sameSite: "lax", // Lax for same-site redirects (OAuth)
         maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
         path: "/",
       });
