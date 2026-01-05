@@ -197,6 +197,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
         lastName: "",
         email: "",
         phone: "",
+        mobile: "",
         website: "",
         company: "",
         city: "",
@@ -218,6 +219,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                 lastName: "",
                 email: "",
                 phone: "",
+                mobile: "",
                 website: "",
                 company: "",
                 city: "",
@@ -262,6 +264,10 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                         <div>
                             <label className="text-sm font-medium mb-2 block">Telefon</label>
                             <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Handy</label>
+                            <Input value={formData.mobile} onChange={(e) => setFormData({ ...formData, mobile: e.target.value })} />
                         </div>
                     </div>
                     <div>

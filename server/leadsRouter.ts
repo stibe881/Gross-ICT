@@ -168,6 +168,7 @@ export const leadsRouter = router({
                 lastName: input.lastName || null,
                 email: input.email || null,
                 phone: input.phone || null,
+                mobile: input.mobile || null,
                 website: input.website || null,
                 company: input.company || null,
                 city: input.city || null,
