@@ -229,10 +229,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
     });
 
     const handleSubmit = () => {
-        if (!formData.firstName || !formData.lastName || !formData.email) {
-            toast.error("Bitte füllen Sie alle Pflichtfelder aus");
-            return;
-        }
+        // No required fields - all are optional
         createLead.mutate(formData as any);
     };
 
@@ -245,17 +242,17 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                 <div className="space-y-4 mt-4">
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="text-sm font-medium mb-2 block">Vorname *</label>
+                            <label className="text-sm font-medium mb-2 block">Vorname</label>
                             <Input value={formData.firstName} onChange={(e) => setFormData({ ...formData, firstName: e.target.value })} />
                         </div>
                         <div>
-                            <label className="text-sm font-medium mb-2 block">Nachname *</label>
+                            <label className="text-sm font-medium mb-2 block">Nachname</label>
                             <Input value={formData.lastName} onChange={(e) => setFormData({ ...formData, lastName: e.target.value })} />
                         </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="text-sm font-medium mb-2 block">Email *</label>
+                            <label className="text-sm font-medium mb-2 block">Email</label>
                             <Input type="email" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                         </div>
                         <div>
