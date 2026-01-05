@@ -465,12 +465,36 @@ export default function LeadDetail() {
                                 <label className="text-sm font-medium mb-2 block">Telefon</label>
                                 <Input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
                             </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Handy</label>
+                                <Input value={editForm.mobile} onChange={(e) => setEditForm({ ...editForm, mobile: e.target.value })} />
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Webseite</label>
+                            <Input type="url" placeholder="https://..." value={editForm.website} onChange={(e) => setEditForm({ ...editForm, website: e.target.value })} />
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-sm font-medium mb-2 block">Firma</label>
                                 <Input value={editForm.company} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} />
                             </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Strasse</label>
+                                <Input value={editForm.street} onChange={(e) => setEditForm({ ...editForm, street: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">PLZ</label>
+                                <Input value={editForm.zipCode} onChange={(e) => setEditForm({ ...editForm, zipCode: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Ort</label>
+                                <Input value={editForm.city} onChange={(e) => setEditForm({ ...editForm, city: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
                             <div>
                                 <label className="text-sm font-medium mb-2 block">Position</label>
                                 <Input value={editForm.position} onChange={(e) => setEditForm({ ...editForm, position: e.target.value })} />
