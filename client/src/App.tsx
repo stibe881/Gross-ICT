@@ -61,6 +61,7 @@ const AutomationManagement = lazy(() => import("./pages/AutomationManagement"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
 const MicrosoftCallback = lazy(() => import("@/pages/MicrosoftCallback"));
 const TicketView = lazy(() => import("@/pages/TicketView"));
+const Leads = lazy(() => import("@/pages/Leads"));
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -115,6 +116,7 @@ function Router() {
         <Route path="/sla-reports" component={SLADashboard} />
         <Route path="/accessibility-statement" component={AccessibilityStatement} />
         <Route path="/products" component={Products} />
+        <Route path="/leads" component={Leads} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />
         <Route path={"/invoice-template-editor"} component={InvoiceTemplateEditor} />

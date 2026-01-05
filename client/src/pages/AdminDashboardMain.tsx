@@ -2,7 +2,7 @@ import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useLocation } from "wouter";
-import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, Server, AlertTriangle } from "lucide-react";
+import { LogOut, Receipt, Users, BookOpen, Settings, Ticket, BarChart3, TrendingUp, TrendingDown, Minus, FileText, Mail, Server, AlertTriangle, UserPlus } from "lucide-react";
 import { NotificationBell } from "@/components/NotificationBell";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
@@ -244,6 +244,15 @@ export default function AdminDashboardMain() {
       icon: Receipt,
       path: '/products',
       color: 'from-emerald-500 to-green-600',
+      permission: 'admin',
+    },
+    {
+      id: 'kundenakquise',
+      title: 'Kundenakquise',
+      description: 'Leads verwalten, Pipeline und Konvertierung',
+      icon: UserPlus,
+      path: '/leads',
+      color: 'from-violet-500 to-purple-600',
       permission: 'admin',
     },
     {
