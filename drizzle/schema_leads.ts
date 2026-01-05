@@ -15,6 +15,8 @@ export const leads = mysqlTable("leads", {
     email: varchar("email", { length: 320 }).notNull(),
     /** Phone number */
     phone: varchar("phone", { length: 50 }),
+    /** Website URL */
+    website: varchar("website", { length: 255 }),
     /** Company name */
     company: varchar("company", { length: 255 }),
     /** Position/Title */
