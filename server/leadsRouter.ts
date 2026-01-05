@@ -51,6 +51,7 @@ export const leadsRouter = router({
 
             const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+            // Get leads with their last activity
             const result = await db!
                 .select({
                     lead: leads,
@@ -61,9 +62,30 @@ export const leadsRouter = router({
                 .where(whereClause)
                 .orderBy(desc(leads.createdAt));
 
+            // Get last activity for each lead
+            const leadIds = result.map(r => r.lead.id);
+            const lastActivities = leadIds.length > 0 ? await db!
+                .select({
+                    leadId: leadActivities.leadId,
+                    activityType: leadActivities.activityType,
+                    createdAt: leadActivities.createdAt,
+                })
+                .from(leadActivities)
+                .where(sql`${leadActivities.leadId} IN ${leadIds}`)
+                .orderBy(desc(leadActivities.createdAt)) : [];
+
+            // Map last activity to each lead
+            const lastActivityMap = new Map();
+            for (const activity of lastActivities) {
+                if (!lastActivityMap.has(activity.leadId)) {
+                    lastActivityMap.set(activity.leadId, activity);
+                }
+            }
+
             return result.map(r => ({
                 ...r.lead,
                 assignedUser: r.assignedUser,
+                lastActivity: lastActivityMap.get(r.lead.id) || null,
             }));
         }),
 
