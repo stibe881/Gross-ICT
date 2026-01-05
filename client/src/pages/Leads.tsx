@@ -302,66 +302,65 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                         <label className="text-sm font-medium mb-2 block">Position</label>
                         <Input value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} />
                     </div>
-                </div>
-                <div className="grid grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-4">
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Status</label>
+                            <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="new">Neu</SelectItem>
+                                    <SelectItem value="contacted">Kontaktiert</SelectItem>
+                                    <SelectItem value="qualified">Qualifiziert</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Priorität</label>
+                            <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v })}>
+                                <SelectTrigger><SelectValue /></SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="A">A - Hoch</SelectItem>
+                                    <SelectItem value="B">B - Mittel</SelectItem>
+                                    <SelectItem value="C">C - Niedrig</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Wert (CHF)</label>
+                            <Input type="number" value={formData.estimatedValue} onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })} />
+                        </div>
+                    </div>
                     <div>
-                        <label className="text-sm font-medium mb-2 block">Status</label>
-                        <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
+                        <label className="text-sm font-medium mb-2 block">Quelle</label>
+                        <Select value={formData.source} onValueChange={(v) => setFormData({ ...formData, source: v })}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="new">Neu</SelectItem>
-                                <SelectItem value="contacted">Kontaktiert</SelectItem>
-                                <SelectItem value="qualified">Qualifiziert</SelectItem>
+                                <SelectItem value="website">Website</SelectItem>
+                                <SelectItem value="referal">Empfehlung</SelectItem>
+                                <SelectItem value="cold_call">Kaltakquise</SelectItem>
+                                <SelectItem value="email">E-Mail</SelectItem>
+                                <SelectItem value="social_media">Social Media</SelectItem>
+                                <SelectItem value="trade_show">Messe</SelectItem>
+                                <SelectItem value="other">Sonstiges</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
                     <div>
-                        <label className="text-sm font-medium mb-2 block">Priorität</label>
-                        <Select value={formData.priority} onValueChange={(v) => setFormData({ ...formData, priority: v })}>
-                            <SelectTrigger><SelectValue /></SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="A">A - Hoch</SelectItem>
-                                <SelectItem value="B">B - Mittel</SelectItem>
-                                <SelectItem value="C">C - Niedrig</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <label className="text-sm font-medium mb-2 block">Notizen</label>
+                        <textarea
+                            className="w-full min-h-[80px] px-3 py-2 rounded-md border border-input bg-background"
+                            value={formData.notes}
+                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        />
                     </div>
-                    <div>
-                        <label className="text-sm font-medium mb-2 block">Wert (CHF)</label>
-                        <Input type="number" value={formData.estimatedValue} onChange={(e) => setFormData({ ...formData, estimatedValue: e.target.value })} />
+                    <div className="flex justify-end gap-2">
+                        <Button variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
+                        <Button onClick={handleSubmit} disabled={createLead.isPending}>
+                            {createLead.isPending ? "Erstelle..." : "Lead erstellen"}
+                        </Button>
                     </div>
                 </div>
-                <div>
-                    <label className="text-sm font-medium mb-2 block">Quelle</label>
-                    <Select value={formData.source} onValueChange={(v) => setFormData({ ...formData, source: v })}>
-                        <SelectTrigger><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="website">Website</SelectItem>
-                            <SelectItem value="referal">Empfehlung</SelectItem>
-                            <SelectItem value="cold_call">Kaltakquise</SelectItem>
-                            <SelectItem value="email">E-Mail</SelectItem>
-                            <SelectItem value="social_media">Social Media</SelectItem>
-                            <SelectItem value="trade_show">Messe</SelectItem>
-                            <SelectItem value="other">Sonstiges</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div>
-                    <label className="text-sm font-medium mb-2 block">Notizen</label>
-                    <textarea
-                        className="w-full min-h-[80px] px-3 py-2 rounded-md border border-input bg-background"
-                        value={formData.notes}
-                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    />
-                </div>
-                <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>Abbrechen</Button>
-                    <Button onClick={handleSubmit} disabled={createLead.isPending}>
-                        {createLead.isPending ? "Erstelle..." : "Lead erstellen"}
-                    </Button>
-                </div>
-            </div>
-        </DialogContent>
+            </DialogContent>
         </Dialog >
     );
 }
