@@ -35,11 +35,52 @@ export default function LeadDetail() {
         description: '',
     });
 
+    const [editForm, setEditForm] = useState({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        company: '',
+        position: '',
+        status: 'new',
+        priority: 'B',
+        source: 'other',
+        estimatedValue: '',
+        notes: '',
+    });
+
     // Load lead data with activities
     const { data: lead, isLoading, refetch } = trpc.leads.byId.useQuery(
         { id: parseInt(id!) },
         { enabled: !!id }
     );
+
+    // Populate edit form when lead data loads
+    if (lead && !editForm.firstName && showEditLead) {
+        setEditForm({
+            firstName: lead.firstName || '',
+            lastName: lead.lastName || '',
+            email: lead.email || '',
+            phone: lead.phone || '',
+            company: lead.company || '',
+            position: lead.position || '',
+            status: lead.status,
+            priority: lead.priority,
+            source: lead.source,
+            estimatedValue: lead.estimatedValue?.toString() || '',
+            notes: lead.notes || '',
+        });
+    }
+
+    // Update lead mutation
+    const updateLead = trpc.leads.update.useMutation({
+        onSuccess: () => {
+            toast.success('Lead erfolgreich aktualisiert');
+            setShowEditLead(false);
+            refetch();
+        },
+        onError: (error) => toast.error(`Fehler: ${error.message}`),
+    });
 
     // Add activity mutation
     const addActivity = trpc.leads.addActivity.useMutation({
@@ -361,6 +402,120 @@ export default function LeadDetail() {
                                 Abbrechen
                             </Button>
                             <Button onClick={handleAddActivity}>Hinzufügen</Button>
+                        </div>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit Lead Dialog */}
+            <Dialog open={showEditLead} onOpenChange={setShowEditLead}>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle>Lead bearbeiten</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 mt-4">
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Vorname</label>
+                                <Input value={editForm.firstName} onChange={(e) => setEditForm({ ...editForm, firstName: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Nachname</label>
+                                <Input value={editForm.lastName} onChange={(e) => setEditForm({ ...editForm, lastName: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Email</label>
+                                <Input type="email" value={editForm.email} onChange={(e) => setEditForm({ ...editForm, email: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Telefon</label>
+                                <Input value={editForm.phone} onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Firma</label>
+                                <Input value={editForm.company} onChange={(e) => setEditForm({ ...editForm, company: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Position</label>
+                                <Input value={editForm.position} onChange={(e) => setEditForm({ ...editForm, position: e.target.value })} />
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-3 gap-4">
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Status</label>
+                                <Select value={editForm.status} onValueChange={(v) => setEditForm({ ...editForm, status: v })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="new">Neu</SelectItem>
+                                        <SelectItem value="contacted">Kontaktiert</SelectItem>
+                                        <SelectItem value="qualified">Qualifiziert</SelectItem>
+                                        <SelectItem value="proposal">Angebot erstellt</SelectItem>
+                                        <SelectItem value="won">Gewonnen</SelectItem>
+                                        <SelectItem value="lost">Verloren</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Priorität</label>
+                                <Select value={editForm.priority} onValueChange={(v) => setEditForm({ ...editForm, priority: v })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="A">A (Hoch)</SelectItem>
+                                        <SelectItem value="B">B (Mittel)</SelectItem>
+                                        <SelectItem value="C">C (Niedrig)</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Quelle</label>
+                                <Select value={editForm.source} onValueChange={(v) => setEditForm({ ...editForm, source: v })}>
+                                    <SelectTrigger><SelectValue /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="website">Website</SelectItem>
+                                        <SelectItem value="referral">Empfehlung</SelectItem>
+                                        <SelectItem value="cold_call">Kaltakquise</SelectItem>
+                                        <SelectItem value="email">E-Mail</SelectItem>
+                                        <SelectItem value="social_media">Social Media</SelectItem>
+                                        <SelectItem value="trade_show">Messe</SelectItem>
+                                        <SelectItem value="other">Sonstiges</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Geschätzter Wert (CHF)</label>
+                            <Input
+                                type="number"
+                                value={editForm.estimatedValue}
+                                onChange={(e) => setEditForm({ ...editForm, estimatedValue: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Notizen</label>
+                            <Textarea
+                                value={editForm.notes}
+                                onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                                rows={4}
+                                className="resize-none"
+                            />
+                        </div>
+                        <div className="flex justify-end gap-2 sticky bottom-0 bg-background pt-4">
+                            <Button variant="outline" onClick={() => setShowEditLead(false)}>
+                                Abbrechen
+                            </Button>
+                            <Button onClick={() => {
+                                updateLead.mutate({
+                                    id: lead!.id,
+                                    ...editForm,
+                                    estimatedValue: editForm.estimatedValue ? parseFloat(editForm.estimatedValue) : undefined,
+                                });
+                            }}>
+                                Speichern
+                            </Button>
                         </div>
                     </div>
                 </DialogContent>
