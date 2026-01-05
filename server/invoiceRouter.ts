@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { router, protectedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
-import { invoices, invoiceItems, quotes, quoteItems, customers } from "../drizzle/schema";
+import { invoices, invoiceItems, quotes, quoteItems, customers } from "../drizzle/schema_accounting";
 import { eq, like, or, desc, and, gte, lte, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 
@@ -791,7 +791,7 @@ export const quoteRouter = router({
     }
 
     const db = await getDb();
-    
+
     // Find customer by user email
     const [customer] = await db!
       .select()
