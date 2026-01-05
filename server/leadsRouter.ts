@@ -177,8 +177,8 @@ export const leadsRouter = router({
         .input(
             z.object({
                 id: z.number(),
-                firstName: z.string().min(1).optional(),
-                lastName: z.string().min(1).optional(),
+                firstName: z.string().optional(),
+                lastName: z.string().optional(),
                 email: z.string().email().optional(),
                 phone: z.string().optional(),
                 company: z.string().optional(),

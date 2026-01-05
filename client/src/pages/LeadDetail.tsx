@@ -21,7 +21,7 @@ import {
     Edit,
     Plus
 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -55,22 +55,24 @@ export default function LeadDetail() {
         { enabled: !!id }
     );
 
-    // Populate edit form when lead data loads
-    if (lead && !editForm.firstName && showEditLead) {
-        setEditForm({
-            firstName: lead.firstName || '',
-            lastName: lead.lastName || '',
-            email: lead.email || '',
-            phone: lead.phone || '',
-            company: lead.company || '',
-            position: lead.position || '',
-            status: lead.status,
-            priority: lead.priority,
-            source: lead.source,
-            estimatedValue: lead.estimatedValue?.toString() || '',
-            notes: lead.notes || '',
-        });
-    }
+    // Populate edit form when dialog opens
+    useEffect(() => {
+        if (lead && showEditLead) {
+            setEditForm({
+                firstName: lead.firstName || '',
+                lastName: lead.lastName || '',
+                email: lead.email || '',
+                phone: lead.phone || '',
+                company: lead.company || '',
+                position: lead.position || '',
+                status: lead.status,
+                priority: lead.priority,
+                source: lead.source,
+                estimatedValue: lead.estimatedValue?.toString() || '',
+                notes: lead.notes || '',
+            });
+        }
+    }, [lead, showEditLead]);
 
     // Update lead mutation
     const updateLead = trpc.leads.update.useMutation({
