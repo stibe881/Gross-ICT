@@ -267,7 +267,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                         </div>
                         <div>
                             <label className="text-sm font-medium mb-2 block">Position</label>
-                            <Input value={formData.phone} onChange={(e) => setFormData({ ...formData, position: e.target.value })} />
+                            <Input value={formData.position} onChange={(e) => setFormData({ ...formData, position: e.target.value })} />
                         </div>
                     </div>
                     <div className="grid grid-cols-3 gap-4">
