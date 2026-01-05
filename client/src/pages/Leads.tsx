@@ -23,6 +23,9 @@ export default function Leads() {
         priority: priorityFilter !== "all" ? (priorityFilter as any) : undefined,
     });
 
+    // Get users for assignment dropdown
+    const { data: users } = trpc.users.all.useQuery();
+
     const createLead = trpc.leads.create.useMutation({
         onSuccess: () => {
             toast.success("Lead erfolgreich erstellt");
@@ -192,6 +195,9 @@ export default function Leads() {
 }
 
 function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
+    // Get users for assignment dropdown
+    const { data: users } = trpc.users.all.useQuery();
+
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -209,6 +215,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
         source: "other",
         estimatedValue: "",
         notes: "",
+        assignedTo: undefined as number | undefined,
     });
 
     const createLead = trpc.leads.create.useMutation({
@@ -233,6 +240,7 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                 source: "other",
                 estimatedValue: "",
                 notes: "",
+                assignedTo: undefined,
             });
         },
         onError: (error) => toast.error(`Fehler: ${error.message}`),
@@ -342,6 +350,18 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                                 <SelectItem value="social_media">Social Media</SelectItem>
                                 <SelectItem value="trade_show">Messe</SelectItem>
                                 <SelectItem value="other">Sonstiges</SelectItem>
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div>
+                        <label className="text-sm font-medium mb-2 block">Zugewiesen an</label>
+                        <Select value={formData.assignedTo?.toString()} onValueChange={(v) => setFormData({ ...formData, assignedTo: v ? parseInt(v) : undefined })}>
+                            <SelectTrigger><SelectValue placeholder="Nicht zugewiesen" /></SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="">Nicht zugewiesen</SelectItem>
+                                {users?.map(user => (
+                                    <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
+                                ))}
                             </SelectContent>
                         </Select>
                     </div>

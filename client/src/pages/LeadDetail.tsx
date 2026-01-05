@@ -53,6 +53,7 @@ export default function LeadDetail() {
         source: 'other',
         estimatedValue: '',
         notes: '',
+        assignedTo: undefined as number | undefined,
     });
 
     // Load lead data with activities
@@ -60,6 +61,9 @@ export default function LeadDetail() {
         { id: parseInt(id!) },
         { enabled: !!id }
     );
+
+    // Get users for assignment dropdown
+    const { data: users } = trpc.users.all.useQuery();
 
     // Populate edit form when dialog opens
     useEffect(() => {
@@ -81,6 +85,7 @@ export default function LeadDetail() {
                 source: lead.source,
                 estimatedValue: lead.estimatedValue?.toString() || '',
                 notes: lead.notes || '',
+                assignedTo: lead.assignedTo || undefined,
             });
         }
     }, [lead, showEditLead]);
@@ -538,6 +543,18 @@ export default function LeadDetail() {
                                         <SelectItem value="social_media">Social Media</SelectItem>
                                         <SelectItem value="trade_show">Messe</SelectItem>
                                         <SelectItem value="other">Sonstiges</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="text-sm font-medium mb-2 block">Zugewiesen an</label>
+                                <Select value={editForm.assignedTo?.toString()} onValueChange={(v) => setEditForm({ ...editForm, assignedTo: v ? parseInt(v) : undefined })}>
+                                    <SelectTrigger><SelectValue placeholder="Nicht zugewiesen" /></SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">Nicht zugewiesen</SelectItem>
+                                        {users?.map(user => (
+                                            <SelectItem key={user.id} value={user.id.toString()}>{user.name}</SelectItem>
+                                        ))}
                                     </SelectContent>
                                 </Select>
                             </div>
