@@ -324,41 +324,259 @@ export default function AdminDashboardMain() {
           </p>
         </div>
 
-        {/* Dashboard Tiles Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleTiles.map((tile) => {
-            const Icon = tile.icon;
-            return (
-              <Card
-                key={tile.id}
-                className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
-                onClick={() => setLocation(tile.path)}
-              >
-                <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
-                      <Icon className="h-6 w-6" />
-                    </div>
-                  </div>
-                  <CardTitle className="mt-4 group-hover:text-primary transition-colors">
-                    {tile.title}
-                  </CardTitle>
-                  <CardDescription className="text-sm">
-                    {tile.description}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button
-                    variant="ghost"
-                    className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+        {/* Dashboard Tiles - Grouped by Category */}
+        <div className="space-y-8">
+          {/* Verkauf & Akquise */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-violet-500">📈</span> Verkauf & Akquise
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['kundenakquise', 'crm'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
                   >
-                    Öffnen →
-                  </Button>
-                </CardContent>
-              </Card>
-            );
-          })}
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Support */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-orange-500">🎧</span> Support
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['tickets', 'wissensdatenbank'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Finanzen */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-green-500">💰</span> Finanzen
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['buchhaltung', 'products', 'vertraege'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Marketing */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-pink-500">📧</span> Marketing
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['newsletter'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Analyse */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-indigo-500">📊</span> Analyse
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['statistiken', 'sla-reports'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* System */}
+          <div>
+            <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
+              <span className="text-gray-500">⚙️</span> System
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {visibleTiles.filter(t => ['verwaltung', 'email-templates'].includes(t.id)).map((tile) => {
+                const Icon = tile.icon;
+                return (
+                  <Card
+                    key={tile.id}
+                    className="group cursor-pointer hover:shadow-lg transition-all duration-300 hover:-translate-y-1 border-border/50 overflow-hidden"
+                    onClick={() => setLocation(tile.path)}
+                  >
+                    <div className={`h-2 bg-gradient-to-r ${tile.color}`} />
+                    <CardHeader>
+                      <div className="flex items-start justify-between">
+                        <div className={`p-3 rounded-lg bg-gradient-to-br ${tile.color} text-white`}>
+                          <Icon className="h-6 w-6" />
+                        </div>
+                      </div>
+                      <CardTitle className="mt-4 group-hover:text-primary transition-colors">
+                        {tile.title}
+                      </CardTitle>
+                      <CardDescription className="text-sm">
+                        {tile.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardFooter>
+                      <Button
+                        variant="ghost"
+                        className="w-full group-hover:bg-primary/10 group-hover:text-primary transition-colors"
+                      >
+                        Öffnen →
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
         {/* Quick Stats */}
