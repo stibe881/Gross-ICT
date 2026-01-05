@@ -98,8 +98,9 @@ export default defineConfig({
       include: [/node_modules/],
       transformMixedEsModules: true,
     },
-    // Target modern browsers for better compatibility
-    target: 'es2020',
+    // Target older browsers for better iOS compatibility (especially iOS 12-13)
+    // ES2015 (ES6) is widely supported across all modern mobile browsers
+    target: 'es2015',
   },
   server: {
     host: true,
