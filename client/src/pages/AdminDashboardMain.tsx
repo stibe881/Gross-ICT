@@ -163,16 +163,17 @@ export default function AdminDashboardMain() {
     }
   };
 
-  // Define dashboard tiles with permissions
+  // Define dashboard tiles with permissions - Grouped logically
   const dashboardTiles = [
+    // 📈 Verkauf & Akquise
     {
-      id: 'buchhaltung',
-      title: 'Buchhaltung',
-      description: 'Rechnungen, Angebote, Zahlungen und Finanzen verwalten',
-      icon: Receipt,
-      path: '/accounting',
-      color: 'from-green-500 to-emerald-600',
-      permission: 'admin', // Only admins can access
+      id: 'kundenakquise',
+      title: 'Kundenakquise',
+      description: 'Leads verwalten, Pipeline und Konvertierung',
+      icon: UserPlus,
+      path: '/leads',
+      color: 'from-violet-500 to-purple-600',
+      permission: 'admin',
     },
     {
       id: 'crm',
@@ -183,33 +184,8 @@ export default function AdminDashboardMain() {
       color: 'from-blue-500 to-cyan-600',
       permission: 'admin',
     },
-    {
-      id: 'vertraege',
-      title: 'Verträge',
-      description: 'Kundenverträge, Vorlagen und SLA-Management',
-      icon: FileText,
-      path: '/contracts',
-      color: 'from-teal-500 to-cyan-600',
-      permission: 'admin',
-    },
-    {
-      id: 'wissensdatenbank',
-      title: 'Wissensdatenbank',
-      description: 'Artikel, Dokumentation und FAQ verwalten',
-      icon: BookOpen,
-      path: '/admin/knowledge-base',
-      color: 'from-purple-500 to-pink-600',
-      permission: 'admin',
-    },
-    {
-      id: 'verwaltung',
-      title: 'Verwaltung',
-      description: 'Benutzer, Einstellungen und Systemkonfiguration',
-      icon: Settings,
-      path: '/admin/users',
-      color: 'from-gray-500 to-slate-600',
-      permission: 'admin',
-    },
+
+    // 🎧 Support
     {
       id: 'tickets',
       title: 'Tickets',
@@ -220,22 +196,24 @@ export default function AdminDashboardMain() {
       permission: 'user', // All users can access tickets
     },
     {
-      id: 'statistiken',
-      title: 'Statistiken',
-      description: 'Dashboard, Charts und Performance-Metriken',
-      icon: BarChart3,
-      path: '/financial-dashboard',
-      color: 'from-indigo-500 to-blue-600',
+      id: 'wissensdatenbank',
+      title: 'Wissensdatenbank',
+      description: 'Artikel, Dokumentation und FAQ verwalten',
+      icon: BookOpen,
+      path: '/admin/knowledge-base',
+      color: 'from-purple-500 to-pink-600',
       permission: 'admin',
     },
+
+    // 💰 Finanzen
     {
-      id: 'newsletter',
-      title: 'Newsletter',
-      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
-      icon: Mail,
-      path: '/newsletter',
-      color: 'from-pink-500 to-rose-600',
-      permission: 'admin',
+      id: 'buchhaltung',
+      title: 'Buchhaltung',
+      description: 'Rechnungen, Angebote, Zahlungen und Finanzen verwalten',
+      icon: Receipt,
+      path: '/accounting',
+      color: 'from-green-500 to-emerald-600',
+      permission: 'admin', // Only admins can access
     },
     {
       id: 'products',
@@ -247,21 +225,34 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
-      id: 'kundenakquise',
-      title: 'Kundenakquise',
-      description: 'Leads verwalten, Pipeline und Konvertierung',
-      icon: UserPlus,
-      path: '/leads',
-      color: 'from-violet-500 to-purple-600',
+      id: 'vertraege',
+      title: 'Verträge',
+      description: 'Kundenverträge, Vorlagen und SLA-Management',
+      icon: FileText,
+      path: '/contracts',
+      color: 'from-teal-500 to-cyan-600',
       permission: 'admin',
     },
+
+    // 📧 Marketing
     {
-      id: 'email-templates',
-      title: 'Email Templates',
-      description: 'E-Mail-Vorlagen erstellen und verwalten',
-      icon: Server,
-      path: '/smtp-settings',
-      color: 'from-yellow-500 to-amber-600',
+      id: 'newsletter',
+      title: 'Newsletter',
+      description: 'Newsletter-Kampagnen, Abonnenten und E-Mail-Marketing',
+      icon: Mail,
+      path: '/newsletter',
+      color: 'from-pink-500 to-rose-600',
+      permission: 'admin',
+    },
+
+    // 📊 Analyse
+    {
+      id: 'statistiken',
+      title: 'Statistiken',
+      description: 'Dashboard, Charts und Performance-Metriken',
+      icon: BarChart3,
+      path: '/financial-dashboard',
+      color: 'from-indigo-500 to-blue-600',
       permission: 'admin',
     },
     {
@@ -271,6 +262,26 @@ export default function AdminDashboardMain() {
       icon: AlertTriangle,
       path: '/sla-reports',
       color: 'from-red-500 to-orange-600',
+      permission: 'admin',
+    },
+
+    // ⚙️ System
+    {
+      id: 'verwaltung',
+      title: 'Verwaltung',
+      description: 'Benutzer, Einstellungen und Systemkonfiguration',
+      icon: Settings,
+      path: '/admin/users',
+      color: 'from-gray-500 to-slate-600',
+      permission: 'admin',
+    },
+    {
+      id: 'email-templates',
+      title: 'Email Templates',
+      description: 'E-Mail-Vorlagen erstellen und verwalten',
+      icon: Server,
+      path: '/smtp-settings',
+      color: 'from-yellow-500 to-amber-600',
       permission: 'admin',
     },
   ];
