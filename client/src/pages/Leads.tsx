@@ -200,6 +200,8 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
         mobile: "",
         website: "",
         company: "",
+        street: "",
+        zipCode: "",
         city: "",
         position: "",
         status: "new",
@@ -222,6 +224,8 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                 mobile: "",
                 website: "",
                 company: "",
+                street: "",
+                zipCode: "",
                 city: "",
                 position: "",
                 status: "new",
@@ -278,6 +282,16 @@ function CreateLeadDialog({ open, onOpenChange, onSuccess }: any) {
                         <div>
                             <label className="text-sm font-medium mb-2 block">Firma</label>
                             <Input value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} />
+                        </div>
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">Strasse</label>
+                            <Input value={formData.street} onChange={(e) => setFormData({ ...formData, street: e.target.value })} />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="text-sm font-medium mb-2 block">PLZ</label>
+                            <Input value={formData.zipCode} onChange={(e) => setFormData({ ...formData, zipCode: e.target.value })} />
                         </div>
                         <div>
                             <label className="text-sm font-medium mb-2 block">Ort</label>

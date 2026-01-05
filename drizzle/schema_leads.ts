@@ -21,6 +21,10 @@ export const leads = mysqlTable("leads", {
     website: varchar("website", { length: 255 }),
     /** Company name */
     company: varchar("company", { length: 255 }),
+    /** Street address */
+    street: varchar("street", { length: 255 }),
+    /** ZIP/Postal code */
+    zipCode: varchar("zipCode", { length: 20 }),
     /** City/Location */
     city: varchar("city", { length: 100 }),
     /** Position/Title */
