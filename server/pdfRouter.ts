@@ -6,216 +6,326 @@ import { eq } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
 import { jsPDF } from "jspdf";
 
-// Helper function to generate invoice PDF
+// Modern color scheme
+const COLORS = {
+  primary: [212, 175, 55] as [number, number, number], // Gold
+  dark: [51, 51, 51] as [number, number, number],
+  lightGray: [245, 245, 245] as [number, number, number],
+  white: [255, 255, 255] as [number, number, number],
+  paymentBox: [245, 250, 255] as [number, number, number],
+};
+
+// Helper function to generate modern invoice PDF
 async function generateInvoicePDF(invoice: any, customer: any, items: any[], settings: any) {
   const doc = new jsPDF();
 
-  // Company Header
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.text(settings?.companyName || "Gross ICT", 20, 20);
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  if (settings?.address) doc.text(settings.address, 20, 28);
-  if (settings?.city) doc.text(`${settings.postalCode || ""} ${settings.city}`, 20, 33);
-  if (settings?.phone) doc.text(`Tel: ${settings.phone}`, 20, 38);
-  if (settings?.email) doc.text(`Email: ${settings.email}`, 20, 43);
-
-  // Invoice Title
+  // === HEADER SECTION WITH LOGO/COMPANY NAME ===
   doc.setFontSize(24);
+  doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.text("RECHNUNG", 150, 20);
+  doc.text(settings?.companyName || "Gross ICT", 20, 25);
 
-  // Invoice Details
+  // Company contact details
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "normal");
+  let headerY = 32;
+  if (settings?.address) { doc.text(settings.address, 20, headerY); headerY += 4; }
+  if (settings?.city) { doc.text(`${settings.postalCode || ""} ${settings.city}`, 20, headerY); headerY += 4; }
+  if (settings?.phone) { doc.text(`Tel: ${settings.phone}`, 20, headerY); headerY += 4; }
+  if (settings?.email) { doc.text(`E-Mail: ${settings.email}`, 20, headerY); }
+
+  // Invoice title with colored background
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(130, 15, 60, 12, "F");
+  doc.setFontSize(18);
+  doc.setTextColor(...COLORS.white);
+  doc.setFont("helvetica", "bold");
+  doc.text("RECHNUNG", 160, 23, { align: "center" });
+
+  // Invoice details box
+  doc.setFillColor(...COLORS.lightGray);
+  doc.rect(130, 30, 60, 24, "F");
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "bold");
+  doc.text("Nr:", 135, 36);
+  doc.text("Datum:", 135, 42);
+  doc.text("Fällig:", 135, 48);
+  doc.setFont("helvetica", "normal");
+  doc.text(invoice.invoiceNumber, 155, 36);
+  doc.text(new Date(invoice.invoiceDate).toLocaleDateString("de-CH"), 155, 42);
+  doc.text(new Date(invoice.dueDate).toLocaleDateString("de-CH"), 155, 48);
+
+  // === CUSTOMER SECTION ===
+  doc.setFillColor(...COLORS.lightGray);
+  doc.rect(20, 60, 90, 30, "F");
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Rechnungsnummer: ${invoice.invoiceNumber}`, 150, 30);
-  doc.text(`Datum: ${new Date(invoice.invoiceDate).toLocaleDateString("de-CH")}`, 150, 35);
-  doc.text(`Fällig: ${new Date(invoice.dueDate).toLocaleDateString("de-CH")}`, 150, 40);
-
-  // Customer Address
-  doc.setFontSize(11);
+  doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.text("Kunde:", 20, 60);
-  doc.setFont("helvetica", "normal");
-  doc.text(customer.name, 20, 66);
-  if (customer.company) doc.text(customer.company, 20, 71);
-  if (customer.address) doc.text(customer.address, 20, 76);
-  if (customer.city) doc.text(`${customer.postalCode || ""} ${customer.city}`, 20, 81);
+  doc.text("Rechnungsempfänger", 25, 67);
 
-  // Line Items Table Header
+  doc.setFontSize(10);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "bold");
+  doc.text(customer.name, 25, 74);
+  doc.setFont("helvetica", "normal");
+  let custY = 79;
+  if (customer.company) { doc.text(customer.company, 25, custY); custY += 5; }
+  if (customer.address) { doc.text(customer.address, 25, custY); custY += 5; }
+  if (customer.city) { doc.text(`${customer.postalCode || ""} ${customer.city}`, 25, custY); }
+
+  // === LINE ITEMS TABLE ===
   let yPos = 100;
-  doc.setFillColor(240, 240, 240);
-  doc.rect(20, yPos, 170, 8, "F");
 
+  // Table header
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(20, yPos, 170, 10, "F");
+  doc.setFontSize(10);
+  doc.setTextColor(...COLORS.white);
   doc.setFont("helvetica", "bold");
-  doc.text("Beschreibung", 22, yPos + 5);
-  doc.text("Menge", 120, yPos + 5);
-  doc.text("Preis", 145, yPos + 5);
-  doc.text("Total", 170, yPos + 5);
+  doc.text("Beschreibung", 25, yPos + 7);
+  doc.text("Menge", 125, yPos + 7);
+  doc.text("Preis", 150, yPos + 7);
+  doc.text("Total", 175, yPos + 7, { align: "right" });
 
-  yPos += 10;
+  yPos += 12;
 
-  // Line Items
+  // Table rows with alternating colors
+  doc.setTextColor(...COLORS.dark);
   doc.setFont("helvetica", "normal");
-  for (const item of items) {
-    if (yPos > 270) {
+  doc.setFontSize(9);
+
+  items.forEach((item: any, index: number) => {
+    if (yPos > 250) {
       doc.addPage();
       yPos = 20;
     }
 
-    doc.text(item.description.substring(0, 50), 22, yPos);
-    doc.text(`${item.quantity} ${item.unit}`, 120, yPos);
-    doc.text(`${parseFloat(item.unitPrice).toFixed(2)}`, 145, yPos);
-    doc.text(`${parseFloat(item.total).toFixed(2)}`, 170, yPos);
-    yPos += 6;
-  }
+    if (index % 2 === 0) {
+      doc.setFillColor(250, 250, 250);
+      doc.rect(20, yPos - 3, 170, 7, "F");
+    }
 
-  // Totals
-  yPos += 10;
-  doc.line(20, yPos, 190, yPos);
+    doc.text(item.description.substring(0, 60), 25, yPos);
+    doc.text(`${item.quantity} ${item.unit}`, 125, yPos);
+    doc.text(`CHF ${parseFloat(item.unitPrice).toFixed(2)}`, 150, yPos);
+    doc.text(`CHF ${parseFloat(item.total).toFixed(2)}`, 185, yPos, { align: "right" });
+    yPos += 7;
+  });
+
+  // === TOTALS SECTION ===
+  yPos += 5;
+  doc.setDrawColor(...COLORS.primary);
+  doc.setLineWidth(0.5);
+  doc.line(120, yPos, 190, yPos);
   yPos += 8;
 
-  doc.text("Zwischensumme:", 120, yPos);
-  doc.text(`${parseFloat(invoice.subtotal).toFixed(2)} CHF`, 170, yPos);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Zwischensumme:", 130, yPos);
+  doc.text(`CHF ${parseFloat(invoice.subtotal).toFixed(2)}`, 185, yPos, { align: "right" });
   yPos += 6;
 
   if (parseFloat(invoice.discountAmount) > 0) {
-    doc.text("Rabatt:", 120, yPos);
-    doc.text(`-${parseFloat(invoice.discountAmount).toFixed(2)} CHF`, 170, yPos);
+    doc.text("Rabatt:", 130, yPos);
+    doc.text(`- CHF ${parseFloat(invoice.discountAmount).toFixed(2)}`, 185, yPos, { align: "right" });
     yPos += 6;
   }
 
-  doc.text("MwSt:", 120, yPos);
-  doc.text(`${parseFloat(invoice.vatAmount).toFixed(2)} CHF`, 170, yPos);
-  yPos += 6;
+  doc.text("MwSt (8.1%):", 130, yPos);
+  doc.text(`CHF ${parseFloat(invoice.vatAmount).toFixed(2)}`, 185, yPos, { align: "right" });
+  yPos += 8;
 
-  doc.setFont("helvetica", "bold");
+  // Total with accent
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(120, yPos - 5, 70, 10, "F");
   doc.setFontSize(12);
-  doc.text("Total:", 120, yPos);
-  doc.text(`${parseFloat(invoice.totalAmount).toFixed(2)} CHF`, 170, yPos);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...COLORS.white);
+  doc.text("Gesamtbetrag:", 130, yPos + 2);
+  doc.text(`CHF ${parseFloat(invoice.totalAmount).toFixed(2)}`, 185, yPos + 2, { align: "right" });
 
-  // Footer
-  if (settings?.bankAccount || settings?.iban) {
-    yPos += 20;
-    doc.setFontSize(10);
+  // === PAYMENT INFORMATION BOX ===
+  yPos += 20;
+  if (settings?.iban || settings?.bankName) {
+    doc.setFillColor(...COLORS.paymentBox);
+    doc.setDrawColor(...COLORS.primary);
+    doc.setLineWidth(0.8);
+    doc.rect(20, yPos, 90, 28, "FD");
+
+    doc.setFontSize(11);
+    doc.setTextColor(...COLORS.primary);
     doc.setFont("helvetica", "bold");
-    doc.text("Zahlungsinformationen:", 20, yPos);
+    doc.text("Zahlungsinformationen", 25, yPos + 7);
+
+    doc.setFontSize(9);
+    doc.setTextColor(...COLORS.dark);
     doc.setFont("helvetica", "normal");
-    yPos += 6;
-    if (settings.bankName) doc.text(`Bank: ${settings.bankName}`, 20, yPos);
+    let payY = yPos + 14;
+
+    if (settings.bankName) {
+      doc.setFont("helvetica", "bold");
+      doc.text("Bank:", 25, payY);
+      doc.setFont("helvetica", "normal");
+      doc.text(settings.bankName, 45, payY);
+      payY += 5;
+    }
+
     if (settings.iban) {
-      yPos += 6;
-      doc.text(`IBAN: ${settings.iban}`, 20, yPos);
+      doc.setFont("helvetica", "bold");
+      doc.text("IBAN:", 25, payY);
+      doc.setFont("helvetica", "normal");
+      doc.text(settings.iban, 45, payY);
     }
   }
 
+  // Footer text
   if (invoice.footerText) {
-    yPos += 10;
-    doc.setFontSize(9);
-    doc.text(invoice.footerText, 20, yPos, { maxWidth: 170 });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "italic");
+    doc.text(invoice.footerText, 20, 280, { maxWidth: 170 });
   }
+
+  // Page footer
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text(`${settings?.companyName || "Gross ICT"} | ${invoice.invoiceNumber}`, 105, 290, { align: "center" });
 
   return doc.output("arraybuffer");
 }
 
-// Helper function to generate quote PDF
+// Helper function to generate quote PDF (simplified version)
 async function generateQuotePDF(quote: any, customer: any, items: any[], settings: any) {
   const doc = new jsPDF();
 
-  // Company Header
-  doc.setFontSize(20);
-  doc.setFont("helvetica", "bold");
-  doc.text(settings?.companyName || "Gross ICT", 20, 20);
-
-  doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  if (settings?.address) doc.text(settings.address, 20, 28);
-  if (settings?.city) doc.text(`${settings.postalCode || ""} ${settings.city}`, 20, 33);
-  if (settings?.phone) doc.text(`Tel: ${settings.phone}`, 20, 38);
-  if (settings?.email) doc.text(`Email: ${settings.email}`, 20, 43);
-
-  // Quote Title
+  // Similar structure as invoice but with "ANGEBOT" title
   doc.setFontSize(24);
+  doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.text("ANGEBOT", 150, 20);
+  doc.text(settings?.companyName || "Gross ICT", 20, 25);
 
-  // Quote Details
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "normal");
+  let headerY = 32;
+  if (settings?.address) { doc.text(settings.address, 20, headerY); headerY += 4; }
+  if (settings?.city) { doc.text(`${settings.postalCode || ""} ${settings.city}`, 20, headerY); headerY += 4; }
+  if (settings?.phone) { doc.text(`Tel: ${settings.phone}`, 20, headerY); headerY += 4; }
+  if (settings?.email) { doc.text(`E-Mail: ${settings.email}`, 20, headerY); }
+
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(130, 15, 60, 12, "F");
+  doc.setFontSize(18);
+  doc.setTextColor(...COLORS.white);
+  doc.setFont("helvetica", "bold");
+  doc.text("ANGEBOT", 160, 23, { align: "center" });
+
+  doc.setFillColor(...COLORS.lightGray);
+  doc.rect(130, 30, 60, 24, "F");
+  doc.setFontSize(9);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "bold");
+  doc.text("Nr:", 135, 36);
+  doc.text("Datum:", 135, 42);
+  doc.text("Gültig bis:", 135, 48);
+  doc.setFont("helvetica", "normal");
+  doc.text(quote.quoteNumber, 155, 36);
+  doc.text(new Date(quote.quoteDate).toLocaleDateString("de-CH"), 155, 42);
+  doc.text(new Date(quote.validUntil).toLocaleDateString("de-CH"), 155, 48);
+
+  doc.setFillColor(...COLORS.lightGray);
+  doc.rect(20, 60, 90, 30, "F");
   doc.setFontSize(10);
-  doc.setFont("helvetica", "normal");
-  doc.text(`Angebotsnummer: ${quote.quoteNumber}`, 150, 30);
-  doc.text(`Datum: ${new Date(quote.quoteDate).toLocaleDateString("de-CH")}`, 150, 35);
-  doc.text(`Gültig bis: ${new Date(quote.validUntil).toLocaleDateString("de-CH")}`, 150, 40);
-
-  // Customer Address
-  doc.setFontSize(11);
+  doc.setTextColor(...COLORS.primary);
   doc.setFont("helvetica", "bold");
-  doc.text("Kunde:", 20, 60);
-  doc.setFont("helvetica", "normal");
-  doc.text(customer.name, 20, 66);
-  if (customer.company) doc.text(customer.company, 20, 71);
-  if (customer.address) doc.text(customer.address, 20, 76);
-  if (customer.city) doc.text(`${customer.postalCode || ""} ${customer.city}`, 20, 81);
+  doc.text("Kunde", 25, 67);
 
-  // Line Items Table Header
+  doc.setFontSize(10);
+  doc.setTextColor(...COLORS.dark);
+  doc.setFont("helvetica", "bold");
+  doc.text(customer.name, 25, 74);
+  doc.setFont("helvetica", "normal");
+  let custY = 79;
+  if (customer.company) { doc.text(customer.company, 25, custY); custY += 5; }
+  if (customer.address) { doc.text(customer.address, 25, custY); custY += 5; }
+  if (customer.city) { doc.text(`${customer.postalCode || ""} ${customer.city}`, 25, custY); }
+
   let yPos = 100;
-  doc.setFillColor(240, 240, 240);
-  doc.rect(20, yPos, 170, 8, "F");
-
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(20, yPos, 170, 10, "F");
+  doc.setFontSize(10);
+  doc.setTextColor(...COLORS.white);
   doc.setFont("helvetica", "bold");
-  doc.text("Beschreibung", 22, yPos + 5);
-  doc.text("Menge", 120, yPos + 5);
-  doc.text("Preis", 145, yPos + 5);
-  doc.text("Total", 170, yPos + 5);
+  doc.text("Beschreibung", 25, yPos + 7);
+  doc.text("Menge", 125, yPos + 7);
+  doc.text("Preis", 150, yPos + 7);
+  doc.text("Total", 175, yPos + 7, { align: "right" });
 
-  yPos += 10;
-
-  // Line Items
+  yPos += 12;
+  doc.setTextColor(...COLORS.dark);
   doc.setFont("helvetica", "normal");
-  for (const item of items) {
-    if (yPos > 270) {
+  doc.setFontSize(9);
+
+  items.forEach((item: any, index: number) => {
+    if (yPos > 250) {
       doc.addPage();
       yPos = 20;
     }
 
-    doc.text(item.description.substring(0, 50), 22, yPos);
-    doc.text(`${item.quantity} ${item.unit}`, 120, yPos);
-    doc.text(`${parseFloat(item.unitPrice).toFixed(2)}`, 145, yPos);
-    doc.text(`${parseFloat(item.total).toFixed(2)}`, 170, yPos);
-    yPos += 6;
-  }
+    if (index % 2 === 0) {
+      doc.setFillColor(250, 250, 250);
+      doc.rect(20, yPos - 3, 170, 7, "F");
+    }
 
-  // Totals
-  yPos += 10;
-  doc.line(20, yPos, 190, yPos);
+    doc.text(item.description.substring(0, 60), 25, yPos);
+    doc.text(`${item.quantity} ${item.unit}`, 125, yPos);
+    doc.text(`CHF ${parseFloat(item.unitPrice).toFixed(2)}`, 150, yPos);
+    doc.text(`CHF ${parseFloat(item.total).toFixed(2)}`, 185, yPos, { align: "right" });
+    yPos += 7;
+  });
+
+  yPos += 5;
+  doc.setDrawColor(...COLORS.primary);
+  doc.setLineWidth(0.5);
+  doc.line(120, yPos, 190, yPos);
   yPos += 8;
 
-  doc.text("Zwischensumme:", 120, yPos);
-  doc.text(`${parseFloat(quote.subtotal).toFixed(2)} CHF`, 170, yPos);
+  doc.setFontSize(10);
+  doc.setFont("helvetica", "normal");
+  doc.text("Zwischensumme:", 130, yPos);
+  doc.text(`CHF ${parseFloat(quote.subtotal).toFixed(2)}`, 185, yPos, { align: "right" });
   yPos += 6;
 
   if (parseFloat(quote.discountAmount) > 0) {
-    doc.text("Rabatt:", 120, yPos);
-    doc.text(`-${parseFloat(quote.discountAmount).toFixed(2)} CHF`, 170, yPos);
+    doc.text("Rabatt:", 130, yPos);
+    doc.text(`- CHF ${parseFloat(quote.discountAmount).toFixed(2)}`, 185, yPos, { align: "right" });
     yPos += 6;
   }
 
-  doc.text("MwSt:", 120, yPos);
-  doc.text(`${parseFloat(quote.vatAmount).toFixed(2)} CHF`, 170, yPos);
-  yPos += 6;
+  doc.text("MwSt (8.1%):", 130, yPos);
+  doc.text(`CHF ${parseFloat(quote.vatAmount).toFixed(2)}`, 185, yPos, { align: "right" });
+  yPos += 8;
 
-  doc.setFont("helvetica", "bold");
+  doc.setFillColor(...COLORS.primary);
+  doc.rect(120, yPos - 5, 70, 10, "F");
   doc.setFontSize(12);
-  doc.text("Total:", 120, yPos);
-  doc.text(`${parseFloat(quote.totalAmount).toFixed(2)} CHF`, 170, yPos);
+  doc.setFont("helvetica", "bold");
+  doc.setTextColor(...COLORS.white);
+  doc.text("Gesamtbetrag:", 130, yPos + 2);
+  doc.text(`CHF ${parseFloat(quote.totalAmount).toFixed(2)}`, 185, yPos + 2, { align: "right" });
 
-  // Footer
   if (quote.footerText) {
-    yPos += 10;
-    doc.setFontSize(9);
-    doc.text(quote.footerText, 20, yPos, { maxWidth: 170 });
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.setFont("helvetica", "italic");
+    doc.text(quote.footerText, 20, 280, { maxWidth: 170 });
   }
+
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text(`${settings?.companyName || "Gross ICT"} | ${quote.quoteNumber}`, 105, 290, { align: "center" });
 
   return doc.output("arraybuffer");
 }
