@@ -164,11 +164,11 @@ export const quoteLineItems = mysqlTable("quoteLineItems", {
 // Products table
 export const products = mysqlTable("products", {
   id: int("id").primaryKey().autoincrement(),
-  sku: varchar("sku", { length: 100 }).notNull().unique(),
+  sku: varchar("sku", { length: 100 }).unique(),
   name: varchar("name", { length: 255 }).notNull(),
   description: text("description"),
   category: varchar("category", { length: 100 }),
-  price: decimal("price", { precision: 10, scale: 2 }).notNull(),
+  unitPrice: decimal("unitPrice", { precision: 10, scale: 2 }).notNull(),
   unit: varchar("unit", { length: 50 }).default("Stk."),
   vatRate: decimal("vatRate", { precision: 5, scale: 2 }).default("8.10"),
   isActive: boolean("isActive").default(true),
