@@ -118,9 +118,9 @@ export const leadsRouter = router({
     create: protectedProcedure
         .input(
             z.object({
-                firstName: z.string().min(1),
-                lastName: z.string().min(1),
-                email: z.string().email(),
+                firstName: z.string().optional(),
+                lastName: z.string().optional(),
+                email: z.string().email().optional(),
                 phone: z.string().optional(),
                 company: z.string().optional(),
                 position: z.string().optional(),
@@ -140,9 +140,9 @@ export const leadsRouter = router({
             const db = await getDb();
 
             const result = await db!.insert(leads).values({
-                firstName: input.firstName,
-                lastName: input.lastName,
-                email: input.email,
+                firstName: input.firstName || null,
+                lastName: input.lastName || null,
+                email: input.email || null,
                 phone: input.phone || null,
                 company: input.company || null,
                 position: input.position || null,
@@ -154,7 +154,12 @@ export const leadsRouter = router({
                 assignedTo: input.assignedTo || null,
             });
 
+            // Get the inserted ID from MySQL result
             const leadId = Number((result as any).insertId);
+
+            if (!leadId || isNaN(leadId)) {
+                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create lead" });
+            }
 
             // Add initial activity
             await db!.insert(leadActivities).values({
@@ -234,7 +239,7 @@ export const leadsRouter = router({
         .input(
             z.object({
                 leadId: z.number(),
-                activityType: z.enum(["note", "email", "call", "meeting", "status_change"]),
+                activityType: z.enum(["note", "email", "call", "meeting", "status_change", "contacted", "email_sent", "called"]),
                 description: z.string().min(1),
             })
         )
