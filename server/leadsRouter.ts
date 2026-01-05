@@ -157,10 +157,14 @@ export const leadsRouter = router({
             });
 
             // Get the inserted ID from MySQL result
-            const leadId = Number((result as any).insertId);
-
-            if (!leadId || isNaN(leadId)) {
-                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to create lead" });
+            let leadId: number;
+            if (typeof (result as any)[0]?.insertId === 'number') {
+                leadId = (result as any)[0].insertId;
+            } else if (typeof (result as any).insertId === 'number') {
+                leadId = (result as any).insertId;
+            } else {
+                console.error('[Leads] Invalid insertId from database:', result);
+                throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: "Failed to retrieve lead ID" });
             }
 
             // Add initial activity
