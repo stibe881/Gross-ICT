@@ -120,7 +120,7 @@ export const leadsRouter = router({
             z.object({
                 firstName: z.string().optional(),
                 lastName: z.string().optional(),
-                email: z.string().email().optional(),
+                email: z.string().email().optional().or(z.literal('')),
                 phone: z.string().optional(),
                 website: z.string().optional(),
                 company: z.string().optional(),
@@ -181,7 +181,7 @@ export const leadsRouter = router({
                 id: z.number(),
                 firstName: z.string().optional(),
                 lastName: z.string().optional(),
-                email: z.string().email().optional(),
+                email: z.string().email().optional().or(z.literal('')),
                 phone: z.string().optional(),
                 website: z.string().optional(),
                 company: z.string().optional(),
