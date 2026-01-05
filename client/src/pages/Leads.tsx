@@ -146,7 +146,7 @@ export default function Leads() {
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {leads.map((lead: any) => (
-                            <Card key={lead.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedLeadId(lead.id)}>
+                            <Card key={lead.id} className="p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setLocation(`/leads/${lead.id}`)}>
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h3 className="font-semibold text-lg">{lead.firstName} {lead.lastName}</h3>

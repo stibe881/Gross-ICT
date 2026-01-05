@@ -58,10 +58,12 @@ const SegmentManagement = lazy(() => import("@/pages/SegmentManagement"));
 const TemplateLibrary = lazy(() => import("@/pages/TemplateLibrary"));
 const VisualTemplateEditor = lazy(() => import("./pages/VisualTemplateEditor"));
 const AutomationManagement = lazy(() => import("./pages/AutomationManagement"));
+const Leads = lazy(() => import("@/pages/Leads"));
+const LeadDetail = lazy(() => import("@/pages/LeadDetail"));
 const AccessibilityStatement = lazy(() => import("@/pages/AccessibilityStatement"));
 const MicrosoftCallback = lazy(() => import("@/pages/MicrosoftCallback"));
 const TicketView = lazy(() => import("@/pages/TicketView"));
-const Leads = lazy(() => import("@/pages/Leads"));
+// The original Leads import was here, but it's now moved above to be after AutomationManagement.
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -116,6 +118,7 @@ function Router() {
         <Route path="/sla-reports" component={SLADashboard} />
         <Route path="/accessibility-statement" component={AccessibilityStatement} />
         <Route path="/products" component={Products} />
+        <Route path="/leads/:id" component={LeadDetail} />
         <Route path="/leads" component={Leads} />
         <Route path="/recurring-invoices" component={RecurringInvoices} />
         <Route path={"/accounting-settings"} component={AccountingSettings} />
