@@ -323,7 +323,7 @@ export default function LeadDetail() {
 
             {/* Add Activity Dialog */}
             <Dialog open={showAddActivity} onOpenChange={setShowAddActivity}>
-                <DialogContent>
+                <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>Neue Aktivität hinzufügen</DialogTitle>
                     </DialogHeader>
@@ -351,11 +351,12 @@ export default function LeadDetail() {
                             <Textarea
                                 value={activityForm.description}
                                 onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })}
-                                rows={4}
+                                rows={6}
                                 placeholder="Details zur Aktivität..."
+                                className="resize-none"
                             />
                         </div>
-                        <div className="flex justify-end gap-2">
+                        <div className="flex justify-end gap-2 sticky bottom-0 bg-background pt-4">
                             <Button variant="outline" onClick={() => setShowAddActivity(false)}>
                                 Abbrechen
                             </Button>
