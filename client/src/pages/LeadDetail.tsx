@@ -19,7 +19,8 @@ import {
     RefreshCw,
     UserPlus,
     Edit,
-    Plus
+    Plus,
+    Trash
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
@@ -104,6 +105,15 @@ export default function LeadDetail() {
         onError: (error) => toast.error(`Fehler: ${error.message}`),
     });
 
+    // Delete lead mutation
+    const deleteLead = trpc.leads.delete.useMutation({
+        onSuccess: () => {
+            toast.success('Lead erfolgreich gelöscht');
+            setLocation('/leads');
+        },
+        onError: (error) => toast.error(`Fehler: ${error.message}`),
+    });
+
     if (isLoading) {
         return (
             <div className="container mx-auto p-6">
@@ -182,6 +192,12 @@ export default function LeadDetail() {
         }
     };
 
+    const handleDelete = () => {
+        if (window.confirm('Möchten Sie diesen Lead wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.')) {
+            deleteLead.mutate({ id: lead.id });
+        }
+    };
+
     return (
         <div className="container mx-auto p-6">
             {/* Header */}
@@ -208,6 +224,10 @@ export default function LeadDetail() {
                     <Button variant="outline" onClick={() => setShowEditLead(true)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Bearbeiten
+                    </Button>
+                    <Button variant="outline" onClick={handleDelete} className="text-red-600 hover:text-red-700">
+                        <Trash className="h-4 w-4 mr-2" />
+                        Löschen
                     </Button>
                     {lead.status === 'qualified' && !lead.convertedToCustomerId && (
                         <Button onClick={handleConvert}>
