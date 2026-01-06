@@ -10,7 +10,7 @@ export const emailTemplateRouter = router({
   list: protectedProcedure
     .input(
       z.object({
-        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "custom", "all"]).optional(),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom", "all"]).optional(),
         activeOnly: z.boolean().optional(),
       }).optional()
     )
@@ -82,7 +82,7 @@ export const emailTemplateRouter = router({
         description: z.string().optional(),
         subject: z.string().min(1).max(500),
         body: z.string().min(1),
-        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "custom"]),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom"]),
         isActive: z.boolean().optional(),
         placeholders: z.array(z.string()).optional(),
       })
@@ -141,7 +141,7 @@ export const emailTemplateRouter = router({
         description: z.string().optional(),
         subject: z.string().min(1).max(500).optional(),
         body: z.string().min(1).optional(),
-        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "custom"]).optional(),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom"]).optional(),
         isActive: z.boolean().optional(),
         placeholders: z.array(z.string()).optional(),
       })

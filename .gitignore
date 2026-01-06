@@ -111,3 +111,6 @@ init-microsoft-oauth.mjs
 *-credentials.json
 *-secrets.json
 oauth-config.json
+
+# Auto Claude data directory
+.auto-claude/

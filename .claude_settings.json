@@ -1,0 +1,34 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
+  },
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Read(./**)",
+      "Write(./**)",
+      "Edit(./**)",
+      "Glob(./**)",
+      "Grep(./**)",
+      "Read(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch/**)",
+      "Write(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch/**)",
+      "Edit(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch/**)",
+      "Glob(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch/**)",
+      "Grep(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch/**)",
+      "Read(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch\\.auto-claude\\specs\\001-ich-m-chte-bei-den-leads-direkt-mails-versenden-k-/**)",
+      "Write(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch\\.auto-claude\\specs\\001-ich-m-chte-bei-den-leads-direkt-mails-versenden-k-/**)",
+      "Edit(C:\\Users\\stefa\\Gross ICT\\Dokumente - Dokumente\\Webseiten\\Gross ICT\\gross-ict.ch\\.auto-claude\\specs\\001-ich-m-chte-bei-den-leads-direkt-mails-versenden-k-/**)",
+      "Bash(*)",
+      "WebFetch(*)",
+      "WebSearch(*)",
+      "mcp__context7__resolve-library-id(*)",
+      "mcp__context7__get-library-docs(*)",
+      "mcp__graphiti-memory__search_nodes(*)",
+      "mcp__graphiti-memory__search_facts(*)",
+      "mcp__graphiti-memory__add_episode(*)",
+      "mcp__graphiti-memory__get_episodes(*)",
+      "mcp__graphiti-memory__get_entity_edge(*)"
+    ]
+  }
+}

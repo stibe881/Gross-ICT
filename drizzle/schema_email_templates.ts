@@ -21,6 +21,7 @@ export const emailTemplates = mysqlTable("emailTemplates", {
     "sla",
     "invoice",
     "customer",
+    "akquise",
     "system",
     "custom"
   ]).default("custom").notNull(),

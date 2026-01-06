@@ -20,7 +20,8 @@ import {
     UserPlus,
     Edit,
     Plus,
-    Trash
+    Trash,
+    Send
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
@@ -35,6 +36,9 @@ export default function LeadDetail() {
         activityType: 'note' as const,
         description: '',
     });
+
+    const [showEmailDialog, setShowEmailDialog] = useState(false);
+    const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
 
     const [editForm, setEditForm] = useState({
         firstName: '',
@@ -64,6 +68,23 @@ export default function LeadDetail() {
 
     // Get users for assignment dropdown
     const { data: users } = trpc.users.all.useQuery();
+
+    // Get akquise email templates
+    const { data: emailTemplates } = trpc.emailTemplates.list.useQuery({
+        category: "akquise",
+        activeOnly: true
+    });
+
+    // Send template email mutation
+    const sendTemplateEmail = trpc.leads.sendTemplateEmail.useMutation({
+        onSuccess: () => {
+            toast.success('E-Mail erfolgreich gesendet');
+            setShowEmailDialog(false);
+            setSelectedTemplate(null);
+            refetch();
+        },
+        onError: (error) => toast.error(`Fehler: ${error.message}`),
+    });
 
     // Populate edit form when dialog opens
     useEffect(() => {
