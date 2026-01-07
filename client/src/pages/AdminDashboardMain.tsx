@@ -276,11 +276,11 @@ export default function AdminDashboardMain() {
       permission: 'admin',
     },
     {
-      id: 'email-templates',
-      title: 'Email Templates',
-      description: 'E-Mail-Vorlagen erstellen und verwalten',
-      icon: Server,
-      path: '/smtp-settings',
+      id: 'templates',
+      title: 'Templates',
+      description: 'Template-Vorlagen erstellen, kategorisieren und verwalten',
+      icon: FileText,
+      path: '/email-templates',
       color: 'from-yellow-500 to-amber-600',
       permission: 'admin',
     },
@@ -542,7 +542,7 @@ export default function AdminDashboardMain() {
               <span className="text-gray-500">⚙️</span> System
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {visibleTiles.filter(t => ['verwaltung', 'email-templates'].includes(t.id)).map((tile) => {
+              {visibleTiles.filter(t => ['verwaltung', 'templates'].includes(t.id)).map((tile) => {
                 const Icon = tile.icon;
                 return (
                   <Card

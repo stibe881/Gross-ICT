@@ -20,8 +20,7 @@ import {
     UserPlus,
     Edit,
     Plus,
-    Trash,
-    Send
+    Trash
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
@@ -36,9 +35,6 @@ export default function LeadDetail() {
         activityType: 'note' as const,
         description: '',
     });
-
-    const [showEmailDialog, setShowEmailDialog] = useState(false);
-    const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
 
     const [editForm, setEditForm] = useState({
         firstName: '',
@@ -68,23 +64,6 @@ export default function LeadDetail() {
 
     // Get users for assignment dropdown
     const { data: users } = trpc.users.all.useQuery();
-
-    // Get akquise email templates
-    const { data: emailTemplates } = trpc.emailTemplates.list.useQuery({
-        category: "akquise",
-        activeOnly: true
-    });
-
-    // Send template email mutation
-    const sendTemplateEmail = trpc.leads.sendTemplateEmail.useMutation({
-        onSuccess: () => {
-            toast.success('E-Mail erfolgreich gesendet');
-            setShowEmailDialog(false);
-            setSelectedTemplate(null);
-            refetch();
-        },
-        onError: (error) => toast.error(`Fehler: ${error.message}`),
-    });
 
     // Populate edit form when dialog opens
     useEffect(() => {
@@ -257,10 +236,6 @@ export default function LeadDetail() {
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="outline" onClick={() => setShowEmailDialog(true)} disabled={!lead.email}>
-                        <Send className="h-4 w-4 mr-2" />
-                        E-Mail senden
-                    </Button>
                     <Button variant="outline" onClick={() => setShowEditLead(true)}>
                         <Edit className="h-4 w-4 mr-2" />
                         Bearbeiten
@@ -613,71 +588,6 @@ export default function LeadDetail() {
                                 });
                             }}>
                                 Speichern
-                            </Button>
-                        </div>
-                    </div>
-                </DialogContent>
-            </Dialog>
-
-            {/* Email Template Dialog */}
-            <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
-                <DialogContent className="max-w-2xl">
-                    <DialogHeader>
-                        <DialogTitle>E-Mail an {lead?.firstName} {lead?.lastName} senden</DialogTitle>
-                    </DialogHeader>
-                    <div className="space-y-4">
-                        <div>
-                            <label className="text-sm font-medium mb-2 block">Template auswählen</label>
-                            <Select
-                                value={selectedTemplate?.toString()}
-                                onValueChange={(v) => setSelectedTemplate(parseInt(v))}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue placeholder="Wählen Sie ein Template" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {emailTemplates?.map(template => (
-                                        <SelectItem key={template.id} value={template.id.toString()}>
-                                            {template.title}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
-                        </div>
-
-                        {selectedTemplate && emailTemplates && (
-                            <div className="space-y-2">
-                                <div className="p-4 bg-muted rounded-md">
-                                    <p className="text-sm font-medium mb-1">Vorschau:</p>
-                                    <p className="text-sm">
-                                        <strong>Betreff:</strong> {emailTemplates.find(t => t.id === selectedTemplate)?.subject}
-                                    </p>
-                                </div>
-                                <p className="text-xs text-muted-foreground">
-                                    Platzhalter wie {'{{firstName}}'}, {'{{company}}'} werden automatisch ersetzt.
-                                </p>
-                            </div>
-                        )}
-
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={() => {
-                                setShowEmailDialog(false);
-                                setSelectedTemplate(null);
-                            }}>
-                                Abbrechen
-                            </Button>
-                            <Button
-                                onClick={() => {
-                                    if (selectedTemplate && lead) {
-                                        sendTemplateEmail.mutate({
-                                            leadId: lead.id,
-                                            templateId: selectedTemplate,
-                                        });
-                                    }
-                                }}
-                                disabled={!selectedTemplate || sendTemplateEmail.isPending}
-                            >
-                                {sendTemplateEmail.isPending ? "Wird gesendet..." : "E-Mail senden"}
                             </Button>
                         </div>
                     </div>

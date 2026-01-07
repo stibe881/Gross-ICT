@@ -3,10 +3,9 @@ import { router, protectedProcedure } from "./_core/trpc";
 import { getDb } from "./db";
 import { leads, leadActivities } from "../drizzle/schema_leads";
 import { customers } from "../drizzle/schema_accounting";
-import { users, emailTemplates } from "../drizzle/schema";
+import { users } from "../drizzle/schema";
 import { eq, like, or, desc, and, sql } from "drizzle-orm";
 import { TRPCError } from "@trpc/server";
-import { sendEmail } from "./_core/emailService";
 
 export const leadsRouter = router({
     // Get all leads with optional filters
@@ -397,87 +396,4 @@ export const leadsRouter = router({
             conversionRate,
         };
     }),
-
-    // Send email template to lead
-    sendTemplateEmail: protectedProcedure
-        .input(
-            z.object({
-                leadId: z.number(),
-                templateId: z.number(),
-                customSubject: z.string().optional(),
-                customBody: z.string().optional(),
-            })
-        )
-        .mutation(async ({ input, ctx }: any) => {
-            if (ctx.user.role !== "admin" && ctx.user.role !== "support") {
-                throw new TRPCError({ code: "FORBIDDEN", message: "Access denied" });
-            }
-
-            const db = await getDb();
-
-            // Get lead
-            const [lead] = await db!
-                .select()
-                .from(leads)
-                .where(eq(leads.id, input.leadId))
-                .limit(1);
-
-            if (!lead) {
-                throw new TRPCError({ code: "NOT_FOUND", message: "Lead not found" });
-            }
-
-            if (!lead.email) {
-                throw new TRPCError({ code: "BAD_REQUEST", message: "Lead has no email address" });
-            }
-
-            // Get template
-            const [template] = await db!
-                .select()
-                .from(emailTemplates)
-                .where(eq(emailTemplates.id, input.templateId))
-                .limit(1);
-
-            if (!template) {
-                throw new TRPCError({ code: "NOT_FOUND", message: "Template not found" });
-            }
-
-            // Replace placeholders in subject and body
-            const replacePlaceholders = (text: string) => {
-                return text
-                    .replace(/\{\{firstName\}\}/g, lead.firstName || "")
-                    .replace(/\{\{lastName\}\}/g, lead.lastName || "")
-                    .replace(/\{\{fullName\}\}/g, `${lead.firstName || ""} ${lead.lastName || ""}`.trim())
-                    .replace(/\{\{company\}\}/g, lead.company || "")
-                    .replace(/\{\{email\}\}/g, lead.email || "")
-                    .replace(/\{\{phone\}\}/g, lead.phone || "")
-                    .replace(/\{\{position\}\}/g, lead.position || "");
-            };
-
-            const subject = input.customSubject || replacePlaceholders(template.subject);
-            const body = input.customBody || replacePlaceholders(template.body);
-
-            // Send email
-            try {
-                await sendEmail({
-                    to: lead.email,
-                    subject,
-                    html: body,
-                });
-
-                // Log activity
-                await db!.insert(leadActivities).values({
-                    leadId: lead.id,
-                    activityType: "email",
-                    description: `E-Mail gesendet: "${subject}"`,
-                    userId: ctx.user.id,
-                });
-
-                return { success: true, message: "E-Mail erfolgreich gesendet" };
-            } catch (error: any) {
-                throw new TRPCError({
-                    code: "INTERNAL_SERVER_ERROR",
-                    message: `Failed to send email: ${error.message}`,
-                });
-            }
-        }),
 });
