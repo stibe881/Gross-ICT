@@ -21,8 +21,9 @@ export const emailTemplates = mysqlTable("emailTemplates", {
     "sla",
     "invoice",
     "customer",
-    "akquise",
     "system",
+    "kundenakquise",
+    "newsletter",
     "custom"
   ]).default("custom").notNull(),
   /** Whether this template is active */
@@ -31,6 +32,8 @@ export const emailTemplates = mysqlTable("emailTemplates", {
   isSystem: boolean("isSystem").default(false).notNull(),
   /** Available placeholders for this template (JSON array) */
   placeholders: text("placeholders"),
+  /** Visual editor design JSON (for GrapesJS) */
+  designJson: text("designJson"),
   /** User who created the template */
   createdBy: int("createdBy"),
   /** User who last updated the template */

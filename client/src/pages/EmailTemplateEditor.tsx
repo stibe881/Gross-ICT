@@ -42,8 +42,9 @@ import {
 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import EmailBuilder from "@/components/EmailBuilder";
 
-type TemplateCategory = "ticket" | "sla" | "invoice" | "customer" | "system" | "custom";
+type TemplateCategory = "kundenakquise" | "newsletter" | "custom";
 
 export default function EmailTemplateEditor() {
   const [selectedTemplate, setSelectedTemplate] = useState<number | null>(null);
@@ -60,6 +61,7 @@ export default function EmailTemplateEditor() {
     description: "",
     subject: "",
     body: "",
+    designJson: "",
     category: "custom" as TemplateCategory,
     isActive: true,
     placeholders: [] as string[],
@@ -123,6 +125,7 @@ export default function EmailTemplateEditor() {
       description: "",
       subject: "",
       body: "",
+      designJson: "",
       category: "custom",
       isActive: true,
       placeholders: [],
@@ -163,6 +166,7 @@ export default function EmailTemplateEditor() {
       description: template.description || "",
       subject: template.subject,
       body: template.body,
+      designJson: template.designJson || "",
       category: template.category,
       isActive: template.isActive,
       placeholders: template.placeholders ? JSON.parse(template.placeholders) : [],
@@ -186,11 +190,8 @@ export default function EmailTemplateEditor() {
 
   const getCategoryBadge = (category: string) => {
     const variants: Record<string, { variant: "default" | "secondary" | "outline"; label: string }> = {
-      ticket: { variant: "default", label: "Ticket" },
-      sla: { variant: "secondary", label: "SLA" },
-      invoice: { variant: "outline", label: "Rechnung" },
-      customer: { variant: "default", label: "Kunde" },
-      system: { variant: "secondary", label: "System" },
+      kundenakquise: { variant: "default", label: "Kundenakquise" },
+      newsletter: { variant: "secondary", label: "Newsletter" },
       custom: { variant: "outline", label: "Benutzerdefiniert" },
     };
     const config = variants[category] || variants.custom;
@@ -220,8 +221,8 @@ export default function EmailTemplateEditor() {
     <div className="container mx-auto py-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Email-Template-Editor</h1>
-          <p className="text-muted-foreground">Erstellen und verwalten Sie Email-Benachrichtigungsvorlagen</p>
+          <h1 className="text-3xl font-bold">Template-Editor</h1>
+          <p className="text-muted-foreground">Erstellen und verwalten Sie Template-Vorlagen</p>
         </div>
         <Button onClick={() => setIsCreateDialogOpen(true)} aria-label="Neues Template erstellen">
           <Plus className="h-4 w-4 mr-2" aria-hidden="true" />
@@ -244,11 +245,8 @@ export default function EmailTemplateEditor() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Alle</SelectItem>
-                  <SelectItem value="ticket">Ticket</SelectItem>
-                  <SelectItem value="sla">SLA</SelectItem>
-                  <SelectItem value="invoice">Rechnung</SelectItem>
-                  <SelectItem value="customer">Kunde</SelectItem>
-                  <SelectItem value="system">System</SelectItem>
+                  <SelectItem value="kundenakquise">Kundenakquise</SelectItem>
+                  <SelectItem value="newsletter">Newsletter</SelectItem>
                   <SelectItem value="custom">Benutzerdefiniert</SelectItem>
                 </SelectContent>
               </Select>
@@ -268,7 +266,7 @@ export default function EmailTemplateEditor() {
       {/* Templates Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Email-Templates</CardTitle>
+          <CardTitle>Templates</CardTitle>
           <CardDescription>
             {templates?.length || 0} Template(s) gefunden
           </CardDescription>
@@ -358,9 +356,9 @@ export default function EmailTemplateEditor() {
       <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Neues Email-Template erstellen</DialogTitle>
+            <DialogTitle>Neues Template erstellen</DialogTitle>
             <DialogDescription>
-              Erstellen Sie eine neue Email-Vorlage für Benachrichtigungen
+              Erstellen Sie eine neue Template-Vorlage
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -384,11 +382,8 @@ export default function EmailTemplateEditor() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ticket">Ticket</SelectItem>
-                    <SelectItem value="sla">SLA</SelectItem>
-                    <SelectItem value="invoice">Rechnung</SelectItem>
-                    <SelectItem value="customer">Kunde</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
+                    <SelectItem value="kundenakquise">Kundenakquise</SelectItem>
+                    <SelectItem value="newsletter">Newsletter</SelectItem>
                     <SelectItem value="custom">Benutzerdefiniert</SelectItem>
                   </SelectContent>
                 </Select>
@@ -423,15 +418,20 @@ export default function EmailTemplateEditor() {
               />
             </div>
             <div>
-              <Label htmlFor="body">Email-Inhalt (HTML)</Label>
-              <Textarea
-                id="body"
-                value={formData.body}
-                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                placeholder="HTML-Inhalt der Email"
-                rows={12}
-                className="font-mono text-sm"
-              />
+              <Label htmlFor="body">Email-Inhalt (Visueller Builder)</Label>
+              <div style={{ height: "600px", marginTop: "8px" }}>
+                <EmailBuilder
+                  initialContent={formData.body}
+                  onChange={(html, css) => {
+                    const fullHtml = css ? `<style>${css}</style>${html}` : html;
+                    setFormData({
+                      ...formData,
+                      body: fullHtml,
+                      designJson: JSON.stringify({ html, css })
+                    });
+                  }}
+                />
+              </div>
             </div>
             <div>
               <Label>Platzhalter einfügen</Label>
@@ -476,9 +476,9 @@ export default function EmailTemplateEditor() {
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Email-Template bearbeiten</DialogTitle>
+            <DialogTitle>Template bearbeiten</DialogTitle>
             <DialogDescription>
-              Ändern Sie die Email-Vorlage
+              Ändern Sie die Template-Vorlage
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -497,11 +497,8 @@ export default function EmailTemplateEditor() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ticket">Ticket</SelectItem>
-                    <SelectItem value="sla">SLA</SelectItem>
-                    <SelectItem value="invoice">Rechnung</SelectItem>
-                    <SelectItem value="customer">Kunde</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
+                    <SelectItem value="kundenakquise">Kundenakquise</SelectItem>
+                    <SelectItem value="newsletter">Newsletter</SelectItem>
                     <SelectItem value="custom">Benutzerdefiniert</SelectItem>
                   </SelectContent>
                 </Select>
@@ -533,14 +530,20 @@ export default function EmailTemplateEditor() {
               />
             </div>
             <div>
-              <Label htmlFor="edit-body">Email-Inhalt (HTML)</Label>
-              <Textarea
-                id="edit-body"
-                value={formData.body}
-                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                rows={12}
-                className="font-mono text-sm"
-              />
+              <Label htmlFor="edit-body">Email-Inhalt (Visueller Builder)</Label>
+              <div style={{ height: "600px", marginTop: "8px" }}>
+                <EmailBuilder
+                  initialContent={formData.body}
+                  onChange={(html, css) => {
+                    const fullHtml = css ? `<style>${css}</style>${html}` : html;
+                    setFormData({
+                      ...formData,
+                      body: fullHtml,
+                      designJson: JSON.stringify({ html, css })
+                    });
+                  }}
+                />
+              </div>
             </div>
             <div>
               <Label>Platzhalter einfügen</Label>

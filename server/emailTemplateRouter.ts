@@ -10,7 +10,7 @@ export const emailTemplateRouter = router({
   list: protectedProcedure
     .input(
       z.object({
-        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom", "all"]).optional(),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "kundenakquise", "newsletter", "custom", "all"]).optional(),
         activeOnly: z.boolean().optional(),
       }).optional()
     )
@@ -82,7 +82,8 @@ export const emailTemplateRouter = router({
         description: z.string().optional(),
         subject: z.string().min(1).max(500),
         body: z.string().min(1),
-        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom"]),
+        designJson: z.string().optional(),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "kundenakquise", "newsletter", "custom"]),
         isActive: z.boolean().optional(),
         placeholders: z.array(z.string()).optional(),
       })
@@ -120,6 +121,7 @@ export const emailTemplateRouter = router({
           description: input.description,
           subject: input.subject,
           body: input.body,
+          designJson: input.designJson || null,
           category: input.category,
           isActive: input.isActive ?? true,
           isSystem: false,
@@ -141,7 +143,8 @@ export const emailTemplateRouter = router({
         description: z.string().optional(),
         subject: z.string().min(1).max(500).optional(),
         body: z.string().min(1).optional(),
-        category: z.enum(["ticket", "sla", "invoice", "customer", "akquise", "system", "custom"]).optional(),
+        designJson: z.string().optional(),
+        category: z.enum(["ticket", "sla", "invoice", "customer", "system", "kundenakquise", "newsletter", "custom"]).optional(),
         isActive: z.boolean().optional(),
         placeholders: z.array(z.string()).optional(),
       })
@@ -183,6 +186,7 @@ export const emailTemplateRouter = router({
       if (input.description !== undefined) updateData.description = input.description;
       if (input.subject !== undefined) updateData.subject = input.subject;
       if (input.body !== undefined) updateData.body = input.body;
+      if (input.designJson !== undefined) updateData.designJson = input.designJson;
       if (input.category !== undefined) updateData.category = input.category;
       if (input.isActive !== undefined) updateData.isActive = input.isActive;
       if (input.placeholders !== undefined) {
@@ -282,6 +286,7 @@ export const emailTemplateRouter = router({
           description: original.description,
           subject: original.subject,
           body: original.body,
+          designJson: original.designJson,
           category: original.category,
           isActive: false, // New duplicates start as inactive
           isSystem: false,
