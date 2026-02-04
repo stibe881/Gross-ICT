@@ -11,112 +11,116 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  
+
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
-  
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
-  
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
-  
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
-  
+
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  
+
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
-  
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
 }
 
 :root {
-  /* Light Mode (Default - Modern & Clean) */
-  --background: oklch(0.99 0.005 240); /* Very soft tinted white */
+  /* Ultra Light & Friendly - Clean Corporate Design */
+  --background: oklch(1 0 0);
+  /* Pure White */
   --foreground: oklch(0.2 0.02 240);
-  
+
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.2 0.02 240);
-  
+
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.2 0.02 240);
-  
-  --primary: oklch(0.7 0.2 45); /* Modern Corporate Orange */
-  --primary-foreground: oklch(1 0 0);
-  
+
+  --primary: #FAC863;
+  /* Original Corporate Orange restored */
+  --primary-foreground: oklch(0.12 0.01 260);
+
   --secondary: oklch(0.96 0.01 240);
   --secondary-foreground: oklch(0.2 0.02 240);
-  
+
   --muted: oklch(0.96 0.01 240);
   --muted-foreground: oklch(0.45 0.02 240);
-  
-  --accent: oklch(0.95 0.03 45); /* Very light orange tint */
-  --accent-foreground: oklch(0.7 0.2 45);
-  
+
+  --accent: #FAC863;
+  /* Light gold/orange tint */
+  --accent-foreground: oklch(0.2 0.02 240);
+
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
-  
+
   --border: oklch(0.9 0.01 240);
   --input: oklch(0.95 0.01 240);
-  --ring: oklch(0.7 0.2 45);
-  
+  --ring: #FAC863;
+
   --radius: 0.875rem;
 }
 
 .dark {
-  /* Dark Mode (保持原有风格但微调) */
-  --background: oklch(0.12 0.01 260); 
+  /* Dark Mode remains available but defaults to light */
+  --background: oklch(0.12 0.01 260);
   --foreground: oklch(0.98 0 0);
-  
+
   --card: oklch(0.15 0.01 260);
   --card-foreground: oklch(0.98 0 0);
-  
+
   --popover: oklch(0.15 0.01 260);
   --popover-foreground: oklch(0.98 0 0);
-  
-  --primary: oklch(0.7 0.2 45); /* Consistent Orange */
-  --primary-foreground: oklch(1 0 0);
-  
+
+  --primary: #FAC863;
+  --primary-foreground: oklch(0.12 0.01 260);
+
   --secondary: oklch(0.2 0.01 260);
   --secondary-foreground: oklch(0.98 0 0);
-  
+
   --muted: oklch(0.2 0.01 260);
   --muted-foreground: oklch(0.6 0.01 260);
-  
-  --accent: oklch(0.25 0.05 45);
+
+  --accent: oklch(0.25 0.05 85);
   --accent-foreground: oklch(1 0 0);
-  
+
   --destructive: oklch(0.6 0.2 25);
   --destructive-foreground: oklch(0.98 0 0);
-  
+
   --border: oklch(0.25 0.01 260);
   --input: oklch(0.25 0.01 260);
-  --ring: oklch(0.7 0.2 45);
+  --ring: oklch(0.75 0.15 85);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
   }
+
   body {
     @apply bg-background text-foreground font-sans antialiased selection:bg-primary/30 selection:text-primary;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
@@ -145,11 +149,11 @@
       max-width: 1200px;
     }
   }
-  
+
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-b from-foreground to-foreground/60;
   }
-  
+
   .text-gradient-gold {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60;
   }
@@ -157,16 +161,19 @@
   .glass-panel {
     @apply bg-background/40 backdrop-blur-xl border border-border shadow-2xl;
   }
-  
+
   .bento-card {
     @apply bg-card/40 backdrop-blur-md border border-border rounded-3xl overflow-hidden transition-all duration-500 hover:border-primary/20 hover:bg-card/60;
   }
 }
 
 @keyframes gradient-xy {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -181,6 +188,7 @@
   0% {
     transform: translateX(0%);
   }
+
   100% {
     transform: translateX(-100%);
   }
@@ -233,17 +241,17 @@
     font-size: 3.5rem;
     line-height: 1.1;
   }
-  
+
   .text-9xl {
     font-size: 4rem;
     line-height: 1;
   }
-  
+
   .container {
     padding-left: 1.5rem;
     padding-right: 1.5rem;
   }
-  
+
   .bento-card {
     min-height: 250px;
   }
@@ -253,19 +261,30 @@
   .animate-marquee {
     animation: marquee 25s linear infinite;
   }
+
   .animate-marquee2 {
     animation: marquee2 25s linear infinite;
   }
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-100%); }
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 @keyframes marquee2 {
-  0% { transform: translateX(100%); }
-  100% { transform: translateX(0%); }
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(0%);
+  }
 }
 
 /* Loading Screen Animations */
@@ -274,6 +293,7 @@
     transform: translateX(-200px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -285,6 +305,7 @@
     transform: translateX(200px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -296,6 +317,7 @@
     transform: translateX(100px);
     opacity: 0;
   }
+
   100% {
     transform: translateX(0);
     opacity: 1;
@@ -303,10 +325,13 @@
 }
 
 @keyframes glowPulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.3;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.1);
@@ -317,6 +342,7 @@
   0% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }

@@ -122,7 +122,7 @@ export default function SecurityCheck() {
     const newScore = score + points;
     setScore(newScore);
     setAnswers([...answers, points]);
-    
+
     if (step < questions.length - 1) {
       setStep(step + 1);
     } else {
@@ -185,13 +185,13 @@ export default function SecurityCheck() {
             {language === 'de' ? "Wie sicher ist Ihre IT?" : "How secure is your IT?"}
           </h2>
           <p className="text-muted-foreground max-w-xl mx-auto">
-            {language === 'de' 
+            {language === 'de'
               ? "Machen Sie den erweiterten Schnelltest (10 Fragen) und erhalten Sie eine sofortige Einschätzung."
               : "Take the extended quick test (10 questions) and get an immediate assessment."}
           </p>
         </div>
 
-        <div className="bg-white/5 border border-white/10 rounded-3xl p-8 md:p-12 backdrop-blur-sm relative overflow-hidden min-h-[500px] flex flex-col justify-center shadow-2xl">
+        <div className="bg-white/70 border border-border rounded-3xl p-8 md:p-12 backdrop-blur-md relative overflow-hidden min-h-[500px] flex flex-col justify-center shadow-xl">
           <AnimatePresence initial={false}>
             {!started ? (
               <motion.div
@@ -208,7 +208,7 @@ export default function SecurityCheck() {
                   {language === 'de' ? "Bereit für den Check?" : "Ready for the check?"}
                 </h3>
                 <p className="text-muted-foreground mb-8 max-w-md">
-                  {language === 'de' 
+                  {language === 'de'
                     ? "Finden Sie in weniger als 2 Minuten heraus, wo Ihre IT-Sicherheitslücken liegen."
                     : "Find out where your IT security gaps are in less than 2 minutes."}
                 </p>
@@ -229,13 +229,13 @@ export default function SecurityCheck() {
                 <div className="flex justify-between items-center mb-8 text-sm font-medium text-muted-foreground">
                   <span>{language === 'de' ? "Frage" : "Question"} {step + 1} / {questions.length}</span>
                   <div className="w-32 h-2 bg-white/10 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-primary transition-all duration-500 ease-out" 
+                    <div
+                      className="h-full bg-primary transition-all duration-500 ease-out"
                       style={{ width: `${((step + 1) / questions.length) * 100}%` }}
                     />
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4 mb-8">
                   {(() => {
                     const QuestionIcon = questions[step].icon || Shield;
@@ -249,19 +249,19 @@ export default function SecurityCheck() {
                     <h3 className="text-xl md:text-2xl font-bold text-foreground leading-tight mb-2">
                       {questions[step].question}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground bg-white/5 p-2 rounded-lg inline-flex">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground bg-primary/5 p-2 rounded-lg inline-flex">
                       <Info className="w-4 h-4 text-primary" />
                       {questions[step].info}
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="grid gap-3">
                   {questions[step].options.map((option, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleAnswer(option.points)}
-                      className="w-full text-left p-5 rounded-xl bg-white/5 hover:bg-primary/10 border border-white/10 hover:border-primary/50 transition-all flex justify-between items-center group active:scale-[0.99]"
+                      className="w-full text-left p-5 rounded-xl bg-white/50 hover:bg-primary/10 border border-border hover:border-primary/50 transition-all flex justify-between items-center group active:scale-[0.99]"
                     >
                       <span className="font-medium">{option.text}</span>
                       <ArrowRight className="w-5 h-5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary" />
@@ -286,7 +286,7 @@ export default function SecurityCheck() {
                       </div>
                       <h3 className={`text-3xl font-bold mb-3 ${result.color}`}>{result.title}</h3>
                       <p className="text-xl text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">{result.desc}</p>
-                      
+
                       {/* Detailed Breakdown */}
                       <div className="bg-white/5 rounded-xl p-6 mb-8 text-left max-h-60 overflow-y-auto custom-scrollbar">
                         <h4 className="font-bold mb-4 text-sm uppercase tracking-wider text-muted-foreground">
@@ -313,7 +313,7 @@ export default function SecurityCheck() {
                           <RefreshCw className="w-4 h-4" />
                           {language === 'de' ? "Wiederholen" : "Retry"}
                         </Button>
-                        <Button 
+                        <Button
                           size="lg"
                           className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full shadow-lg shadow-primary/20"
                           onClick={() => setLocation("/contact")}

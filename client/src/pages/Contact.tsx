@@ -109,11 +109,11 @@ export default function Contact() {
             transition={{ duration: 0.5 }}
             className="text-center mb-16"
           >
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-gradient">Kontaktieren Sie uns</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 text-foreground">Kontaktieren Sie uns</h1>
+            <p className="text-xl text-foreground/70 max-w-2xl mx-auto">
               Bereit für den nächsten Schritt? Wir freuen uns auf Ihr Projekt.
             </p>
-          </motion.div> contemplation
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
             {/* Contact Info */}
@@ -123,15 +123,15 @@ export default function Contact() {
               transition={{ delay: 0.2, duration: 0.5 }}
               className="space-y-8"
             >
-              <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+              <Card className="bg-white/70 border-border shadow-xl backdrop-blur-md">
                 <CardHeader>
                   <CardTitle className="text-2xl">Kontaktinformationen</CardTitle>
                   <CardDescription>Wir sind für Sie da.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <a href="mailto:info@gross-ict.ch" className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                    <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
-                      <Mail className="h-5 w-5" />
+                  <a href="mailto:info@gross-ict.ch" className="flex items-center gap-4 text-foreground/60 hover:text-primary transition-colors cursor-pointer group">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
+                      <Mail className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Email</p>
@@ -139,9 +139,9 @@ export default function Contact() {
                     </div>
                   </a>
 
-                  <a href="tel:+41794140616" className="flex items-center gap-4 text-muted-foreground hover:text-primary transition-colors cursor-pointer">
-                    <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
-                      <Phone className="h-5 w-5" />
+                  <a href="tel:+41794140616" className="flex items-center gap-4 text-foreground/60 hover:text-primary transition-colors cursor-pointer group">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
+                      <Phone className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Telefon</p>
@@ -149,9 +149,9 @@ export default function Contact() {
                     </div>
                   </a>
 
-                  <div className="flex items-center gap-4 text-muted-foreground">
-                    <div className="h-10 w-10 rounded-full bg-primary/5 flex items-center justify-center border border-primary/10">
-                      <MapPin className="h-5 w-5" />
+                  <div className="flex items-center gap-4 text-foreground/60">
+                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <MapPin className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm font-medium text-foreground">Standort</p>
@@ -159,7 +159,7 @@ export default function Contact() {
                     </div>
                   </div>
                 </CardContent>
-              </Card> contemplation
+              </Card>
 
               <div className="p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-transparent border border-primary/10">
                 <h3 className="text-lg font-bold mb-2">Support benötigt?</h3>
@@ -180,7 +180,7 @@ export default function Contact() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4, duration: 0.5 }}
             >
-              <Card className="bg-card/50 border-border/50 backdrop-blur-sm h-full">
+              <Card className="bg-white/70 border-border shadow-xl backdrop-blur-md h-full">
                 <CardHeader>
                   <CardTitle className="text-2xl">Nachricht senden</CardTitle>
                   <CardDescription>Füllen Sie das Formular aus und wir melden uns umgehend.</CardDescription>
@@ -189,56 +189,56 @@ export default function Contact() {
                   <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Vorname</label>
+                        <label className="text-sm font-medium text-foreground/70">Vorname</label>
                         <Input
                           id="first-name"
                           placeholder="Max"
                           value={formData.firstName}
                           onChange={handleChange}
-                          className="bg-background/50 border-border focus:border-primary/50"
+                          className="bg-white/50 border-border focus:border-primary/50 text-foreground"
                         />
                       </div>
                       <div className="space-y-2">
-                        <label className="text-sm font-medium text-muted-foreground">Nachname</label>
+                        <label className="text-sm font-medium text-foreground/70">Nachname</label>
                         <Input
                           id="last-name"
                           placeholder="Muster"
                           value={formData.lastName}
                           onChange={handleChange}
-                          className="bg-background/50 border-border focus:border-primary/50"
+                          className="bg-white/50 border-border focus:border-primary/50 text-foreground"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-muted-foreground">Email</label>
+                      <label className="text-sm font-medium text-foreground/70">Email</label>
                       <Input
                         id="email"
                         type="email"
                         placeholder="max@beispiel.ch"
                         value={formData.email}
                         onChange={handleChange}
-                        className="bg-background/50 border-border focus:border-primary/50"
+                        className="bg-white/50 border-border focus:border-primary/50 text-foreground"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-muted-foreground">Betreff</label>
+                      <label className="text-sm font-medium text-foreground/70">Betreff</label>
                       <Input
                         id="subject"
                         placeholder="Projektanfrage..."
                         value={formData.subject}
                         onChange={handleChange}
-                        className="bg-background/50 border-border focus:border-primary/50"
+                        className="bg-white/50 border-border focus:border-primary/50 text-foreground"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-muted-foreground">Nachricht</label>
+                      <label className="text-sm font-medium text-foreground/70">Nachricht</label>
                       <Textarea
                         id="message"
                         placeholder="Wie können wir Ihnen helfen?"
-                        className="min-h-[150px] bg-background/50 border-border focus:border-primary/50"
+                        className="min-h-[150px] bg-white/50 border-border focus:border-primary/50 text-foreground"
                         value={formData.message}
                         onChange={handleChange}
                       />
@@ -253,7 +253,7 @@ export default function Contact() {
                       />
                       <label
                         htmlFor="contact-consent"
-                        className="text-xs text-muted-foreground leading-tight cursor-pointer"
+                        className="text-xs text-foreground/60 leading-tight cursor-pointer"
                       >
                         Ich stimme zu, dass meine Angaben zur Kontaktaufnahme und für Rückfragen dauerhaft gespeichert werden. Weitere Informationen finden Sie in der <Link href="/privacy" className="underline hover:text-foreground transition-colors">Datenschutzerklärung</Link>.
                       </label>
@@ -262,14 +262,14 @@ export default function Contact() {
                     <Button
                       type="submit"
                       disabled={contactMutation.isPending}
-                      className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold transition-all"
+                      className="w-full bg-primary text-primary-foreground hover:opacity-90 font-bold transition-all shadow-lg shadow-primary/20 h-10"
                     >
                       {contactMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
                         <>Nachricht senden <Send className="ml-2 h-4 w-4" /></>
                       )}
-                    </Button> contemplation
+                    </Button>
                   </form>
                 </CardContent>
               </Card>

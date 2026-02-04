@@ -7,7 +7,7 @@ export default function FAQSection() {
   const faqs = [
     {
       question: language === 'de' ? "Wie schnell reagieren Sie im Notfall?" : "How fast do you react in an emergency?",
-      answer: language === 'de' 
+      answer: language === 'de'
         ? "Für Vertragskunden garantieren wir Reaktionszeiten von unter 2 Stunden. Bei kritischen Ausfällen sind wir oft sofort verfügbar."
         : "For contract customers, we guarantee response times of under 2 hours. For critical outages, we are often available immediately."
     },
@@ -38,14 +38,14 @@ export default function FAQSection() {
   ];
 
   return (
-    <section className="py-24 bg-black/20">
+    <section className="py-24 bg-primary/5">
       <div className="container max-w-3xl px-4 md:px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             {language === 'de' ? "Häufige Fragen" : "Frequently Asked Questions"}
           </h2>
           <p className="text-muted-foreground">
-            {language === 'de' 
+            {language === 'de'
               ? "Antworten auf die wichtigsten Fragen zu unserer Zusammenarbeit."
               : "Answers to the most important questions about our cooperation."}
           </p>
@@ -53,7 +53,7 @@ export default function FAQSection() {
 
         <Accordion type="single" collapsible className="w-full space-y-4">
           {faqs.map((faq, index) => (
-            <AccordionItem key={index} value={`item-${index}`} className="border border-white/10 bg-white/5 rounded-lg px-4">
+            <AccordionItem key={index} value={`item-${index}`} className="border border-border bg-white/70 rounded-lg px-4 shadow-sm">
               <AccordionTrigger className="text-left hover:text-primary transition-colors text-lg font-medium py-4">
                 {faq.question}
               </AccordionTrigger>

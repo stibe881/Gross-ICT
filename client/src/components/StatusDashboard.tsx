@@ -31,12 +31,12 @@ export default function StatusDashboard() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
 
-        const response = await fetch(service.endpoint, { 
-          method: 'HEAD', 
+        const response = await fetch(service.endpoint, {
+          method: 'HEAD',
           mode: 'no-cors', // Important for cross-origin checks like 1.1.1.1
-          signal: controller.signal 
+          signal: controller.signal
         });
-        
+
         clearTimeout(timeoutId);
         return 'operational';
       } catch (error) {
@@ -55,7 +55,7 @@ export default function StatusDashboard() {
         }
         return service;
       }));
-      
+
       setStatuses(updatedStatuses);
       setLastUpdated(new Date());
     };
@@ -93,7 +93,7 @@ export default function StatusDashboard() {
   };
 
   return (
-    <section className="py-12 border-t border-white/5 bg-black/40">
+    <section className="py-12 border-t border-border bg-white/30">
       <div className="container px-4 md:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div className="flex items-center gap-3">
@@ -114,7 +114,7 @@ export default function StatusDashboard() {
           {statuses.map((service) => {
             const StatusIcon = getStatusIcon(service.status);
             const ServiceIcon = service.icon;
-            
+
             return (
               <motion.div
                 key={service.id}

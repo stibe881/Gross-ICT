@@ -44,7 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
-    
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
       lenis.destroy();
@@ -61,20 +61,20 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col font-sans text-foreground bg-background selection:bg-primary/20">
       <SkipLink />
-      
+
       {/* Floating Island Navigation */}
       <header className="fixed top-6 left-0 right-0 z-50 flex justify-center px-4 pointer-events-none pt-4">
         <div className={cn(
-          "pointer-events-auto flex items-center gap-2 p-2 rounded-full border border-white/10 bg-black/50 backdrop-blur-xl shadow-2xl transition-all duration-500",
+          "pointer-events-auto flex items-center gap-2 p-2 rounded-full border border-border bg-white/70 backdrop-blur-xl shadow-lg transition-all duration-500",
           isScrolled ? "w-auto px-4" : "w-full max-w-4xl justify-between px-6"
         )}>
-          
+
           {/* Logo Area */}
           <Link href="/">
             <div className="flex items-center cursor-pointer group px-2">
-              <img 
-                src="/logo-new.png" 
-                alt="Gross ICT" 
+              <img
+                src="/logo-new.png"
+                alt="Gross ICT"
                 className={cn(
                   "transition-all duration-300 object-contain",
                   isScrolled ? "h-8" : "h-10"
@@ -84,14 +84,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </Link>
 
           {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center gap-1 bg-white/5 rounded-full p-1 border border-white/5">
+          <nav className="hidden md:flex items-center gap-1 bg-black/5 rounded-full p-1 border border-border/50">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
                 <span className={cn(
                   "px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 cursor-pointer hover:text-foreground",
-                  location === item.path 
-                    ? "bg-foreground/10 text-foreground shadow-inner" 
-                    : "text-muted-foreground hover:bg-foreground/5"
+                  location === item.path
+                    ? "bg-white/50 text-foreground shadow-sm"
+                    : "text-muted-foreground hover:bg-white/30"
                 )}>
                   {item.name}
                 </span>
@@ -104,15 +104,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* User Dashboard Button (only show icon) */}
             {user && (
               <Link href={user.role === 'admin' ? '/admin' : '/dashboard'}>
-                <button className="p-2 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 group">
+                <button className="p-2 rounded-full bg-black/5 hover:bg-black/10 transition-colors border border-border group">
                   <User className="h-4 w-4 text-primary" />
                 </button>
               </Link>
             )}
             {/* Language Switcher */}
-            <button 
+            <button
               onClick={() => setLanguage(language === 'de' ? 'en' : 'de')}
-              className="px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+              className="px-3 py-2 rounded-full text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-black/5 transition-all"
             >
               {language === 'de' ? 'EN' : 'DE'}
             </button>
@@ -120,7 +120,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all"
+              className="p-2 rounded-full text-muted-foreground hover:text-foreground hover:bg-black/5 transition-all"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -131,7 +131,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             {/* Login Button (Desktop only) */}
             {!user && (
               <Link href="/login">
-                <button className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-foreground hover:bg-white/10 transition-all border border-white/10">
+                <button className="hidden md:flex items-center gap-1 px-3 py-2 rounded-full text-sm font-medium text-foreground hover:bg-black/5 transition-all border border-border">
                   <User className="h-4 w-4" />
                   <span>{language === 'de' ? 'Anmelden' : 'Login'}</span>
                 </button>
@@ -139,16 +139,16 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             )}
 
             <Link href="/contact">
-              <button className="bg-white text-black px-3 py-2 rounded-full text-sm font-semibold hover:bg-gray-200 transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap">
+              <button className="bg-primary text-primary-foreground px-3 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition-all active:scale-95 flex items-center gap-1 whitespace-nowrap shadow-sm">
                 <span className="hidden lg:inline">{t.nav.contact}</span>
                 <span className="lg:hidden">Kontakt</span>
                 <ArrowRight className="h-3 w-3" />
               </button>
             </Link>
-            
+
             {/* Mobile Menu Toggle */}
-            <button 
-              className="md:hidden p-2 text-foreground bg-white/5 rounded-full"
+            <button
+              className="md:hidden p-2 text-foreground bg-black/5 rounded-full"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -159,21 +159,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-40 bg-black/95 backdrop-blur-xl pt-32 px-6 md:hidden animate-in slide-in-from-top-5 duration-300">
+        <div className="fixed inset-0 z-40 bg-white/95 backdrop-blur-xl pt-32 px-6 md:hidden animate-in slide-in-from-top-5 duration-300">
           <nav className="flex flex-col gap-4">
             {navItems.map((item) => (
               <Link key={item.path} href={item.path}>
-                <span 
-                  className="block p-4 rounded-2xl bg-white/5 border border-white/5 text-xl font-medium hover:bg-white/10 transition-colors cursor-pointer"
+                <span
+                  className="block p-4 rounded-2xl bg-black/5 border border-border text-xl font-medium hover:bg-black/10 transition-colors cursor-pointer"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
                 </span>
               </Link>
             ))}
-            
+
             <RemoteSupportModal>
-              <span 
+              <span
                 className="block p-4 rounded-2xl bg-primary/10 border border-primary/20 text-xl font-medium text-primary hover:bg-primary/20 transition-colors cursor-pointer flex items-center gap-3"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
@@ -181,12 +181,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {language === 'de' ? 'Fernwartung' : 'Remote Support'}
               </span>
             </RemoteSupportModal>
-            
+
             {/* Login Link in Mobile Menu */}
             {!user && (
               <Link href="/login">
-                <span 
-                  className="block p-4 rounded-2xl bg-white/5 border border-white/5 text-xl font-medium hover:bg-white/10 transition-colors cursor-pointer flex items-center gap-3"
+                <span
+                  className="block p-4 rounded-2xl bg-black/5 border border-border text-xl font-medium hover:bg-black/10 transition-colors cursor-pointer flex items-center gap-3"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   <User className="w-5 h-5" />
@@ -198,8 +198,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       )}
 
-      <div className="cinematic-vignette"></div>
-       <main id="main-content" className="flex-1 relative z-0">
+      <div className=""></div>
+      <main id="main-content" className="flex-1 relative z-0">
         {children}
       </main>
 
@@ -210,7 +210,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="space-y-4">
               <img src="/logo-new.png" alt="Gross ICT" className="h-6 w-auto" />
               <p className="text-muted-foreground text-sm leading-relaxed">
-                Next-Generation IT Solutions.<br/>
+                Next-Generation IT Solutions.<br />
                 {t.hero.subtitle}
               </p>
               <div className="text-muted-foreground text-sm leading-relaxed pt-2">
@@ -220,9 +220,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <a href="tel:+41794140616" className="hover:text-primary transition-colors">
                     +41 79 414 06 16
                   </a>
-                  <a 
-                    href="https://wa.me/41794140616" 
-                    target="_blank" 
+                  <a
+                    href="https://wa.me/41794140616"
+                    target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 text-green-500 hover:text-green-400 transition-colors font-medium"
                   >
@@ -232,7 +232,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="font-medium text-foreground mb-4">Services</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
@@ -258,7 +258,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <AccessibilityBadge />
             </div>
           </div>
-          
+
           <div className="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <img src="/logo-new.png" alt="Gross ICT" className="h-5 w-auto" />
