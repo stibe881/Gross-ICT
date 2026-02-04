@@ -66,8 +66,8 @@ export default function Home() {
 
   return (
     <Layout>
-      <SEO 
-        title="Home" 
+      <SEO
+        title="Home"
         description="Gross ICT - Ihr Partner für Next-Gen IT-Lösungen, Webentwicklung und Netzwerkinfrastruktur in Zell LU."
         structuredData={{
           "@context": "https://schema.org",
@@ -88,80 +88,80 @@ export default function Home() {
       />
       <AnimatedBackground />
       <Scene3D />
-      
+
       {/* Hero Section */}
       <section ref={ref} className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden w-full">
 
 
-        <motion.div 
+        <motion.div
           style={{ y, opacity }}
           className="w-full px-4 md:px-8 relative z-10 flex flex-col items-center text-center"
         >
-          <motion.div 
+          <motion.div
             initial="initial"
             whileInView="animate"
             viewport={{ once: true }}
             variants={stagger}
             className="space-y-12 max-w-[90vw] mx-auto"
           >
-            <motion.div variants={fadeIn} className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 border border-white/10 text-sm font-medium backdrop-blur-xl hover:bg-white/10 transition-all cursor-default shadow-lg shadow-black/20">
+            <motion.div variants={fadeIn} className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-primary/10 border border-primary/20 text-sm font-medium backdrop-blur-xl hover:bg-primary/20 transition-all cursor-default shadow-sm">
               <span className="relative flex h-2.5 w-2.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
               </span>
-              <span className="text-gray-200 tracking-wide uppercase text-xs font-bold">{t.hero.badge}</span>
+              <span className="text-primary tracking-wide uppercase text-xs font-bold">{t.hero.badge}</span>
             </motion.div>
-            
+
             <ScrollTypography />
-            
-            <motion.p variants={fadeIn} className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed font-light">
+
+            <motion.p variants={fadeIn} className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
               {t.hero.subtitle}
             </motion.p>
-            
+
             <motion.div variants={fadeIn} className="flex flex-col items-center gap-8 pt-8">
               <div className="flex flex-col sm:flex-row justify-center gap-6">
-                <Button asChild size="lg" className="h-14 px-10 rounded-full bg-white text-black hover:bg-gray-100 font-bold text-lg transition-all shadow-[0_0_40px_-10px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.4)]">
+                <Button asChild size="lg" className="h-14 px-10 rounded-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-lg transition-all shadow-lg shadow-primary/20 hover:scale-105">
                   <Link href="/contact">
                     {t.hero.cta_primary} <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-                <Button asChild variant="outline" size="lg" className="h-14 px-10 rounded-full border-white/10 bg-white/5 hover:bg-white/10 text-white backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
+                <Button asChild variant="outline" size="lg" className="h-14 px-10 rounded-full border-primary/20 bg-background/50 hover:bg-primary/5 text-foreground backdrop-blur-md transition-all hover:scale-105 font-medium text-lg">
                   <Link href="/services/web">
                     {t.hero.cta_secondary}
                   </Link>
                 </Button>
               </div>
-              
+
               <div className="flex gap-4 text-sm text-muted-foreground">
-                <a href="https://wa.me/41794140616" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-white transition-colors">
+                <a href="https://wa.me/41794140616" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:text-primary transition-colors">
                   <MessageCircle className="h-4 w-4" /> {t.hero.whatsapp}
                 </a>
-                <span className="text-white/20">|</span>
-                <Link href="/contact" className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer">
+                <span className="text-border">|</span>
+                <Link href="/contact" className="flex items-center gap-2 hover:text-primary transition-colors cursor-pointer">
                   <Calendar className="h-4 w-4" /> {t.hero.schedule}
                 </Link>
               </div>
-            </motion.div>
+            </motion.div> contemplation
           </motion.div>
         </motion.div>
-        
+
         {/* Modern Scroll Indicator */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5, duration: 1 }}
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-white/30 text-xs tracking-[0.2em] uppercase font-medium cursor-pointer hover:text-white transition-colors"
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 text-muted-foreground/30 text-xs tracking-[0.2em] uppercase font-medium cursor-pointer hover:text-primary transition-colors"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
           <span>{t.hero.scroll}</span>
-          <div className="w-[1px] h-16 bg-gradient-to-b from-white/30 to-transparent"></div>
+          <div className="w-[1px] h-16 bg-gradient-to-b from-border to-transparent"></div>
         </motion.div>
       </section>
 
       {/* Bento Grid Services Section */}
       <section className="py-32 relative">
         <div className="container">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -179,7 +179,7 @@ export default function Home() {
             {/* Large Card - Web */}
             <Spotlight className="col-span-1 md:col-span-2 md:row-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.01 // WEB_CORE</div>
-              <BentoCard 
+              <BentoCard
                 className="h-full border-none bg-transparent"
                 title={t.services.web.title}
                 description={t.services.web.desc}
@@ -189,11 +189,11 @@ export default function Home() {
                 delay={0.1}
               />
             </Spotlight>
-            
+
             {/* Medium Card - Support */}
             <Spotlight className="col-span-1 md:col-span-1 md:row-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SYS.02 // SUPPORT</div>
-              <BentoCard 
+              <BentoCard
                 className="h-full border-none bg-transparent"
                 title={t.services.support.title}
                 description={t.services.support.desc}
@@ -207,7 +207,7 @@ export default function Home() {
             {/* Small Cards Row */}
             <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">SEC.02 // SHIELD</div>
-              <BentoCard 
+              <BentoCard
                 className="h-full border-none bg-transparent"
                 title={t.services.security.title}
                 description={t.services.security.desc}
@@ -220,7 +220,7 @@ export default function Home() {
 
             <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">OPT.03 // SPEED</div>
-              <BentoCard 
+              <BentoCard
                 className="h-full border-none bg-transparent"
                 title={t.services.performance.title}
                 description={t.services.performance.desc}
@@ -233,7 +233,7 @@ export default function Home() {
 
             <Spotlight className="col-span-1 md:col-span-1">
               <div className="absolute top-4 right-4 text-[10px] font-mono text-white/30 tracking-widest">DAT.04 // INSIGHT</div>
-              <BentoCard 
+              <BentoCard
                 className="h-full border-none bg-transparent"
                 title={t.services.analytics.title}
                 description={t.services.analytics.desc}
@@ -250,7 +250,7 @@ export default function Home() {
       <FAQSection />
 
       <SecurityCheck />
-      
+
       <StatusDashboard />
 
       <NewsSection />
@@ -263,7 +263,7 @@ export default function Home() {
 function BentoCard({ className, title, description, icon, bgImage, href, delay }: any) {
   return (
     <Link href={href}>
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
@@ -276,9 +276,9 @@ function BentoCard({ className, title, description, icon, bgImage, href, delay }
         {/* Background Image with Overlay */}
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent z-10" />
-          <img 
-            src={bgImage} 
-            alt={title} 
+          <img
+            src={bgImage}
+            alt={title}
             className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-60 group-hover:opacity-40"
           />
         </div>
@@ -288,7 +288,7 @@ function BentoCard({ className, title, description, icon, bgImage, href, delay }
           <div className="mb-auto p-3 rounded-2xl bg-white/5 w-fit backdrop-blur-md border border-white/10 group-hover:bg-primary/20 group-hover:border-primary/30 transition-colors">
             {icon}
           </div>
-          
+
           <div className="space-y-2 transform transition-transform duration-300 group-hover:-translate-y-2">
             <h3 className="text-2xl font-bold text-white group-hover:text-primary transition-colors">{title}</h3>
             <p className="text-sm text-gray-400 line-clamp-2 group-hover:text-gray-300 transition-colors">

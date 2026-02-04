@@ -146,7 +146,7 @@ function App() {
     <HelmetProvider>
       <ErrorBoundary>
         <ThemeProvider
-          defaultTheme="dark"
+          defaultTheme="light"
           switchable
         >
           <LanguageProvider>

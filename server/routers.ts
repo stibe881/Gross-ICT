@@ -40,6 +40,7 @@ import { smtpRouter } from "./smtpRouter";
 import { quoteRequestRouter } from "./quoteRequestRouter";
 import { dashboardPreferencesRouter } from "./dashboardPreferencesRouter";
 import { microsoftOAuthRouter } from "./microsoftOAuthRouter";
+import { contactRouter } from "./contactRouter";
 import { leadsRouter } from "./leadsRouter";
 
 export const appRouter = router({
@@ -87,6 +88,7 @@ export const appRouter = router({
   dashboardPreferences: dashboardPreferencesRouter,
   microsoftOAuth: microsoftOAuthRouter,
   leads: leadsRouter,
+  contact: contactRouter,
 });
 
 export type AppRouter = typeof appRouter;
